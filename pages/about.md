@@ -2,7 +2,6 @@
 layout: page
 title: About
 description: 只要我写的够快，bug就追不上我
-keywords: Zhuang Ma, 马壮
 comments: true
 menu: 关于
 permalink: /about/
@@ -14,7 +13,7 @@ Where most it promises; and oft it hits
 
 Where hope is coldest, and despair most fits.
 
-
+<br>
 **简单的编程爱好者**
 
 ![]({{ site.url }}/assets/img/wzx_head.jpg)

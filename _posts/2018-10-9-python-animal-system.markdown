@@ -8,11 +8,7 @@ mathjax: true
 author: wzx
 ---
 
-- 目录
-{:toc}
-
 今后一定好好学习
-
 
 
 

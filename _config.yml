@@ -15,7 +15,7 @@ repository: wzx140/wzx140.github.io
 # 对 css 和 js 资源的 cdn 加速配置
 cdn:
     jsdelivr:
-        enabled: true
+        enabled: false
 # 组件配置
 components:
     # 分享
@@ -39,7 +39,7 @@ highlight_theme: github
 #      Author      #
 # ---------------- #
 author: wzx
-organization: 
+organization: nuaa
 organization_url: 
 github_username: wzx140
 location: Nanjing, China

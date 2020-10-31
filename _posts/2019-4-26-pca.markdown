@@ -1,0 +1,139 @@
+---
+layout: post
+title:  "浅谈主成分分析与奇异值分解"
+date:   2019-4-25
+categories: MachineLearning
+tags: PCA SVD
+mathjax: true
+author: wzx
+---
+
+- 目录
+{:toc}
+
+主成分分析(PCA)是针对多元数据的一种分析方法，对多元数据进行降纬。奇异值分解(SVD)主要用于估计矩阵的秩，由于其迭代算法比本征值分解更快更精确，所以奇异值分解是进行主成分分析的主要工具
+
+
+
+
+## PCA
+### 协方差矩阵
+首先回顾以下概率论中的概念，协方差 $cov[x,y]=E[(x-\mu_x)(y-\mu_y)]$ ，其中 $mu_x=E(x)\quad \mu_y=E(y)$ 为均值。定义协方差矩阵
+
+$$
+\begin{equation}
+\begin{aligned}
+\Sigma&=E[(\boldsymbol{x}-E[\boldsymbol{x}])(\boldsymbol{x}-E[\boldsymbol{x}])^T] \\
+&=\begin{pmatrix}
+var[x_1] & cov[x_1,x_2] & \cdots & cov[x_1,x_n] \\
+cov[x_2,x_1] & var[x_2] & \cdots & cov[x_2,x_n] \\
+\vdots &\vdots& \ddots & \vdots \\
+cov[x_n,x_1] & cov[x_n, x_2]& \cdots & var[x_n]
+\end{pmatrix}
+\end{aligned}
+\end{equation}
+$$
+
+假设由实验的到N个观测向量 $X_1,\cdots,X_N$ ，将其组成 $p\times N$ 的观测矩阵 $[X_1,\cdots,X_N]$ ，构造它的**平均偏差形式**， $B=[\hat{X_1},\cdots,\hat{X_N}]$ ，则之前定义的协方差矩阵可以表示为 $p \times p$ 的矩阵
+
+$$
+S=\frac{1}{N-1}BB^T
+$$
+
+### 正交对角化
+存在**正交矩阵**P，即矩阵的列向量相互正交并具有单位长度，使得矩阵
+
+$$
+A=PDP^T
+$$
+
+其中 D 为对角矩阵，对角线的元素为 A 的本征值，P 为 A 的本征值对应本征向量组成的正交矩阵，并且满足 $P^T=P^{-1}$
+
+**对称矩阵**一定能够正交对角化，我们来看一下对称矩阵的**谱定理**，假设对称矩阵 A
+- A 有 n 个实本征值（计重数）
+- A 可正交对角化
+- 不同本征值对应的本征空间相互正交，即不同本征值的本征向量互相正交
+- 每个本征值的重数等于对应本征空间的维数
+
+### 主成分分析
+我们的目的是求一个 $p\times p$ 的正交矩阵 $P=[\boldsymbol{u_1},\cdots,\boldsymbol{u_p}]$，确定变量替换 $X=PY$ ，即
+
+$$
+\begin{pmatrix}
+x_1  \\
+x_2 \\
+\vdots \\
+x_p
+\end{pmatrix}=\begin{pmatrix}
+\boldsymbol{u_1} & \boldsymbol{u_2} & \cdots & \boldsymbol{u_p}
+\end{pmatrix}\begin{pmatrix}
+y_1  \\
+y_2 \\
+\vdots \\
+y_p
+\end{pmatrix}
+$$
+
+使得新变量 $y_1,\cdots,y_n$ 不相关，并按方差降序排列
+
+设 $S_x$ 为观测矩阵的协方差矩阵，观测矩阵 B 具有平均偏差形式，新变量的协方差矩阵为对角矩阵
+
+$$
+\begin{equation}
+\begin{aligned}
+S_y&=\frac{1}{N-1}[\boldsymbol{y_1},\cdots,\boldsymbol{y_n}][\boldsymbol{y_1},\cdots,\boldsymbol{y_n}]^T \\
+&=\frac{1}{N-1}P^T[\boldsymbol{x_1},\cdots,\boldsymbol{x_n}](P[\boldsymbol{x_1},\cdots,\boldsymbol{x_n}])^T \\
+&=P^T(\frac{1}{N-1}[\boldsymbol{x_1},\cdots,\boldsymbol{x_n}][\boldsymbol{x_1},\cdots,\boldsymbol{x_n}]^T)P \\
+&=P^TS_xP
+\end{aligned}
+\end{equation}
+$$
+
+由此可知 $S_x=PS_yP^T$ ，我们只需要对 $S_x$ 进行正交对角化即可，因为 $S_x$ 是对称矩阵，所以 $S_x$ 一定可以正交对角化。变换 P 的列由 $S_x$ 的对应单位本征向量组成
+
+我们称协方差矩阵 $S_x$ 的单位本征向量 $\boldsymbol{u_1},\dots,\boldsymbol{u_p}$ 为数据的**主成分**。**第一主成分**为 $S_x$ 的最大本征值对应的本征向量。**第二主成分**为 $S_x$ 的第二大本征值对应的本征向量。以此类推
+
+第一主成分确定新变量 $y_1$ ，设 $c_1,\cdots,c_p$ 为 $\boldsymbol{u_1}$ 中的元素，则
+
+$$
+y_1=\boldsymbol{u_1}^TX=c_1x_1+c_2x_2+\cdots+c_px_p
+$$
+
+可以看出 $y_1$ 为原始向量各分量的线性组合
+
+$S_x$ 的本征值表示对应 $y_i$ 的方差，所以我们使用 $\frac{\lambda_i}{tr(S_x)}$ 表示 $y_i$ “解释”的**全变差**（$tr(S_x)$）比例
+
+### 其他方法
+这位大神总结了[最小化损失与最大化投影方差推导方法](http://chengfeng96.com/blog/2019/03/14/%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90%EF%BC%88Principle-Component-Analysis-PCA%EF%BC%89%E6%B5%85%E8%B0%88/)
+
+## SVD
+这位大佬从算子的角度阐述了[奇异值分解](http://chengfeng96.com/blog/2019/01/30/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E4%B9%8B%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/)
+### 定义
+设 A 是 $m\times n$ 的矩阵，$\{\boldsymbol{v_1},\cdots,\boldsymbol{v_n}\}$ 是 $AA^T$ 的一组标准正交基， $\lambda_1,\cdots,\lambda_n$ 为对应的本征值，则存在 $m\times n$ 的“对角矩阵”
+
+$$
+\Sigma=\begin{pmatrix}
+D  & \boldsymbol{0} \\
+\boldsymbol{0} & \boldsymbol{0}
+\end{pmatrix}
+$$
+
+D 为非零奇异值构成的对角矩阵，有 m-r 行 0 和 n-r 列 0  ，以及右奇异向量
+
+$$
+V=\begin{pmatrix}
+\boldsymbol{v_1}  & \boldsymbol{v_2} & \cdots & \boldsymbol{v_n}
+\end{pmatrix}
+$$
+
+以及 左奇异向量 $U=[\boldsymbol{u_1},\cdots,\boldsymbol{u_n}]$ ，是由 $\{A\boldsymbol{v_1},\cdots,A\boldsymbol{v_r}\}$ 标准化后扩充成的 $R^m$ 里的标准正交基，满足
+
+$$
+A=U\Sigma V^T
+$$
+
+### 在PCA中的应用
+假设 B 是具有平均偏差形式的 $p\times N$ 的观测矩阵，设 $A=(1/\sqrt{N-1})B^T$ ，则 $A^TA$ 就是协方差矩阵 $S$ 。A 的奇异值的平方就是 $S$ 的 p 个本征值，A 的右奇异向量是数据的主成分
+
+## REFERENCE
+[1]莱. 线性代数及其应用[M]. 刘深泉 等, 译. 机械工业出版社, 2005.

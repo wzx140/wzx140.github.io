@@ -1,0 +1,119 @@
+---
+layout: post
+title:  "CMAKE基本语法"
+date:   2018-10-18
+categories: Others
+tags: CMake C++
+mathjax: false
+author: wzx
+---
+
+- 目录
+{:toc}
+
+*CMake* 是一个跨平台的，开源的构建系统*（BuildSystem）*。*CMake* 可以通过 *CMakeLists.txt *文件来产生特定平台的标准的构建文件
+
+
+
+
+
+### 赋值语句
+
+```
+# 通过 set 命令构建一个 listVAR
+
+set(VAR a b c)
+```
+> 使用语法 ${VariableName} 来访问名字为 *VariableName* 的变量的值（变量名区分大小写）  
+需要注意的是，**即使在字符串中也可以使用 *${VariableName}* 来访问变量的值**
+
+### 条件控制
+
+```
+#条件控制命令为 if 命令
+
+if(expression)
+
+    #...
+
+elseif(expression2)
+
+    #...
+
+else()
+
+    #...
+
+endif()
+```
+> 对于 if(string) 来说：  
+如果 string 为（不区分大小写）1、ON、YES、TRUE、Y、非 0 的数则表示真  
+如果 string 为（不区分大小写）0、OFF、NO、FALSE、N、IGNORE、空字符串、以 -NOTFOUND 结尾的字符串则表示假  
+如果 string 不符合上面两种情况，则 **string 被认为是一个变量的名字**。变量的值为第二条所述的各值则表示假，否则表示真。
+
+### 操作符
+
+```
+# 为真的前提是 expression 为假
+if(NOT expression)
+
+# 为真的前提是 expr1 和 expr2 都为真
+if(expr1 AND expr2)
+
+# 为真的前提是 expr1 或者 expr2 为真
+if(expr1 OR expr2)
+
+# 为真的前提是存在 command-name 命令、宏或函数且能够被调用
+if(COMMAND command-name)
+
+# 为真的前提是存在 name 的文件或者目录（应该使用绝对路径）
+if(EXISTS name)
+
+# 为真的前提是 file1 比 file2 新或者 file1、file2 中有一个文件不存在（应该使用绝对路径）
+if(file1 IS_NEWER_THAN file2)
+
+
+# 为真的前提是 directory-name 表示的是一个目录（应该使用绝对路径）
+if(IS_DIRECTORY directory-name)
+
+# 为真的前提是变量值或者字符串匹配 regex 正则表达式
+if(variable|string MATCHES regex)
+
+# 为真的前提是变量值或者字符串为有效的数字且满足小于（大于、等于）的条件
+if(variable|string LESS variable|string)
+if(variable|string GREATER variable|string)
+if(variable|string EQUAL variable|string)
+
+# 为真的前提是变量值或者字符串以字典序满足小于（大于、等于）的条件
+if(variable|string STRLESS variable|string)
+if(variable|string STRGREATERvariable|string)
+if(variable|string STREQUALvariable|string)
+
+# 为真的前提是 variable 表示的变量被定义了。
+if(DEFINED variable)
+```
+
+### 循环语句
+```
+# foreach 循环范例：
+
+set(VAR a b c)
+
+foreach(f ${VAR})
+
+   message(${f})
+
+endforeach()
+
+# while 循环范例：
+
+set(VAR 5)
+
+while(${VAR} GREATER 0)
+
+   message(${VAR})
+
+   math(EXPR VAR "${VAR} - 1")
+
+endwhile()
+```

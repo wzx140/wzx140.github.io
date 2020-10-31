@@ -1,0 +1,130 @@
+---
+layout: post
+title:  "图"
+date:   2019-11-7
+categories: 算法和数据结构
+tags: DataStructure Graph
+mathjax: true
+author: wzx
+---
+
+- 目录
+{:toc}
+
+图的结构要比相比[二叉树]({% post_url 2019-3-16-binary-tree %})和[森林]({% post_url 2019-11-2-forest %})要更复杂
+
+
+
+
+## 定义
+$G(V,E)$ , $V$ 表示顶点(*vectex*)的集合，$E$ 是边(*edge*)的集合
+
+## 组成
+- 图
+    - 边
+        - 无向边 $(v_i,v_j)$
+        - 有向边(弧*arc*) $<v_i,v_j>$
+    - 顶点
+        - 入度
+        - 出度
+    - 路径
+        - 简单路径 (除首尾顶点外，顶点不重复出现)
+        - 回路(环*cycle*) (首尾顶点相同)
+            - **无向图中，两个顶点不能组成环**
+
+## 分类
+- 图
+    - 完全图
+    - 稀疏图
+        - 稀疏因子 $\delta=\frac{t}{m\times n}<0.05$
+        - 边数小于完全图的5％
+    - 稠密图
+    - 无向图
+    - 有向图
+    - 带权图(网*network*)
+    - 无环图(*directed acyclic graph,DAG*)
+    - 有根图
+        - 树
+        - 森林
+    - 连通图(任意顶点间都是连通的)
+        - 无向图
+            - 连通分量(最大连通子图)
+        - 有向图
+            - 强连通(任意顶点间有双向路径)
+            - 强连通分量(极大强连通子图)
+
+## 存储结构
+$G(V,E)$ 是一个有 $n$ 个顶点的图，有 $e$ 条边
+### 邻接矩阵
+用二维数组 $A[n,n]$ 来存储图
+
+![]({{ site.url }}/assets/img/2019-11-7-1.png){:height="150"}
+
+$$
+A[i,j]=\left\{
+\begin{aligned}
+1(W_{ij}), & \quad (V_i,V_j)\in E\ or\ <V_i,V_j>\in E \\
+0, & \quad (V_i,V_j)\notin E\ or\ <V_i,V_j>\notin E
+\end{aligned}
+\right.
+$$
+
+对于 n 个顶点的图，邻接矩阵的空间代价都为 $O(n^2)$，与边数无关
+
+### 邻接表
+
+![]({{ site.url }}/assets/img/2019-11-7-2.png){:height="60"}
+
+- 顶点表目
+    - *data* 顶点数据域
+    - *firstarc*
+        - 边表指针域(无向图)，顶点 $v_i$ 所有**边**组成的单链表
+        - 出边表指针域(有向图邻接表)，顶点 $v_i$ 所有**出边**组成的单链表
+        - 入边表指针域(有向图逆邻接表)，顶点 $v_i$ 所有**入边**组成的单链表
+
+- 边(出入度)表
+    - *adjvex* 相邻点在顶点表目的索引
+    - *nextarc* 顶点的下一条边的指针
+    - *info* 权重信息
+
+
+- 无向图，邻接表的空间代价为 $O(n+2e)$
+- 有向图，邻接表的空间代价为 $O(n+e)$
+
+### 十字链表
+**邻接表**和**逆邻接表**的结合
+
+![]({{ site.url }}/assets/img/2019-11-7-3.png){:height="80"}
+
+- 顶点表目
+    - *data* 顶点数据域
+    - *firstinarc* 入边表指针域，顶点 $v_i$ 所有**入边**组成的单链表
+    - *firstoutarc* 出边表指针域，顶点 $v_i$ 所有**出边**组成的单链表
+
+- 出入度表
+    - *tailvex* 弧起点(当前顶点)在顶点表目的索引
+    - *tailnextarc* 顶点的下一条**入边**的指针
+    - *headvex* 弧终点(相邻顶点)在顶点表目的索引
+    - *headnextarc* 顶点的下一条**出边**的指针
+    - *info* 权重信息
+
+## 遍历
+由于图的特殊性，我们要考虑**非连通图**和**存在回路**的情况，为每个顶点保存一个**标志位**，存储是否访问过，即可
+
+### 深度优先遍历
+类似[树的前序遍历]({% post_url 2019-3-16-binary-tree %}#前序遍历)，可以利用栈或者递归实现，比较简单
+
+![]({{ site.url }}/assets/img/2019-11-7-4.png){:height="200"}
+
+### 广度优先遍历
+类似的，可以用队列来实现，比较简单
+
+![]({{ site.url }}/assets/img/2019-11-7-5.png){:height="200"}
+
+### 拓扑排序
+将一个**有向无环图**中所有顶点在不违反**先决条件**关系的前提下排成线性序列的过程称为拓扑排序。在之前的[博客](../../../../../2018/10/09/python-animal-system/)中已经分析过了
+
+## REFERENCE
+[1][图的遍历](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/6Kuta/tu-de-bian-li) - 北京大学[EB/OL]. Coursera.  
+[2][图的存储结构](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/6YZjq/tu-de-cun-chu-jie-gou) - 北京大学[EB/OL]. Coursera.  
+[3][图的概念和抽象数据类型](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/naKTY/tu-de-gai-nian-he-chou-xiang-shu-ju-lei-xing) - 北京大学[EB/OL]. Coursera.

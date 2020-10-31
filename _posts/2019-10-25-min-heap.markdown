@@ -1,0 +1,147 @@
+---
+layout: post
+title:  "最小堆的实现"
+date:   2019-10-25
+categories: 算法和数据结构
+tags: DataStructure priority_queue min_heap
+mathjax: true
+author: wzx
+---
+
+- 目录
+{:toc}
+
+优先队列，堆排序，都用了最小堆
+
+
+
+
+## 定义
+- 堆是一颗**完全二叉树**
+
+- 堆中某个结点的值总是不大于或不小于其子结点的值
+    - 结点小于子结点，最小堆
+    - 结点大于子结点，最大堆
+
+- 堆中每个结点的子树都是堆
+
+- 堆不唯一
+
+## 建堆
+使用**筛选法**建堆。
+1. 用`siftDown()`对当前结点调整，使其作为根结点的子树为为最小堆
+2. 从最后一个**分支结点**开始，**自下向上**执行(1)中的步骤
+
+### `siftDown`
+从当前结点开始，比较它和它的子结点，如果它大于最小的子结点，就交换它和子结点的值，直至树的最后一层，这样就可以调整为当前结点作为根结点的二叉树为为最小堆
+
+```c++
+void MinHeap::SiftDown(int position) {
+	int parent = position;
+	// 左子结点
+	int child = 2 * parent + 1;
+	// 当前值暂存
+	int temp = this->heapArray[parent];
+
+	while (child < this->size) {
+		// 取左右子结点中较小的一个
+		if (child < this->size - 1 && this->heapArray[child] > this->heapArray[child + 1]) {
+			child = child + 1;
+		}
+
+		if (temp > this->heapArray[child]) {
+			// 比暂存值小的结点都向上传播一层
+			this->heapArray[parent] = this->heapArray[child];
+
+			// 向下层继续
+			parent = child;
+			child = 2 * parent + 1;
+		} else {
+			break;
+		}
+	}
+
+	// 最后再将暂存值放在合适位置
+	this->heapArray[parent] = temp;
+}
+```
+有关父子节点间的索引关系，参见[二叉树的性质]({% post_url 2019-3-16-binary-tree %}#二叉树的性质)
+
+### 实现
+最后一个分支结点的下标应为 $\lfloor \frac{n}{2} \rfloor-1$
+```c++
+void MinHeap::buildHeap() {
+	for (int i = this->size / 2 - 1; i >= 0; i--) {
+		this->SiftDown(i);
+	}
+}
+```
+
+## 插入
+### `siftUp`
+与 `siftDown`类似。从当前结点开始，比较它和它的父结点，如果它小于父结点，就交换它和父结点的值，直至第0层
+```c++
+void MinHeap::SiftUp(int position) {
+	int child = position;
+	// 父结点
+	int parent = (child - 1) / 2;
+	// 当前值暂存
+	int temp = this->heapArray[child];
+
+	while (child > 0) {
+
+		if (temp < this->heapArray[parent]) {
+			// 比暂存值大的结点都向下传播一层
+			this->heapArray[child] = this->heapArray[parent];
+
+			// 向上层继续
+			child = parent;
+			parent = (child - 1) / 2;
+		} else {
+			break;
+		}
+	}
+
+	// 最后再将暂存值放在合适位置
+	this->heapArray[child] = temp;
+}
+```
+
+### 实现
+将插入的元素放在最后一个叶结点后面，再用 `siftUp` 向上传播
+
+```c++
+bool MinHeap::push(int value) {
+	if (this->size == this->maxSize) {
+		return false;
+	}
+	this->heapArray[size++] = value;
+	this->SiftUp(size - 1);
+	return true;
+}
+```
+
+## 删除
+将最后一个叶结点放在根结点位置，并向下传播
+
+```c++
+bool MinHeap::pop() {
+	if (size <= 0) {
+		return false;
+	}
+	this->heapArray[0] = this->heapArray[--this->size];
+	this->siftDown(0);
+	return true;
+}
+```
+## 算法复杂度分析
+- 建堆时间复杂度：$\sum_{i=1}^{log\ n}(i-1)\frac{n}{2^i}=O(n)$
+
+- 入队：$O(logn)$
+
+- 删除元素(已知位置)：$O(logn)$
+
+- 出队: $O(1)$
+
+## REFERENCE
+[1][堆与优先队列](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/WY3aq/dui-yu-you-xian-dui-lie) - 北京大学[EB/OL]. Coursera.

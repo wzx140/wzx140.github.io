@@ -1,0 +1,157 @@
+---
+layout: post
+title:  "GTest 基本使用"
+date:   2018-10-31
+categories: Others
+tags: C++ GTest
+mathjax: false
+author: wzx
+---
+
+- 目录
+{:toc}
+
+简单介绍 *Googletest* 的用法
+
+
+
+
+## Test与Test Case
+* Test ：用给定的输入和输出值测试特定方法
+* Test Case的名字 ： 一组相关的 *Test*
+
+> 这里和 *ISTQB* 的定义不一样
+
+## ASSERT and EXPECT 断言
+*GTest* 的断言是宏定义（类似函数调用形式），且有两种不同形式的断言
+* ASSERT_\*：会产生 *fatal failures*（报错并导致程序终止）这将可能导致内存泄漏
+* EXPECT_\* ：会产生 *nonfatal failures*（报错但不会导致程序终止），通常使用 *EXPECT_* *
+
+### 自定义错误信息
+```c++
+ASSERT_EQ(x.size(), y.size()) << "Vectors x and y are of unequal length";
+
+for (int i = 0; i < x.size(); ++i) {
+  EXPECT_EQ(x[i], y[i]) << "Vectors x and y differ at index " << i;
+}
+```
+> 任何可以传入 *ostream* 的都可以传入断言，但字符集为**UNICODE会被转化为UTF-8**
+
+### Basic Assertions
+```c++
+//ASSERT_* 同理
+EXPECT_TRUE(condition);
+EXPECT_FALSE(condition);
+```
+
+### Binary Comparison
+```c++
+//ASSERT_* 同理
+
+//val1 == val2
+EXPECT_EQ(val1, val2);
+
+//val1 != val2
+EXPECT_NE(val1, val2);
+
+//val1 < val2
+EXPECT_LT(val1, val2);
+
+//val1 <= val2
+EXPECT_LE(val1, val2);
+
+//val1 > val2
+EXPECT_GT(val1, val2);
+
+//val1 >= val2
+EXPECT_GE(val1, val2);
+```
+* 不要用这些来比较自定义类型（除非你定义了比较的运算符），使用 \*_TRUE，\*_FALSE来比较  
+* 使用 \*_EQ(ptr, nullptr) and \*_NE(ptr, nullptr)断言空指针，NULL与空指针是不一样的  
+* 不能用来比较字符串内容是否一样，只有在两个字符串在内存中位置相同才会断言为真  
+
+### String Comparison
+```c++
+//ASSERT_* 同理
+
+//内容相同
+EXPECT_STREQ(str1, str2);
+
+//内容不同
+EXPECT_STRNE(str1, str2);
+
+//内容相同，忽略大小写
+EXPECT_STRCASEEQ(str1, str2);
+
+//内容不同，忽略大小写
+EXPECT_STRCASENE(str1, str2);
+```
+
+## Simple Test
+```c++
+TEST(TestCaseName, TestName) {
+  ... test body ...
+}
+```
+> *TestCaseName* 指 *Test Case* 的名字，*TestName* 指该 *Test Case* 下某个 *Test* 的名字，**注意不能包含_**
+
+## a set of Tests
+当多个测试公用一组数据时，就可以使用 *Test Fixture* 与 *TEST_F*
+
+### Test Fixtures
+```c++
+class xxx : public ::testing::Test {
+ protected:
+  void SetUp() override {
+     //write your code
+  }
+
+  void TearDown() override {
+    //write your code
+ }
+
+ //some object
+  xx;
+
+ //some tests  
+  TEST_F(TestCaseName, TestName);
+};
+```
+
+当 *Test Fixture*  运行时，以下将会依次发生
+1. 构建 *Test Fixture* 的对象 ，称为`t1`
+2. 调用`t1.SetUp()`初始化
+3. 运行第一个 *TEST_F*
+4. 调用`t1.TearDown()`清理
+5. `t1`析构
+6. 为其他 test 重复以上步骤
+
+#### TEST_F
+使用这个宏来实现 *Test Fixture*，不同的 *TEST_F* 使用不同的 *Test Fixture*对象，也就是说每个测试都相对封闭，所以说单元测试
+```c++
+//TestCaseName即Test Fixture的类名
+TEST_F(TestCaseName, TestName) {
+  ... test body ...
+}
+```
+## 激活测试
+```c++
+//运行main函数，将执行所有的Test
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  //强烈建议return这个值，不要return 0或1
+  return RUN_ALL_TESTS();
+}
+```
+
+## 异常抛出与测试暂停
+如果希望在调试器下运行测试程序时，断言失败并进入断点：
+- 设置环境变量 `GTEST_BREAK_ON_FAILURE` 为**0以外的值**
+- 运行测试时加 `--gtest_break_on_failure`
+
+如果希望由调试器捕获异常，而不是gtest捕获
+- 设置环境变量 `GTEST_CATCH_EXCEPTIONS` 为**0值**
+- 运行测试时加 `--gtest_catch_exceptions=0`
+
+## REFERENCE
+[1][Google Test Primer](https://github.com/google/googletest/blob/master/googletest/docs/primer.md).

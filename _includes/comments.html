@@ -98,9 +98,7 @@
             clientSecret: '{{ site.gitalk.clientSecret }}',
             repo: '{{ site.gitalk.repo }}',
             owner: '{{ site.gitalk.owner }}',
-            admin: ['{{ site.gitalk.owner }}'],
-            labels: ['gitment'],
-            perPage: 50,
+            admin: ['{{ site.gitalk.owner }}']
         });
         gitalk.render('gitalk-container');
         </script>

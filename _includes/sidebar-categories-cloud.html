@@ -15,7 +15,7 @@
   {% assign diff = 1 %}
 {% endif %}
 
-{% for category in site.categories %}
+{% for category in site.categories reversed%}
   {% assign temp = category[1].size | minus: min | times: 36 | divided_by: diff %}
   {% assign base = temp | divided_by: 4 %}
   {% assign remain = temp | modulo: 4 %}

@@ -3,13 +3,10 @@ layout: post
 title:  "QT如何实现Go to slot的自动连接"
 date:   2018-10-12
 categories: Others
-tags: QT C++
+keywords: QT
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 执行**Go to slot**后会在该组件的父级容器内产生*on_xx_xx*函数，但在其构造函数内却没有看见*connect*函数。
 
@@ -17,7 +14,6 @@ author: wzx
 
 
 
-### 解决
 在构造函数里调用了`ui->setupUi(this);`,查看源码发现其实是调用了**QMetaObject::connectSlotsByName(QObject *o)**这个函数来实现connect的。
 ```c++
 void QMetaObject::connectSlotsByName(QObject *o)

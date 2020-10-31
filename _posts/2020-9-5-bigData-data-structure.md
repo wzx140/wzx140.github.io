@@ -3,14 +3,10 @@ layout: post
 title:  "大数据日知录学习(四)：常用数据结构"
 date:   2020-9-5 16:00
 categories: 大数据理论与架构
-tags: BigData
+keywords: BigData
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 简要介绍大数据常用的数据结构
 
@@ -47,12 +43,12 @@ MembershipTest(element, filter, hash_functions)
         if filter[h_i(element)] != 1 then
             return false
     end foreach
-    
+
     return true
 ```
 
 ### 误判率
-对于**集合大小n, 哈希函数个数k, 位数组大小m**，误判率为 $p_{fp}\approx (1-e^{-kn/m})^k$ ，最优的哈希函数个数为 $k=\frac{m}{n} ln2$ ，故已知集合大小 $n$ 的情况下，并且在期望的误判率 $P$ 下，位数组的大小为 $m=-\frac{nlnp}{(ln2)^2}$ 
+对于**集合大小n, 哈希函数个数k, 位数组大小m**，误判率为 $p_{fp}\approx (1-e^{-kn/m})^k$ ，最优的哈希函数个数为 $k=\frac{m}{n} ln2$ ，故已知集合大小 $n$ 的情况下，并且在期望的误判率 $P$ 下，位数组的大小为 $m=-\frac{nlnp}{(ln2)^2}$
 
 ### 改进
 计数BF，位数组的一个比特位拓展为多个比特位，就可以增加删除集合成员的功能
@@ -144,7 +140,7 @@ delete(list, searchKey)
 		update[i] = x
 	# 找到要删除的结点
 	x = x.next[1]
-	if x.key == searchKey: 
+	if x.key == searchKey:
 		for i in [1, list.level]:
 			# 要删除的结点在当前层没有，在更高的层也不会有
 			if update[i].next[i] != x: break

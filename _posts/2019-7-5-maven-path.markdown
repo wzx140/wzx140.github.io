@@ -3,13 +3,10 @@ layout: post
 title:  "maven与IDEA的目录结构"
 date:   2019-7-5
 categories: Java
-tags: Java Maven IDEA
+keywords: Java Maven IDEA
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 今天在写代码时，出现了在IDEA可以运行单元测试，但是通过`mvn test`却找不到测试文件的奇怪情况。所以对IDEA的目录结构配置以及*maven*的目录结构配置做一个总结
 

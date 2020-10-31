@@ -3,13 +3,10 @@ layout: post
 title:  "浅层神经网络中的矩阵计算"
 date:   2018-12-11
 categories: MachineLearning
-tags: Matrix DeepLearning
+keywords: Matrix DeepLearning
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 单隐层的神经网络中 正向传播 与 反向传播 向量化的具体实现与具体计算过程
 

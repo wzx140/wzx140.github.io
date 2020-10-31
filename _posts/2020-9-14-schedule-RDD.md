@@ -3,13 +3,10 @@ layout: post
 title:  "Spark源码阅读(十四)：调度系统之RDD"
 date:   2020-9-14 9:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 介绍Spark中的RDD
 
@@ -35,7 +32,7 @@ author: wzx
   - DETERMINATE: RDD的输出始终是相同顺序的数据集
   - UNORDERED: RDD的输出始终是相同的数据集，但顺序不同
   - INDETERMINATE. RDD的输出始终可能不同
-    
+
 
 RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子类中实现
 
@@ -81,7 +78,7 @@ RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子�
 
   ```scala
   protected def getDependencies: Seq[Dependency[_]] = deps
-  
+
   final def dependencies: Seq[Dependency[_]] = {
     checkpointRDD.map(r => List(new OneToOneDependency(r))).getOrElse {
       if (dependencies_ == null) {
@@ -101,7 +98,7 @@ RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子�
   ```scala
   private[spark] def getNarrowAncestors: Seq[RDD[_]] = {
       val ancestors = new mutable.HashSet[RDD[_]]
-  
+
       def visit(rdd: RDD[_]): Unit = {
           val narrowDependencies = rdd.dependencies.filter(_.isInstanceOf[NarrowDependency[_]])
           val narrowParents = narrowDependencies.map(_.rdd)
@@ -111,9 +108,9 @@ RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子�
               visit(parent)
           }
       }
-  
+
       visit(this)
-  
+
       // In case there is a cycle, do not include the root itself
       ancestors.filterNot(_ == this).toSeq
   }
@@ -126,13 +123,13 @@ RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子�
 表示**RDD间的依赖关系**，抽象类`Dependency`是个泛型类，只有**`rdd()`这一个未实现的方法**。有以下继承关系
 
 - `NarrowDependency`：[**窄依赖**]({% post_url 2020-1-28-spark-rdd %}#窄依赖与宽依赖)，定义了**抽象的`getParents()`方法用于获取子partition对应的父partition**，定义了构造器传入一个RDD
-  
+
   - `OneToOneDependency`：**父RDD与子RDD的partition是一一对应的关系**。所以实现的`getParents()`方法为直接返回输入的`partitionId`
-  
+
   - `RangeDependency`：如下图所示，**父RDD与子RDD的一定范围内的partition是一一对应的关系**。所以构造器传入了父RDD及与子RDD的partition对应范围的特征值，并且实现了`getParents()`方法
-  
+
     <img src="{{ site.url }}/assets/img/2020-9-14-2.png" style="zoom: 50%;" />
-  
+
 - `ShuffleDependency`：[**宽依赖**]({% post_url 2020-1-28-spark-rdd %}#窄依赖与宽依赖)。`ShuffleDependency`在构造的过程中还将自己注册到`SparkContext`的`ContextCleaner`中。有以下重要的成员属性
 
   - `_rdd`: `RDD[_ <: Product2[K, V]]`类型，即数据集中的类型必须是`Product2[K, V]`及其子类，代表**必须是键值对类型的RDD**
@@ -405,7 +402,7 @@ def getPartition(key: Any): Int = {
     val callsiteLongForm = Option(SparkEnv.get)
     .map(_.conf.get(EVENT_LOG_CALLSITE_LONG_FORM))
     .getOrElse(false)
-  
+
     val callSite = if (callsiteLongForm) {
       rdd.creationSite.longForm
     } else {

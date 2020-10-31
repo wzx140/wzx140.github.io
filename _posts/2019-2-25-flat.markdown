@@ -3,13 +3,10 @@ layout: post
 title:  "我们生活在一个狭隘的空间里 ——读《平面国》"
 date:   2019-2-25
 categories: BookReview
-tags: BookReview
+keywords: 平面国
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 求知比盲目的快乐要好得多
 

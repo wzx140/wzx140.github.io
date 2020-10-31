@@ -3,13 +3,10 @@ layout: post
 title:  "VTK的数据存储与表达"
 date:   2018-10-23
 categories: VTK
-tags: VTK
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 vtkDataArray是一个即可定义为动态也可定义为静态的数组，每一个元素是一个元组（Tuple），与Python里的元组不同这里的元组可以改变元组里的元素，但不可以改变元组的大小。  
 vtkDataArray只是一个抽象类，具体使用应是其子类。以vtkPolyData为例，里面的很多数据都是以vtkDataArray的子类形式存在的。

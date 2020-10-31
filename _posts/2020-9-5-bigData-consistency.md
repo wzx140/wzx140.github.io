@@ -3,14 +3,10 @@ layout: post
 title:  "大数据日知录学习(二)：一致性分类"
 date:   2020-9-5 11:00
 categories: 大数据理论与架构
-tags: BigData
+keywords: BigData
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 大数据系统中，一般采用同一数据多个副本保证可用性，这就带来了数据一致性问题。
 

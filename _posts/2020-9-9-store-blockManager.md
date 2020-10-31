@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(十)：存储体系之block管理与调度"
 date:   2020-9-9 9:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中的`BlockManager`和`BlockManagerMaster`
 
@@ -46,7 +42,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
   def initialize(appId: String): Unit = {
     blockTransferService.init(this)
     shuffleClient.init(appId)
-  
+
     blockReplicationPolicy = {
       val priorityClass = conf.get(
         "spark.storage.replication.policy", classOf[RandomBlockReplicationPolicy].getName)
@@ -55,30 +51,30 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       logInfo(s"Using $priorityClass for block replication policy")
       ret
     }
-  
+
     val id =
     BlockManagerId(executorId, blockTransferService.hostName, blockTransferService.port, None)
-  
+
     val idFromMaster = master.registerBlockManager(
       id,
       maxOnHeapMemory,
       maxOffHeapMemory,
       slaveEndpoint)
-  
+
     blockManagerId = if (idFromMaster != null) idFromMaster else id
-  
+
     shuffleServerId = if (externalShuffleServiceEnabled) {
       logInfo(s"external shuffle service port = $externalShuffleServicePort")
       BlockManagerId(executorId, blockTransferService.hostName, externalShuffleServicePort)
     } else {
       blockManagerId
     }
-  
+
     // Register Executors' configuration with the local shuffle service, if one should exist.
     if (externalShuffleServiceEnabled && !blockManagerId.isDriver) {
       registerWithExternalShuffleServer()
     }
-  
+
     logInfo(s"Initialized BlockManager: $blockManagerId")
   }
   ```
@@ -124,7 +120,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     val onDiskSize = status.diskSize
     master.updateBlockInfo(blockManagerId, blockId, storageLevel, inMemSize, onDiskSize)
   }
-  
+
   private def reportAllBlocks(): Unit = {
     logInfo(s"Reporting ${blockInfoManager.size} blocks to the master.")
     for ((blockId, info) <- blockInfoManager.entries) {
@@ -163,7 +159,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     reportAllBlocks()
   }
   ```
-  
+
 - `getLocalBytes()`: **从本地存储体系中获得封装为`BlockData`的序列化的block**
 
   - 由`BlockInfoManager`获得block的读锁
@@ -205,7 +201,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       }
     }
   }
-  
+
   def getLocalBytes(blockId: BlockId): Option[BlockData] = {
     logDebug(s"Getting local block $blockId as bytes")
     // As an optimization for map output fetches, if the block is for a shuffle, return it
@@ -227,7 +223,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
 
   - 优先从内存中获取未序列化的block，如果存储等级是序列化则反序列化block后返回
   - 其次从硬盘中获取block(序列化)。如果存储等级是序列化，则反序列化block后返回，并**尝试将block(未序列化)放入内存中**。如果存储等级是未序列化，则**尝试将block(序列化)放入内存中**，并反序列化block(序列化)后返回
-  
+
 - `getBlockData()`: **对`getLocalBytes()`的进一步封装，返回`ManagedBuffer`，**如果获取不到block，调用`reportBlockStatus()`报告block不存在
 
   ```scala
@@ -259,7 +255,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     - 根据`tellMaster`向`BlockManagerMaster`报告block状态并等待其他复制执行完毕
   - 如果写入成功并且需要保持读锁(当前任务写入block后需要读)，则调用`BlockInfoManager.downgradeLock()`将写锁降级为读锁，否则释放当前任务的所有锁
   - 如果写入失败或者发生异常则调用`removeBlockInternal()`移除这个block，在`MemoryStore`, `DiskStore`, `BlockInfoManager`中清除这个block
-  
+
   ```scala
   private def doPut[T](
     blockId: BlockId,
@@ -267,10 +263,10 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     classTag: ClassTag[_],
     tellMaster: Boolean,
     keepReadLock: Boolean)(putBody: BlockInfo => Option[T]): Option[T] = {
-  
+
     require(blockId != null, "BlockId is null")
     require(level != null && level.isValid, "StorageLevel is null or invalid")
-  
+
     val putBlockInfo = {
       val newInfo = new BlockInfo(level, classTag, tellMaster)
       if (blockInfoManager.lockNewBlockForWriting(blockId, newInfo)) {
@@ -284,7 +280,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
         return None
       }
     }
-  
+
     val startTimeMs = System.currentTimeMillis
     var exceptionWasThrown: Boolean = true
     val result: Option[T] = try {
@@ -333,7 +329,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     }
     result
   }
-  
+
   private def doPutBytes[T](
     blockId: BlockId,
     bytes: ChunkedByteBuffer,
@@ -355,9 +351,9 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       } else {
         null
       }
-  
+
       val size = bytes.size
-  
+
       if (level.useMemory) {
         // Put it in memory first, even if it also has useDisk set to true;
         // We will drop it to disk later if the memory store can't hold it.
@@ -390,7 +386,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       } else if (level.useDisk) {
         diskStore.putBytes(blockId, bytes)
       }
-  
+
       val putBlockStatus = getCurrentBlockStatus(blockId, info)
       val blockWasSuccessfullyStored = putBlockStatus.storageLevel.isValid
       if (blockWasSuccessfullyStored) {
@@ -419,7 +415,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       }
     }.isEmpty
   }
-  
+
   def putBytes[T: ClassTag](
     blockId: BlockId,
     bytes: ChunkedByteBuffer,
@@ -429,7 +425,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     doPutBytes(blockId, bytes, level, implicitly[ClassTag[T]], tellMaster)
   }
   ```
-  
+
 - `doPutIterator()`: 与`doPutBytes()`类似，**将未序列化的数据写入block**。优先写到内存中，都是调用了迭代写入，内存不足则写到硬盘中
 
 - `putIterator()`: 实际调用了`doPutIterator()`
@@ -469,13 +465,13 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       preferredLocs ++ sameRackLocs ++ differentRackLocs
     }
   }
-  
+
   def getRemoteBytes(blockId: BlockId): Option[ChunkedByteBuffer] = {
     logDebug(s"Getting remote block $blockId")
     require(blockId != null, "BlockId is null")
     var runningFailureCount = 0
     var totalFailureCount = 0
-  
+
     // Because all the remote blocks are registered in driver, it is not necessary to ask
     // all the slave executors to get block status.
     val locationsAndStatus = master.getLocationsAndStatus(blockId)
@@ -483,7 +479,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       b.status.diskSize.max(b.status.memSize)
     }.getOrElse(0L)
     val blockLocations = locationsAndStatus.map(_.locations).getOrElse(Seq.empty)
-  
+
     // If the block size is above the threshold, we should pass our FileManger to
     // BlockTransferService, which will leverage it to spill the block; if not, then passed-in
     // null value means the block will be persisted in memory.
@@ -492,7 +488,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     } else {
       null
     }
-  
+
     val locations = sortLocations(blockLocations)
     val maxFetchFailures = locations.size
     var locationIterator = locations.iterator
@@ -506,7 +502,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
         case NonFatal(e) =>
         runningFailureCount += 1
         totalFailureCount += 1
-  
+
         if (totalFailureCount >= maxFetchFailures) {
           // Give up trying anymore locations. Either we've tried all of the original locations,
           // or we've refreshed the list of locations from the master, and have still
@@ -515,10 +511,10 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
                      s"Most recent failure cause:", e)
           return None
         }
-  
+
         logWarning(s"Failed to fetch remote block $blockId " +
                    s"from $loc (failed attempt $runningFailureCount)", e)
-  
+
         // If there is a large number of executors then locations list can contain a
         // large number of stale entries causing a large number of retries that may
         // take a significant amount of time. To get rid of these stale entries
@@ -529,11 +525,11 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
                    s"after ${runningFailureCount} fetch failures.")
           runningFailureCount = 0
         }
-  
+
         // This location failed, so we retry fetch from a different one by returning null here
         null
       }
-  
+
       if (data != null) {
         // SPARK-24307 undocumented "escape-hatch" in case there are any issues in converting to
         // ChunkedByteBuffer, to go back to old code-path.  Can be removed post Spark 2.4 if
@@ -610,7 +606,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     val info = blockInfoManager.assertBlockIsLockedForWriting(blockId)
     var blockIsUpdated = false
     val level = info.level
-  
+
     // Drop to disk, if storage level requires
     if (level.useDisk && !diskStore.contains(blockId)) {
       logInfo(s"Writing block $blockId to disk")
@@ -628,7 +624,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
       }
       blockIsUpdated = true
     }
-  
+
     // Actually drop from memory store
     val droppedMemorySize =
     if (memoryStore.contains(blockId)) memoryStore.getSize(blockId) else 0L
@@ -638,7 +634,7 @@ private[spark] val shuffleClient = if (externalShuffleServiceEnabled) {
     } else {
       logWarning(s"Block $blockId could not be dropped from memory as it does not exist")
     }
-  
+
     val status = getCurrentBlockStatus(blockId, info)
     if (info.tellMaster) {
       reportBlockStatus(blockId, status, droppedMemorySize)

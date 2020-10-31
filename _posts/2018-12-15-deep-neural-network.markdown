@@ -3,13 +3,10 @@ layout: post
 title:  "深层神经网络中的矩阵计算"
 date:   2018-12-15
 categories: MachineLearning
-tags: Matrix DeepLearning
+keywords: Matrix DeepLearning
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 深层神经网络其实与 [浅层神经网络]({% post_url 2018-12-11-deep-learning-shallow-neural-network %}) 类似，只是含有多个隐藏层，可以实现更复杂的功能
 

@@ -3,13 +3,10 @@ layout: post
 title:  "Spark源码阅读(十六)：调度系统之调度池"
 date:   2020-9-15 8:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 介绍Spark中的调度池包括`TaskSetManager`
 
@@ -358,7 +355,7 @@ private[spark] class TaskSet(
       case TaskLocality.RACK_LOCAL => "spark.locality.wait.rack"
       case _ => null
     }
-  
+
     if (localityWaitKey != null) {
       conf.getTimeAsMs(localityWaitKey, defaultWait.toString)
     } else {
@@ -380,27 +377,27 @@ private[spark] class TaskSet(
 
   ```scala
   private[spark] class MedianHeap(implicit val ord: Ordering[Double]) {
-  
+
     /**
      * Stores all the numbers less than the current median in a smallerHalf,
      * i.e median is the maximum, at the root.
      */
     private[this] var smallerHalf = PriorityQueue.empty[Double](ord)
-  
+
     /**
      * Stores all the numbers greater than the current median in a largerHalf,
      * i.e median is the minimum, at the root.
      */
     private[this] var largerHalf = PriorityQueue.empty[Double](ord.reverse)
-  
+
     def isEmpty(): Boolean = {
       smallerHalf.isEmpty && largerHalf.isEmpty
     }
-  
+
     def size(): Int = {
       smallerHalf.size + largerHalf.size
     }
-  
+
     def insert(x: Double): Unit = {
       // If both heaps are empty, we arbitrarily insert it into a heap, let's say, the largerHalf.
       if (isEmpty) {
@@ -416,7 +413,7 @@ private[spark] class TaskSet(
       }
       rebalance()
     }
-  
+
     private[this] def rebalance(): Unit = {
       if (largerHalf.size - smallerHalf.size > 1) {
         smallerHalf.enqueue(largerHalf.dequeue())
@@ -425,7 +422,7 @@ private[spark] class TaskSet(
         largerHalf.enqueue(smallerHalf.dequeue)
       }
     }
-  
+
     def median: Double = {
       if (isEmpty) {
         throw new NoSuchElementException("MedianHeap is empty.")
@@ -501,7 +498,7 @@ private[spark] class TaskSet(
       emptyKeys.foreach(id => pendingTasks.remove(id))
       hasTasks
     }
-  
+
     while (currentLocalityIndex < myLocalityLevels.length - 1) {
       val moreTasks = myLocalityLevels(currentLocalityIndex) match {
         case TaskLocality.PROCESS_LOCAL => moreTasksToRunIn(pendingTasksForExecutor)
@@ -532,7 +529,7 @@ private[spark] class TaskSet(
   }
   ```
 
-  
+
 
 下面介绍与推测执行有关的成员方法
 
@@ -555,7 +552,7 @@ private[spark] class TaskSet(
     var foundTasks = false
     val minFinishedForSpeculation = (SPECULATION_QUANTILE * numTasks).floor.toInt
     logDebug("Checking for speculative tasks: minFinished = " + minFinishedForSpeculation)
-  
+
     if (tasksSuccessful >= minFinishedForSpeculation && tasksSuccessful > 0) {
       val time = clock.getTimeMillis()
       val medianDuration = successfulTaskDurations.median
@@ -589,18 +586,18 @@ private[spark] class TaskSet(
   - 接下来的判断与上两个循环一致，分别判断NO_PREF和RACK_LOCAL等级
   - 如果都没有返回值，那么就返回(task id, ANY)
   - **由此可以看出指定的本地性等级参数为最低本地性要求，此方法会优先返回高本地性的推测task**
-  
+
   ```scala
   protected def dequeueSpeculativeTask(execId: String, host: String, locality: TaskLocality.Value)
   : Option[(Int, TaskLocality.Value)] =
   {
     speculatableTasks.retain(index => !successful(index)) // Remove finished tasks from set
-  
+
     def canRunOnHost(index: Int): Boolean = {
       !hasAttemptOnHost(index, host) &&
       !isTaskBlacklistedOnExecOrNode(index, execId, host)
     }
-  
+
     if (!speculatableTasks.isEmpty) {
       // Check for process-local tasks; note that tasks can be process-local
       // on multiple nodes when we replicate cached blocks, as in Spark Streaming
@@ -615,7 +612,7 @@ private[spark] class TaskSet(
           return Some((index, TaskLocality.PROCESS_LOCAL))
         }
       }
-  
+
       // Check for node-local tasks
       if (TaskLocality.isAllowed(locality, TaskLocality.NODE_LOCAL)) {
         for (index <- speculatableTasks if canRunOnHost(index)) {
@@ -626,7 +623,7 @@ private[spark] class TaskSet(
           }
         }
       }
-  
+
       // Check for no-preference tasks
       if (TaskLocality.isAllowed(locality, TaskLocality.NO_PREF)) {
         for (index <- speculatableTasks if canRunOnHost(index)) {
@@ -637,7 +634,7 @@ private[spark] class TaskSet(
           }
         }
       }
-  
+
       // Check for rack-local tasks
       if (TaskLocality.isAllowed(locality, TaskLocality.RACK_LOCAL)) {
         for (rack <- sched.getRackForHost(host)) {
@@ -650,7 +647,7 @@ private[spark] class TaskSet(
           }
         }
       }
-  
+
       // Check for non-local tasks
       if (TaskLocality.isAllowed(locality, TaskLocality.ANY)) {
         for (index <- speculatableTasks if canRunOnHost(index)) {
@@ -659,7 +656,7 @@ private[spark] class TaskSet(
         }
       }
     }
-  
+
     None
   }
   ```
@@ -693,11 +690,11 @@ private[spark] class TaskSet(
         pendingTasksForRack.getOrElseUpdate(rack, new ArrayBuffer) += index
       }
     }
-  
+
     if (tasks(index).preferredLocations == Nil) {
       pendingTasksWithNoPrefs += index
     }
-  
+
     allPendingTasks += index  // No point scanning this whole list to find the old task there
   }
   ```
@@ -723,7 +720,7 @@ private[spark] class TaskSet(
     }
     None
   }
-  
+
   private def isTaskBlacklistedOnExecOrNode(index: Int, execId: String, host: String): Boolean = {
     taskSetBlacklistHelperOpt.exists { blacklist =>
       blacklist.isNodeBlacklistedForTask(host, index) ||
@@ -746,21 +743,21 @@ private[spark] class TaskSet(
     for (index <- dequeueTaskFromList(execId, host, getPendingTasksForExecutor(execId))) {
       return Some((index, TaskLocality.PROCESS_LOCAL, false))
     }
-  
+
     if (TaskLocality.isAllowed(maxLocality, TaskLocality.NODE_LOCAL)) {
       // pendingTasksForHost
       for (index <- dequeueTaskFromList(execId, host, getPendingTasksForHost(host))) {
         return Some((index, TaskLocality.NODE_LOCAL, false))
       }
     }
-  
+
     if (TaskLocality.isAllowed(maxLocality, TaskLocality.NO_PREF)) {
       // Look for noPref tasks after NODE_LOCAL for minimize cross-rack traffic
       for (index <- dequeueTaskFromList(execId, host, pendingTasksWithNoPrefs)) {
         return Some((index, TaskLocality.PROCESS_LOCAL, false))
       }
     }
-  
+
     if (TaskLocality.isAllowed(maxLocality, TaskLocality.RACK_LOCAL)) {
       // pendingTasksForRack
       for {
@@ -770,13 +767,13 @@ private[spark] class TaskSet(
         return Some((index, TaskLocality.RACK_LOCAL, false))
       }
     }
-  
+
     if (TaskLocality.isAllowed(maxLocality, TaskLocality.ANY)) {
       for (index <- dequeueTaskFromList(execId, host, allPendingTasks)) {
         return Some((index, TaskLocality.ANY, false))
       }
     }
-  
+
     // find a speculative task if all others tasks have been scheduled
     dequeueSpeculativeTask(execId, host, maxLocality).map {
       case (taskIndex, allowedLocality) => (taskIndex, allowedLocality, true)}
@@ -791,7 +788,7 @@ private[spark] class TaskSet(
       parent.increaseRunningTasks(1)
     }
   }
-  
+
   def removeRunningTask(tid: Long) {
     if (runningTasksSet.remove(tid) && parent != null) {
       parent.decreaseRunningTasks(1)
@@ -837,9 +834,9 @@ private[spark] class TaskSet(
     }
     if (!isZombie && !offerBlacklisted) {
       val curTime = clock.getTimeMillis()
-  
+
       var allowedLocality = maxLocality
-  
+
       if (maxLocality != TaskLocality.NO_PREF) {
         allowedLocality = getAllowedLocalityLevel(curTime)
         if (allowedLocality > maxLocality) {
@@ -847,7 +844,7 @@ private[spark] class TaskSet(
           allowedLocality = maxLocality
         }
       }
-  
+
       dequeueTask(execId, host, allowedLocality).map { case ((index, taskLocality, speculative)) =>
         // Found a task; do some bookkeeping and return a task description
         val task = tasks(index)
@@ -885,14 +882,14 @@ private[spark] class TaskSet(
                      s"${TaskSetManager.TASK_SIZE_TO_WARN_KB} KB.")
         }
         addRunningTask(taskId)
-  
+
         // We used to log the time it takes to serialize the task, but task size is already
         // a good proxy to task serialization time.
         // val timeTaken = clock.getTime() - startTime
         val taskName = s"task ${info.id} in stage ${taskSet.id}"
         logInfo(s"Starting $taskName (TID $taskId, $host, executor ${info.executorId}, " +
                 s"partition ${task.partitionId}, $taskLocality, ${serializedTask.limit()} bytes)")
-  
+
         sched.dagScheduler.taskStarted(task, info)
         new TaskDescription(
           taskId,
@@ -977,19 +974,19 @@ private[spark] class TaskSet(
       if (resultSizeAcc.isDefined) {
         totalResultSize -= resultSizeAcc.get.asInstanceOf[LongAccumulator].value
       }
-  
+
       // Handle this task as a killed task
       handleFailedTask(tid, TaskState.KILLED,
                        TaskKilled("Finish but did not commit due to another attempt succeeded"))
       return
     }
-  
+
     info.markFinished(TaskState.FINISHED, clock.getTimeMillis())
     if (speculationEnabled) {
       successfulTaskDurations.insert(info.duration)
     }
     removeRunningTask(tid)
-  
+
       // Kill any other attempts for the same task (since those are unnecessary now that one
       // attempt completed successfully).
     for (attemptInfo <- taskAttempts(index) if attemptInfo.running) {
@@ -1025,7 +1022,7 @@ private[spark] class TaskSet(
   }
   ```
 
-  
+
 
 ## 总结
 

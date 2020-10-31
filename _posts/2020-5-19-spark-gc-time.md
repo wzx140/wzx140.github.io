@@ -3,13 +3,10 @@ layout: post
 title:  "Spark作业gc时间过长"
 date:   2020-5-19
 categories: Spark
-tags: Distribution Spark GC
+keywords: Distribution Spark GC
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 在运行spark作业时，发现GC时间非常长，基本上快占task time 的三分之一了，最后通过GC日志确定了问题所在。
 
@@ -25,9 +22,9 @@ author: wzx
 可以通过在JVM添加参数来输出GC日志，在`spark-submit`通过 `spark.driver.extraJavaOptions` 和 `spark.executor.extraJavaOptions` 指定
 
 ```shell
-# 输出简要GC日志 
+# 输出简要GC日志
 -XX:+PrintGC
-# 输出详细GC日志 
+# 输出详细GC日志
 -XX:+PrintGCDetails
 # 输出GC日志到文件
 -Xloggc:gc.log
@@ -44,17 +41,17 @@ author: wzx
 以下是我的GC日志
 
 ```shell
-2020-05-15T15:58:48.502+0800: 49.508: [GC (System.gc()) [PSYoungGen: 359152K->93559K(1223168K)] 376068K->110482K(4019712K), 0.0471985 secs] [Times: user=0.11 sys=0.10, real=0.05 secs] 
-2020-05-15T15:58:48.549+0800: 49.556: [Full GC (System.gc()) [PSYoungGen: 93559K->0K(1223168K)] [ParOldGen: 16923K->97733K(2796544K)] 110482K->97733K(4019712K), [Metaspace: 30597K->30593K(1077248K)], 0.0805504 secs] [Times: user=0.16 sys=0.05, real=0.08 secs] 
+2020-05-15T15:58:48.502+0800: 49.508: [GC (System.gc()) [PSYoungGen: 359152K->93559K(1223168K)] 376068K->110482K(4019712K), 0.0471985 secs] [Times: user=0.11 sys=0.10, real=0.05 secs]
+2020-05-15T15:58:48.549+0800: 49.556: [Full GC (System.gc()) [PSYoungGen: 93559K->0K(1223168K)] [ParOldGen: 16923K->97733K(2796544K)] 110482K->97733K(4019712K), [Metaspace: 30597K->30593K(1077248K)], 0.0805504 secs] [Times: user=0.16 sys=0.05, real=0.08 secs]
 2020-05-15T15:58:48.630+0800: 49.636: Total time for which application threads were stopped: 0.1281609 seconds, Stopping threads took: 0.0000755 seconds
-2020-05-15T15:58:48.632+0800: 49.638: [GC (System.gc()) [PSYoungGen: 10485K->160K(1223168K)] 108219K->97893K(4019712K), 0.0018068 secs] [Times: user=0.01 sys=0.00, real=0.01 secs] 
-2020-05-15T15:58:48.634+0800: 49.640: [Full GC (System.gc()) [PSYoungGen: 160K->0K(1223168K)] [ParOldGen: 97733K->94577K(2796544K)] 97893K->94577K(4019712K), [Metaspace: 30598K->30598K(1077248K)], 0.0932750 secs] [Times: user=0.28 sys=0.00, real=0.09 secs] 
+2020-05-15T15:58:48.632+0800: 49.638: [GC (System.gc()) [PSYoungGen: 10485K->160K(1223168K)] 108219K->97893K(4019712K), 0.0018068 secs] [Times: user=0.01 sys=0.00, real=0.01 secs]
+2020-05-15T15:58:48.634+0800: 49.640: [Full GC (System.gc()) [PSYoungGen: 160K->0K(1223168K)] [ParOldGen: 97733K->94577K(2796544K)] 97893K->94577K(4019712K), [Metaspace: 30598K->30598K(1077248K)], 0.0932750 secs] [Times: user=0.28 sys=0.00, real=0.09 secs]
 .......
-2020-05-15T15:58:50.071+0800: 51.077: [GC (System.gc()) [PSYoungGen: 181766K->10716K(1223168K)] 276343K->105301K(4019712K), 0.0083237 secs] [Times: user=0.03 sys=0.00, real=0.01 secs] 
-2020-05-15T15:58:50.079+0800: 51.086: [Full GC (System.gc()) [PSYoungGen: 10716K->0K(1223168K)] [ParOldGen: 94585K->100385K(2796544K)] 105301K->100385K(4019712K), [Metaspace: 40727K->40712K(1085440K)], 0.1144704 secs] [Times: user=0.34 sys=0.00, real=0.12 secs] 
+2020-05-15T15:58:50.071+0800: 51.077: [GC (System.gc()) [PSYoungGen: 181766K->10716K(1223168K)] 276343K->105301K(4019712K), 0.0083237 secs] [Times: user=0.03 sys=0.00, real=0.01 secs]
+2020-05-15T15:58:50.079+0800: 51.086: [Full GC (System.gc()) [PSYoungGen: 10716K->0K(1223168K)] [ParOldGen: 94585K->100385K(2796544K)] 105301K->100385K(4019712K), [Metaspace: 40727K->40712K(1085440K)], 0.1144704 secs] [Times: user=0.34 sys=0.00, real=0.12 secs]
 ......
-2020-05-15T15:58:50.658+0800: 51.664: [GC (System.gc()) [PSYoungGen: 92815K->17580K(1223168K)] 193200K->117973K(4019712K), 0.0092596 secs] [Times: user=0.03 sys=0.00, real=0.01 secs] 
-2020-05-15T15:58:50.667+0800: 51.673: [Full GC (System.gc()) [PSYoungGen: 17580K->0K(1223168K)] [ParOldGen: 100393K->110457K(2796544K)] 117973K->110457K(4019712K), [Metaspace: 41207K->41203K(1085440K)], 0.1100946 secs] [Times: user=0.33 sys=0.01, real=0.11 secs] 
+2020-05-15T15:58:50.658+0800: 51.664: [GC (System.gc()) [PSYoungGen: 92815K->17580K(1223168K)] 193200K->117973K(4019712K), 0.0092596 secs] [Times: user=0.03 sys=0.00, real=0.01 secs]
+2020-05-15T15:58:50.667+0800: 51.673: [Full GC (System.gc()) [PSYoungGen: 17580K->0K(1223168K)] [ParOldGen: 100393K->110457K(2796544K)] 117973K->110457K(4019712K), [Metaspace: 41207K->41203K(1085440K)], 0.1100946 secs] [Times: user=0.33 sys=0.01, real=0.11 secs]
 ```
 
 以第一条日志为例
@@ -81,7 +78,7 @@ author: wzx
 
 ## REFERENCE
 
-[1] [SRE 高延迟问题的罪魁祸首 System.gc()](https://www.infoq.cn/article/lXTRgYb9ecVBu*72fT7O)  
+[1] [SRE 高延迟问题的罪魁祸首 System.gc()](https://www.infoq.cn/article/lXTRgYb9ecVBu*72fT7O)
 
 [2] [JVM GC 日志详解](https://juejin.im/post/5c80b0f451882532cd57b541)
 

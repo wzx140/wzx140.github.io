@@ -3,13 +3,10 @@ layout: post
 title:  "Scala中的泛型"
 date:   2020-8-3
 categories: Scala
-tags: Scala
+keywords: Scala
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 总结scala泛型中的容易混淆的概念。
 

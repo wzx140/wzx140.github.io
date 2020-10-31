@@ -1,16 +1,12 @@
 ---
 layout: post
-title:  "Spark源码阅读(二十五)——SparkContext与SparkSession"
+title:  "Spark源码阅读(二十五): SparkContext与SparkSession"
 date:   2020-10-16
 categories: Spark
-tags: Spark  SparkCore
+keywords: Spark SparkContext SparkSession
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark功能切入点`SparkContext`用来创建和操作RDD，以及一个统一的切入点`SparkSession`，封装了`SparkConf`、`SparkContext`和`SQLContext`并作为`DataSet`和`DataFrame`的切入点。
 
@@ -108,7 +104,7 @@ Spark应用程序的配置参数，**通过`CouncurrentHashMap`维护`spark.`开
   - 尝试获取`userSuppliedContext`中的`SparkContext`，或则使用`options`内的配置属性创建一个`SparkContext`
   - 加载Catalyst拓展规则
   - 构建`SparkSession`并放入`activeThreadSession`和`defaultSession`并返回
-  
+
   ```scala
   def getOrCreate(): SparkSession = synchronized {
   assertOnDriver()
@@ -118,7 +114,7 @@ Spark应用程序的配置参数，**通过`CouncurrentHashMap`维护`spark.`开
       applyModifiableSettings(session)
       return session
     }
-  
+
     // Global synchronization so we will only set the default session once.
   SparkSession.synchronized {
       // If the current thread does not have an active session, get it from the global session.
@@ -127,21 +123,21 @@ Spark应用程序的配置参数，**通过`CouncurrentHashMap`维护`spark.`开
         applyModifiableSettings(session)
       return session
       }
-  
+
       // No active nor global default session. Create a new one.
       val sparkContext = userSuppliedContext.getOrElse {
       val sparkConf = new SparkConf()
         options.foreach { case (k, v) => sparkConf.set(k, v) }
-  
+
         // set a random app name if not given.
       if (!sparkConf.contains("spark.app.name")) {
           sparkConf.setAppName(java.util.UUID.randomUUID().toString)
         }
-  
+
         SparkContext.getOrCreate(sparkConf)
         // Do not update `SparkConf` for existing `SparkContext`, as it's shared by all sessions.
       }
-  
+
       // Initialize extensions if the user has defined a configurator class.
       val extensionConfOption = sparkContext.conf.get(StaticSQLConf.SPARK_SESSION_EXTENSIONS)
       if (extensionConfOption.isDefined) {
@@ -159,12 +155,12 @@ Spark应用程序的配置参数，**通过`CouncurrentHashMap`维护`spark.`开
           logWarning(s"Cannot use $extensionConfClassName to configure session extensions.", e)
       }
       }
-  
+
       session = new SparkSession(sparkContext, None, None, extensions)
       options.foreach { case (k, v) => session.initialSessionOptions.put(k, v) }
       setDefaultSession(session)
       setActiveSession(session)
-  
+
       // Register a successfully instantiated context to the singleton. This should be at the
       // end of the class definition so that the singleton is updated only if there is no
     // exception in the construction of the instance.
@@ -174,7 +170,7 @@ Spark应用程序的配置参数，**通过`CouncurrentHashMap`维护`spark.`开
         }
       })
     }
-  
+
     return session
   }
   ```

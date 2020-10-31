@@ -3,13 +3,10 @@ layout: post
 title:  "复制构造函数"
 date:   2019-8-30
 categories: Others
-tags: C++ QT
+keywords: C++ QT
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 在 QT 中，自定义类放入`QList`时，编译时报错 `'PanelItem::PanelItem(const PanelItem &)': attempting to reference a deleted function`
 

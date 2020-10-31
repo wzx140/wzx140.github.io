@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(三)：RPC之StreamManager、RpcHandler"
 date:   2020-9-1
 categories: Spark
-tags: Spark SparkCore RPC
+keywords: Spark SparkCore RPC
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 Spark RPC中的底层的流数据处理与消息传输
 
@@ -56,7 +52,7 @@ private static class StreamState {
 
 以下为重要的方法
 
-- `registerStream()`: 注册一个`ManagedBuffers`流和channel。  
+- `registerStream()`: 注册一个`ManagedBuffers`流和channel。
 
   ```scala
   public long registerStream(String appId, Iterator<ManagedBuffer> buffers, Channel channel) {
@@ -80,17 +76,17 @@ private static class StreamState {
     }
     state.curChunk += 1;
     ManagedBuffer nextChunk = state.buffers.next();
-  
+
     if (!state.buffers.hasNext()) {
       logger.trace("Removing stream id {}", streamId);
       streams.remove(streamId);
     }
-  
+
     return nextChunk;
   }
   ```
 
-  
+
 
 ### `NettyStreamManager`
 
@@ -121,9 +117,9 @@ private static class StreamState {
       requestMessage
     }
   }
-  
+
   private[netty] object RequestMessage {
-  
+
     private def readRpcAddress(in: DataInputStream): RpcAddress = {
       val hasRpcAddress = in.readBoolean()
       if (hasRpcAddress) {
@@ -132,7 +128,7 @@ private static class StreamState {
         null
       }
     }
-  
+
     def apply(nettyEnv: NettyRpcEnv, client: TransportClient, bytes: ByteBuffer): RequestMessage = {
       val bis = new ByteBufferInputStream(bytes)
       val in = new DataInputStream(bis)
@@ -151,7 +147,7 @@ private static class StreamState {
       }
     }
   }
-  
+
   // NettyRpcEnv.deserialize()
   private[netty] def deserialize[T: ClassTag](client: TransportClient, bytes: ByteBuffer): T = {
     NettyRpcEnv.currentClient.withValue(client) {
@@ -173,7 +169,7 @@ private static class StreamState {
     val messageToDispatch = internalReceive(client, message)
     dispatcher.postRemoteMessage(messageToDispatch, callback)
   }
-  
+
   // RpcEndpoint.receive()
   override def receive(
     client: TransportClient,

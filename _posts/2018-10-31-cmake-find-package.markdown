@@ -3,13 +3,10 @@ layout: post
 title:  "CMake之find_package"
 date:   2018-10-31
 categories: Others
-tags: CMake C++
+tags: CMake
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 *find_package* 可以被用来在系统中自动查找配置构建工程所需的程序库。*CMake* 自带的模块文件里有大半是对各种常见开源库的 *find_package* 支持，支持库的种类非常多。
 

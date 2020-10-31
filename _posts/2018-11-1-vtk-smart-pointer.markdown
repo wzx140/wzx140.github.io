@@ -3,13 +3,10 @@ layout: post
 title:  "VTK之SmartPointer"
 date:   2018-11-1
 categories: VTK
-tags: VTK C++ Pointer
+keywords: VTK Pointer
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 VTK 的对象在引用完了之后需要手动 *delete*，这样很不方便并且可能导致内存泄漏。*SmartPointer* 就是为了解决这一问题的，如果对象超出作用域，并且不会在其他地方是用来，那么他将会被自动 *delete*
 

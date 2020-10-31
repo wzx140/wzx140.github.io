@@ -3,13 +3,10 @@ layout: post
 title:  "Spark源码阅读(二十)：计算引擎之Task与TaskContext"
 date:   2020-9-25
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 简述task的实现细节
 
@@ -115,7 +112,7 @@ author: wzx
       _.onTaskFailure(this, error)
     }
   }
-  
+
   @GuardedBy("this")
   private[spark] override def markTaskCompleted(error: Option[Throwable]): Unit = synchronized {
     if (completed) return
@@ -124,7 +121,7 @@ author: wzx
       _.onTaskCompletion(this)
     }
   }
-  
+
   private def invokeListeners[T](
     listeners: Seq[T],
     name: String,
@@ -177,7 +174,7 @@ rdd.barrier().mapPartitions { iter =>
    // Wait until the MPI job finished.
    context.barrier()
    // Collect output and return.
-	 ??? 
+	 ???
 }
 
 // 错误用法，有的partition并没有调用context.barrier()
@@ -307,21 +304,21 @@ task是Spark中作业运行的最小单位，为了容错，每个task可能会�
       localProperties,
       metricsSystem,
       metrics)
-  
+
     context = if (isBarrier) {
       new BarrierTaskContext(taskContext)
     } else {
       taskContext
     }
-  
+
     InputFileBlockHolder.initialize()
     TaskContext.setTaskContext(context)
     taskThread = Thread.currentThread()
-  
+
     if (_reasonIfKilled != null) {
       kill(interruptThread = false, _reasonIfKilled)
     }
-  
+
     new CallerContext(
       "TASK",
       SparkEnv.get.conf.get(APP_CALLER_CONTEXT),
@@ -332,7 +329,7 @@ task是Spark中作业运行的最小单位，为了容错，每个task可能会�
       Option(stageAttemptId),
       Option(taskAttemptId),
       Option(attemptNumber)).setCurrentContext()
-  
+
     try {
       runTask(context)
     } catch {

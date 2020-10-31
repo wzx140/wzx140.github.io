@@ -3,13 +3,10 @@ layout: post
 title:  "48. Rotate Image"
 date:   2019-2-19
 categories: 算法和数据结构
-tags: LeetCode Python
+keywords: LeetCode Rotate-Image
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 LeetCode 上的[一个题目](https://leetcode.com/problems/rotate-image/)觉得很有意思
 

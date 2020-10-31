@@ -3,13 +3,10 @@ layout: post
 title:  "Median of Two Sorted Arrays"
 date:   2019-7-31
 categories: 算法和数据结构
-tags: LeetCode C++
+tags: LeetCode
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 LeetCode 上的[一个题目](https://leetcode.com/problems/median-of-two-sorted-arrays)。想到解法很容易，只是不满足题目要求的时间复杂度，难度为 *Hard*
 

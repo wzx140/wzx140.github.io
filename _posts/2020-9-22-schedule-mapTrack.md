@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(十八)：调度系统之map输出跟踪器"
 date:   2020-9-22
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 `MapOutputTracker`用于跟踪map任务的输出状态，此状态便于reduce任务定位map输出结果所在的节点地址，进而获取中间输出结果
 
@@ -118,7 +114,7 @@ author: wzx
     }
     pool
   }
-  
+
   private class MessageLoop extends Runnable {
     override def run(): Unit = {
       try {
@@ -160,20 +156,20 @@ author: wzx
   def post(message: GetMapOutputMessage): Unit = {
     mapOutputRequests.offer(message)
   }
-  
+
   /** RpcEndpoint class for MapOutputTrackerMaster */
   private[spark] class MapOutputTrackerMasterEndpoint(
       override val rpcEnv: RpcEnv, tracker: MapOutputTrackerMaster, conf: SparkConf)
     extends RpcEndpoint with Logging {
-  
+
     logDebug("init") // force eager creation of logger
-  
+
     override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
       case GetMapOutputStatuses(shuffleId: Int) =>
         val hostPort = context.senderAddress.hostPort
         logInfo("Asked to send map output locations for shuffle " + shuffleId + " to " + hostPort)
         val mapOutputStatuses = tracker.post(new GetMapOutputMessage(shuffleId, context))
-  
+
       case StopMapOutputTracker =>
         logInfo("MapOutputTrackerMasterEndpoint stopped!")
         context.reply(true)
@@ -240,7 +236,7 @@ Executor端维护map输出信息
             case e: InterruptedException =>
           }
         }
-  
+
         // Either while we waited the fetch happened successfully, or
         // someone fetched it in between the get and the fetching.synchronized.
         fetchedStatuses = mapStatuses.get(shuffleId).orNull
@@ -249,7 +245,7 @@ Executor端维护map输出信息
           fetching += shuffleId
         }
       }
-  
+
       if (fetchedStatuses == null) {
         // We won the race to fetch the statuses; do so
         logInfo("Doing the fetch; tracker endpoint = " + trackerEndpoint)
@@ -268,7 +264,7 @@ Executor端维护map输出信息
       }
       logDebug(s"Fetching map output statuses for shuffle $shuffleId took " +
                s"${System.currentTimeMillis - startTime} ms")
-  
+
       if (fetchedStatuses != null) {
         fetchedStatuses
       } else {

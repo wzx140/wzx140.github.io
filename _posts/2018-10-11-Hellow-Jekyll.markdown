@@ -3,13 +3,10 @@ layout: post
 title:  "Jekyll环境搭建与入门"
 date:   2018-10-10
 categories: Others
-tags: Jekyll
+keywords: Jekyll
 mathjax: false
 author: wzx
 ---
-
-* content
-{:toc}
 
 *jekyll*是一个简单的免费的Blog生成工具，只能生成静态网页的工具，不需要数据库支持。*jekyll*可以免费部署在Github上，而且可以绑定自己的域名。
 

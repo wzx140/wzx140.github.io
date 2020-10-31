@@ -3,13 +3,10 @@ layout: post
 title:  "Scala中的函数"
 date:   2020-7-27
 categories: Scala
-tags: Scala
+keywords: Scala
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 Scala是函数式编程语言，下面记录一些比较困扰的函数概念。
 
@@ -72,13 +69,13 @@ object Test {
     println("in the method")
     println(t)
   }
-  
+
   // 传值调用
   def delayed2(t: Long) = {
     println("in the method")
     println(t)
   }
-  
+
   // 直接传递函数
   def delayed3(t: () => Long) = {
     println("in the method")
@@ -103,13 +100,13 @@ object Test {
     delayed1(time())
     delayed2(time())
     delayed3(time _)
-    
+
     // 直接传递的传名调用
     delayed2{
       println("in time")
       System.nanoTime
     }
-    
+
   }
 }
 ```
@@ -137,7 +134,7 @@ object Test {
   // andThen orElse组合仍返回偏函数
   val evenCheck: PartialFunction[Int, Boolean] = positive andThen even
   val oddCheck: PartialFunction[Int, Boolean] = positive andThen odd
-  
+
   evenCheck.isDefinedAt(-1)   // false
   evenCheck(-1) // throw exception
 }

@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(十一)：存储体系之block传输"
 date:   2020-9-11
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中的block传输
 
@@ -53,7 +49,7 @@ author: wzx
     extends BufferedOutputStream(ts, bufferSize) with ManualCloseOutputStream
     mcs = new ManualCloseBufferedOutputStream
   }
-  
+
   def open(): DiskBlockObjectWriter = {
     if (hasBeenClosed) {
       throw new IllegalStateException("Writer already closed. Cannot be reopened.")
@@ -62,13 +58,13 @@ author: wzx
       initialize()
       initialized = true
     }
-  
+
     bs = serializerManager.wrapStream(blockId, mcs)
     objOut = serializerInstance.serializeStream(bs)
     streamOpen = true
     this
   }
-  
+
   // SerializerManager.scala
   def wrapStream(blockId: BlockId, s: OutputStream): OutputStream = {
     wrapForCompression(blockId, wrapForEncryption(s))
@@ -96,11 +92,11 @@ author: wzx
     writeMetrics.incBytesWritten(pos - reportedPosition)
     reportedPosition = pos
   }
-  
+
   def recordWritten(): Unit = {
     numRecordsWritten += 1
     writeMetrics.incRecordsWritten(1)
-  
+
     // 2^14
     if (numRecordsWritten % 16384 == 0) {
       updateBytesWritten()
@@ -115,7 +111,7 @@ author: wzx
     if (!streamOpen) {
       open()
     }
-  
+
     bs.write(kvBytes, offs, len)
   }
   ```
@@ -131,14 +127,14 @@ author: wzx
       bs.flush()
       objOut.close()
       streamOpen = false
-  
+
       if (syncWrites) {
         // Force outstanding writes to disk and track how long it takes
         val start = System.nanoTime()
         fos.getFD.sync()
         writeMetrics.incWriteTime(System.nanoTime() - start)
       }
-  
+
       val pos = channel.position()
       val fileSegment = new FileSegment(file, committedPosition, pos - committedPosition)
       committedPosition = pos
@@ -401,10 +397,10 @@ override def receive(
       val server = transportContext.createServer(bindAddress, port, bootstraps.asJava)
       (server, server.getPort)
     }
-  
+
     Utils.startServiceOnPort(_port, startService, conf, getClass.getName)._1
   }
-  
+
   override def init(blockDataManager: BlockDataManager): Unit = {
     val rpcHandler = new NettyBlockRpcServer(conf.getAppId, serializer, blockDataManager)
     var serverBootstrap: Option[TransportServerBootstrap] = None
@@ -522,7 +518,7 @@ override def receive(
     ```
 
 - `uploadBlock()`: **发送向远端上传block的请求**
-  
+
   - 创建`TransportClient`
   - 序列化存储等级和类型
   - 如果大于`spark.maxRemoteBlockSizeFetchToMem`则调动`TransportClient.uploadStream()`作为流将block上传

@@ -3,13 +3,10 @@ layout: post
 title:  "梯度下降的优化算法"
 date:   2018-12-21
 categories: MachineLearning
-tags: DeepLearning GD
+keywords: DeepLearning GD
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 随着训练样本数量的提升，我们训练后的模型的表现也越来越好，但每次迭代的时间也不断增加。我们主要通过，减少完成一次参数更新的样本数量，以及利用算法尽量从最短路径更新参数，来优化梯度下降算法
 

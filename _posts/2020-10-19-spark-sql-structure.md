@@ -1,22 +1,19 @@
 ---
 layout: post
-title:  "Spark源码阅读(二十六)——SparkSQL之基本概念"
+title:  "Spark源码阅读(二十六): SparkSQL之基本概念"
 date:   2020-10-19
 categories: Spark
-tags: Spark  SparkSQL
+keywords: Spark  SparkSQL
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 介绍Spark SQL中的基本重要概念
 
 
 
 
-## `DataType`
+## DataType
 
 **数据类型主要用来表示数据表中存储的列信息**。如下图所示，Spark sql中的数据类型都继承自`DataType`。包括简单的整数、浮点数、字符串，以及复杂的嵌套结构。常用的复合数据类型有数组类型`ArrayType`、字典类型`MapType`和结构体类型`StructType`。其中，数组类型中要求数组元素类型一致，字典类型中既要求所有 key 的类型一致，也要求所有的 value 类型一致。
 
@@ -24,7 +21,7 @@ author: wzx
 
 **`StructField`表示结构体中的类型**，共定义了4个属性，字段名称`name`、数据类型`dataType`、是否允许为空`nullable`、元数据`metadata`。**`StructType`通过`Array[StructField]`类型的`fields`参数保存了零到多个`StructField`**
 
-## `lnternalRow`
+## lnternalRow
 
 **抽象类`lnternalRow`表示关系表的一行数据，每一列都是Catalyst内部定义的数据类型**。继承了`SpecializedGetters`接口，里面定义了从下标取出某个类型元素的抽象方法。`lnternalRow`中定义了通过下标来操作列元素的抽象方法
 
@@ -43,7 +40,7 @@ boolean getBoolean(int ordinal);
 
 <img src="{{ site.url }}/assets/img/2020-10-19-1.png" style="zoom: 67%;" />
 
-### `JoinedRow`
+### JoinedRow
 
 **由两个`InternalRow`构造，用于join操作**，直接将两个`InternalRow`拼接起来
 
@@ -57,11 +54,11 @@ override def isNullAt(i: Int): Boolean =
 if (i < row1.numFields) row1.isNullAt(i) else row2.isNullAt(i - row1.numFields)
 ```
 
-### `UnsafeRow `
+### UnsafeRow
 
 使用堆外内存，避免了 JVM 中垃圾回收的代价。此外，`UnsafeRow`对行数据进行了特定的编码，使得存储更加高效。
 
-### `BaseGenericlnternalRow`
+### BaseGenericlnternalRow
 
 **特质`BaseGenericlnternalRow`应用了模板方法设计模式**，实现了 `SpecializedGetters`接口中定义的所有get类型方法，但是暴露出未实现的`genericGet()`由子类实现。
 
@@ -75,7 +72,7 @@ override def getBoolean(ordinal: Int): Boolean = getAs(ordinal)
 ...
 ```
 
-#### `GenericlnternalRow`
+#### GenericlnternalRow
 
 `lnternalRow`的一种实现，**使用`Array[Any]`数组作为基础存储，并且构造参数数组是非拷贝的，因此一旦创建就不允许通过set操作进行改变**
 
@@ -99,7 +96,7 @@ class GenericInternalRow(val values: Array[Any]) extends BaseGenericInternalRow 
 }
 ```
 
-#### `SpecificinternalRow`
+#### SpecificinternalRow
 
 相对于`GenericlnternalRow`来说，使用`Array[MutableValue]`为构造数组，允许通过set操作改变。
 
@@ -129,11 +126,11 @@ final class MutableInt extends MutableValue {
 }
 ```
 
-#### `MutableUnsafeRow`
+#### MutableUnsafeRow
 
 和`UnsafeRow`相关，用来支持对特定的列数据进行修改
 
-## `TreeNode`
+## TreeNode
 
 抽象类`TreeNode`是物理计划和逻辑计划中所有树结构的基类，**通过`Seq[BaseType]`类型的`children`变量来储存子结点，通过`origin`属性来存储当前结点对应在SQL语句的行和起始位置**
 
@@ -186,7 +183,7 @@ object CurrentOrigin {
 
 <img src="{{ site.url }}/assets/img/2020-10-19-2.png" style="zoom: 67%;" />
 
-### `Expression`
+### Expression
 
 抽象类`TreeNode`的子类。表达式一般指的是不需要触发执行引擎而能够直接进行计算的单元，例如加减乘除四则运算、逻辑操作、转换操作、过滤操作等
 
@@ -194,10 +191,10 @@ object CurrentOrigin {
 
 <img src="{{ site.url }}/assets/img/2020-10-19-3.png" style="zoom: 67%;" />
 
-如图所示，除了`TreeNode`内的一些方法外，主要定义了基**本属性、核心操作、输入输出、字符串表示和等价性判断**这5个基本操作 
+如图所示，除了`TreeNode`内的一些方法外，主要定义了基**本属性、核心操作、输入输出、字符串表示和等价性判断**这5个基本操作
 
 - 输入输出
-  - `dataType()`: **表达式返回类型** 
+  - `dataType()`: **表达式返回类型**
   - `checkInputDataTypes()`: **检查输入数量类型是否合法**
   - `references()`：**返回`AttributeSet`该表达式中会涉及的属性值**，默认为所有子节点中属性值的集合
 - 核心操作
@@ -207,7 +204,7 @@ object CurrentOrigin {
   - `foldable`: **返回表达式能否在查询执行之前直接静态计算**，即在算子树中可以直接预先处理(折叠)。当表达式为`Literal`类型或者子表达式中`foldable()`都 true时，此表达式的`foldable()`返回true
   - `deterministic`: **用来标记表达式是否为确定性的**，即每次执行`eval()`函数的输出是否都相同。该属性对于算子树优化中判断谓词能否下推等很有必要
   - `childrenResolved`,`resolved`: **是否解析了所有的占位符**，`resolved`调用了`childrenResolved()`并且做了输入类型检查
-  - `nullable`: **用来标记表达式是否可能输出Null值**， 一般在`genCode()`生成的Java代码中对null值进行判断 
+  - `nullable`: **用来标记表达式是否可能输出Null值**， 一般在`genCode()`生成的Java代码中对null值进行判断
 - 等价性判断
   - `canonicalized`: **经过规范化处理后的表达式**。规范化处理会在确保输出结果相同的前提下通过一些规则对表达式进行重写
   - `semanticEquals()`: **判断两个表达式在语义上是否等价**。默认的判断条件是**两个表达式都是确定性的且两个表达式经过规范化处理后相同**

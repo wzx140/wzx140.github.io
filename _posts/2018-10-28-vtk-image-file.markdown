@@ -3,13 +3,10 @@ layout: post
 title:  "VTK的图像文件读取与显示"
 date:   2018-10-28
 categories: VTK
-tags: VTK C++ image
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 一些简单的图像读取与显示操作
 

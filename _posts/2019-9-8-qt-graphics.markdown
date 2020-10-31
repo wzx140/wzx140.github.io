@@ -3,13 +3,10 @@ layout: post
 title:  "QT绘图体系"
 date:   2019-9-8
 categories: Others
-tags: QT Graphics Painter
+keywords: QT Graphics Painter
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 简单概述 `qgraphics` 绘图系统
 

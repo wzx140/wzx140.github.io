@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(七)：存储体系之block信息管理"
 date:   2020-9-8 8:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍用于block的标识信息，数据信息，元数据和锁管理
 
@@ -34,7 +30,7 @@ author: wzx
 ```scala
 sealed abstract class BlockId {
   def name: String
-  
+
   def asRDDId: Option[RDDBlockId] = if (isRDD) Some(asInstanceOf[RDDBlockId]) else None
   def isRDD: Boolean = isInstanceOf[RDDBlockId]
   def isShuffle: Boolean = isInstanceOf[ShuffleBlockId]
@@ -267,10 +263,10 @@ case class RDDBlockId(rddId: Int, splitIndex: Int) extends BlockId {
   ```scala
   def releaseAllLocksForTask(taskAttemptId: TaskAttemptId): Seq[BlockId] = synchronized {
     val blocksWithReleasedLocks = mutable.ArrayBuffer[BlockId]()
-  
+
     val readLocks = readLocksByTask.remove(taskAttemptId).getOrElse(ImmutableMultiset.of[BlockId]())
     val writeLocks = writeLocksByTask.remove(taskAttemptId).getOrElse(Seq.empty)
-  
+
     for (blockId <- writeLocks) {
       infos.get(blockId).foreach { info =>
         assert(info.writerTask == taskAttemptId)
@@ -278,7 +274,7 @@ case class RDDBlockId(rddId: Int, splitIndex: Int) extends BlockId {
       }
       blocksWithReleasedLocks += blockId
     }
-  
+
     readLocks.entrySet().iterator().asScala.foreach { entry =>
       val blockId = entry.getElement
       val lockCount = entry.getCount
@@ -288,9 +284,9 @@ case class RDDBlockId(rddId: Int, splitIndex: Int) extends BlockId {
         assert(info.readerCount >= 0)
       }
     }
-  
+
     notifyAll()
-  
+
     blocksWithReleasedLocks
   }
   ```

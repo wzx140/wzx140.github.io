@@ -3,13 +3,10 @@ layout: post
 title:  "在spark-submit中自定义日志配置"
 date:   2020-5-14
 categories: Spark
-tags: Distribution Spark
+keywords: Distribution Spark
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 日志有助于debug和优化程序，对于spark程序而言，有时需要改变默认的日志配置，如调整日志输出级别，根据日志级别进行分流存储等
 

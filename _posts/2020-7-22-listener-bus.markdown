@@ -3,15 +3,10 @@ layout: post
 title:  "Spark源码阅读(一)：事件总线"
 date:   2020-7-22
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
-
 ---
-
-- 目录
-{:toc}
-
 
 Spark中的事件总线用于接受事件并提交到对应的监听器中。
 

@@ -3,13 +3,10 @@ layout: post
 title:  "Spark源码阅读(二十一)：计算引擎之排序聚合基础数据结构"
 date:   2020-9-28 8:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 主要介绍了`AppendOnlyMap`与`PartitionedPairBuffer`两种Spark自己实现的类似map和colletion的数据结构，**对大量聚合运算进行了优化且实现了采样估计集合大小的特性**
 
@@ -23,11 +20,11 @@ author: wzx
 - `SAMPLE_GROWTH_RATE`: **采样增长的速率**，固定为1.1
 
 - `samples`: `mutable.Queue[Sample]`样本队列。**最后两个样本将被用于估算集合大小**
-  
+
   ```scala
   case class Sample(size: Long, numUpdates: Long)
   ```
-  
+
 - `bytesPerUpdate`: **平均每次更新的字节数**
 
 - `numUpdates`: 从上一次`resetSamples()`后**更新操作(包括插入和更新)的总次数**
@@ -107,14 +104,14 @@ author: wzx
     val it = partitionedDestructiveSortedIterator(keyComparator)
     new WritablePartitionedIterator {
       private[this] var cur = if (it.hasNext) it.next() else null
-  
+
       def writeNext(writer: DiskBlockObjectWriter): Unit = {
         writer.write(cur._1._2, cur._2)
         cur = if (it.hasNext) it.next() else null
       }
-  
+
       def hasNext(): Boolean = cur != null
-  
+
       def nextPartition(): Int = cur._1._1
     }
   }
@@ -307,9 +304,9 @@ author: wzx
       keyIndex += 1
     }
     assert(curSize == newIndex + (if (haveNullValue) 1 else 0))
-  
+
     new Sorter(new KVArraySortDataFormat[K, AnyRef]).sort(data, 0, newIndex, keyComparator)
-  
+
     new Iterator[(K, V)] {
       var i = 0
       var nullValueReady = haveNullValue
@@ -338,7 +335,7 @@ author: wzx
     assert(!destroyed, destructionMessage)
     new Iterator[(K, V)] {
       var pos = -1
-  
+
       /** Get the next value we should return from next(), or null if we're finished iterating */
       def nextValue(): (K, V) = {
         if (pos == -1) {    // Treat position -1 as looking at the null value
@@ -355,9 +352,9 @@ author: wzx
         }
         null
       }
-  
+
       override def hasNext: Boolean = nextValue() != null
-  
+
       override def next(): (K, V) = {
         val value = nextValue()
         if (value == null) {

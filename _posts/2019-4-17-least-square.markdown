@@ -3,13 +3,10 @@ layout: post
 title:  "最小二乘问题"
 date:   2019-4-17
 categories: MachineLearning
-tags: Least_squares
+keywords: Least_squares
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 从 最小化误差平方和 和 方程组的最小二乘解 两个角度理解最小二乘问题
 

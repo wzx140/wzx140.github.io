@@ -3,14 +3,10 @@ layout: post
 title:  "大数据日知录学习(一)：分片与路由"
 date:   2020-9-5 10:00
 categories: 大数据理论与架构
-tags: BigData
+keywords: BigData
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 大数据背景下，传统纵向拓展的方式即增加机器的配置已经无法满足数据量的需要，因此主流大数据系统基本采用横向拓展即增加机器数量，对数据的分片与路由显得尤为重要。
 

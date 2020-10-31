@@ -3,13 +3,10 @@ layout: post
 title:  "QT Creator的promote to自定义控件"
 date:   2018-10-15
 categories: Others
-tags: QT
+keywords: QT
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 `promote to`将QT自带的那些控件（如*QLable，QPushButton*之类）的派生类作为自定义控件可以再*design*界面中使用。
 

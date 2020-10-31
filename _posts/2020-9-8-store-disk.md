@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(八)：存储体系之磁盘存储"
 date:   2020-9-8 9:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中block的磁盘存储
 
@@ -49,7 +45,7 @@ author: wzx
   }
   ```
 
-  
+
 
 - `subDirs`: 二维`File`数组，表示**本地目录和子目录名称的组合关系**，为每个`localDir`生成`subDirsPerLocalDir`个子目录。`private val subDirs = Array.fill(localDirs.length)(new Array[File](subDirsPerLocalDir))`。下图所示目录的层级结构
 
@@ -70,7 +66,7 @@ author: wzx
     val hash = Utils.nonNegativeHash(filename)
     val dirId = hash % localDirs.length
     val subDirId = (hash / localDirs.length) % subDirsPerLocalDir
-  
+
     val subDir = subDirs(dirId).synchronized {
       val old = subDirs(dirId)(subDirId)
       if (old != null) {
@@ -84,13 +80,13 @@ author: wzx
         newDir
       }
     }
-  
+
     new File(subDir, filename)
   }
-  
+
   def getFile(blockId: BlockId): File = getFile(blockId.name)
   ```
-  
+
 - `containsBlock)()`: `DiskBlockManager`中是否有这个block
 
 - `getAllFiles()`: 返回 `DiskBlockManager`上所有的文件。**为了保证线程安全，采用同步克隆的方式，所以返回的文件列表可能不是最新的**
@@ -107,7 +103,7 @@ author: wzx
     }
   }
   ```
-  
+
 - `getAllBlocks()`: 调用了`getAllFiles()`方法，**获取所有储存在磁盘上的block**。可以看出block和文件是一一对应的
 
   ```scala
@@ -122,7 +118,7 @@ author: wzx
     }
   }
   ```
-  
+
 - `createTempLocalBlock()`: 创建保存中间结果的block和文件。
 
 - `createTempShuffleBlock()`: 创建保存中间shuffle结果的block和文件。
@@ -135,7 +131,7 @@ author: wzx
     }
     (blockId, getFile(blockId))
   }
-  
+
   def createTempShuffleBlock(): (TempShuffleBlockId, File) = {
     var blockId = new TempShuffleBlockId(UUID.randomUUID())
     while (getFile(blockId).exists()) {
@@ -157,7 +153,7 @@ author: wzx
     }
     doStop()
   }
-  
+
   private def doStop(): Unit = {
     if (deleteFilesOnStop) {
       localDirs.foreach { localDir =>
@@ -230,7 +226,7 @@ author: wzx
       Utils.bytesToString(file.length()),
       finishTime - startTime))
   }
-  
+
   // 如果数据需要加密，则创建加密的channel，否则不加密
   private def openForWrite(file: File): WritableByteChannel = {
     val out = new FileOutputStream(file).getChannel()
@@ -263,17 +259,17 @@ author: wzx
   def getBytes(blockId: BlockId): BlockData = {
     val file = diskManager.getFile(blockId.name)
     val blockSize = getSize(blockId)
-  
+
     securityManager.getIOEncryptionKey() match {
       case Some(key) =>
       new EncryptedBlockData(file, blockSize, conf, key)
-  
+
       case _ =>
       new DiskBlockData(minMemoryMapBytes, maxMemoryMapBytes, file, blockSize)
     }
   }
   ```
-  
+
 - `remove()`: 由`DiskBlockManager`**删除block文件和`blockSize`上的映射关系**
 
   ```scala

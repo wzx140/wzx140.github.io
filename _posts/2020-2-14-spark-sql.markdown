@@ -3,13 +3,10 @@ layout: post
 title:  "浅析Spark SQL"
 date:   2020-2-14
 categories: Spark
-tags: Distribution SparkSQL
+tags: SparkSQL
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 Spark中的重要模块，在Spark的函数式编程API中引入了关系数据的处理
 

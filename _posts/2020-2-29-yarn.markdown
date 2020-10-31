@@ -3,13 +3,10 @@ layout: post
 title:  "YARN原理解析"
 date:   2020-2-29
 categories: 大数据理论与架构
-tags: Distribution YARN
+keywords: Distribution YARN
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 YARN(Yet Another Resource Negotiator)的设计思想就是分离资源管理和job的调度/监控
 

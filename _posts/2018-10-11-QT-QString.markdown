@@ -3,13 +3,10 @@ layout: post
 title:  "QString总结"
 date:   2018-10-11
 categories: Others
-tags: QT C++ String
+keywords: QT String
 mathjax: false
 author: wzx
 ---
-
-* content
-{:toc}
 
 *QT*库对*C++*做了很多封装，其中**QString**就可以大大减小工作量。
 

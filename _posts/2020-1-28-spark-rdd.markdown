@@ -3,13 +3,10 @@ layout: post
 title:  "Spark RDD 算子 共享变量"
 date:   2020-1-28
 categories: Spark
-tags: Distribution Spark RDD
+keywords: Spark RDD
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 Spark中的重要概念，RDD，算子与共享变量
 

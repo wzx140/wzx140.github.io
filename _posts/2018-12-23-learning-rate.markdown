@@ -3,13 +3,10 @@ layout: post
 title:  "玄学的学习率"
 date:   2018-12-23
 categories: MachineLearning
-tags: DeepLearning LR
+keywords: DeepLearning LR
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 学习率是深度神经网络里最重要的超参数之一，学习率的选取直接影响了我们模型的质量，但有时学习率的选取是很玄学的
 

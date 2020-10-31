@@ -3,14 +3,10 @@ layout: post
 title:  "大数据日知录学习(三)：一致性协议"
 date:   2020-9-5 11:20
 categories: 大数据理论与架构
-tags: BigData
+keywords: BigData
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 简要介绍常用一致性协议。
 

@@ -3,13 +3,10 @@ layout: post
 title:  "Scala中的反射"
 date:   2020-8-11
 categories: Scala
-tags: Scala
+keywords: Scala
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 总结scala反射中的基本概念。
 
@@ -123,7 +120,7 @@ obj: Any = ...
 scala> val tt = ru.typeTag[Int]
 tt: ru.TypeTag[Int] = TypeTag[Int]
 
-// create typeTag from implicit parameter 
+// create typeTag from implicit parameter
 scala> def paramInfo[T](x: T)(implicit tag: ru.TypeTag[T]): Unit = println(s"${tag.tpe}")
 paramInfo: [T](x: T)(implicit tag: ru.TypeTag[T])Unit
 
@@ -150,7 +147,7 @@ scala> val ct = classTag[Int]
 ct: scala.reflect.ClassTag[Int] = Int
 
 // create classTag from implicit parameter
-// type erased 
+// type erased
 scala> def paramInfo[T](x: T)(implicit tag: ClassTag[T]): Unit = println(s"$tag")
 paramInfo: [T](x: T)(implicit tag: scala.reflect.ClassTag[T])Unit
 
@@ -158,7 +155,7 @@ scala> paramInfo(List(1, 2, 3))
 scala.collection.immutable.List
 
 // create classTag from context bound
-// type erased 
+// type erased
 scala> def paramInfo[T: ClassTag](x: T): Unit = println(s"${classTag[T]}")
 paramInfo: [T](x: T)(implicit evidence$1: scala.reflect.ClassTag[T])Unit
 

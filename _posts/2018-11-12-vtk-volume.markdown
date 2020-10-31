@@ -3,13 +3,10 @@ layout: post
 title:  "VTK之体绘制的渲染对象"
 date:   2018-11-12
 categories: VTK
-tags: VTK C++ volume
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 vtkVolume类似几何渲染的vtkActor，需要传入 [*vtkVolumeMapper*]({% post_url 2018-11-12-vtk-volume-mapper %}) 和 *vtkVolumeProperty*
 

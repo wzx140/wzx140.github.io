@@ -3,13 +3,10 @@ layout: post
 title:  "哈希表检索"
 date:   2019-12-11
 categories: 算法和数据结构
-tags: DataStructure Hash HashMap Search
+keywords: DataStructure Hash HashMap Search
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 哈希表检索的实现
 

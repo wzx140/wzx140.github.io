@@ -3,13 +3,11 @@ layout: post
 title:  "赚钱的思维 ——读《富爸爸穷爸爸》"
 date:   2020-7-14
 categories: BookReview
-tags: BookReview
+keywords: 富爸爸穷爸爸
 mathjax: false
 author: wzx
 ---
 
-- 目录
-{:toc}
 从未遇见一位没亏过钱的富人，却遇见过许多从未亏掉一毛钱的穷人。
 
 

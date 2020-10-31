@@ -3,13 +3,10 @@ layout: post
 title:  "森林"
 date:   2019-11-2
 categories: 算法和数据结构
-tags: DataStructure Forest
+keywords: DataStructure Forest
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 森林相比[二叉树]({% post_url 2019-3-16-binary-tree %})要更复杂，所以将森林与二叉树一起考虑将更好
 

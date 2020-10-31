@@ -3,13 +3,10 @@ layout: post
 title:  "Flink基本概念"
 date:   2020-4-21
 categories: 大数据理论与架构
-tags: Distribution Flink
+keywords: Distribution Flink
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 Flink是一个分布式处理**流式或者批量数据**的系统，适用于多种数据处理应用，如实时分析，历史数据处理，迭代算法等，将它们转化为**拥有流水机制和容错机制的数据流**进行处理。
 

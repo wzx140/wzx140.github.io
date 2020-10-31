@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(六)：存储体系总览"
 date:   2020-9-7
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中的存储体系
 

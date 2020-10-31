@@ -3,13 +3,10 @@ layout: post
 title:  "最小堆的实现"
 date:   2019-10-25
 categories: 算法和数据结构
-tags: DataStructure priority_queue min_heap
+keywords: DataStructure priority_queue min_heap
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 优先队列，堆排序，都用了最小堆
 

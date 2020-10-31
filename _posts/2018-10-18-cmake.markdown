@@ -3,13 +3,10 @@ layout: post
 title:  "CMAKE基本语法"
 date:   2018-10-18
 categories: Others
-tags: CMake C++
+keywords: CMake
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 *CMake* 是一个跨平台的，开源的构建系统*（BuildSystem）*。*CMake* 可以通过 *CMakeLists.txt *文件来产生特定平台的标准的构建文件
 

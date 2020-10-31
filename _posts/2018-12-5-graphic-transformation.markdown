@@ -3,13 +3,10 @@ layout: post
 title:  "VTK简单图形处理"
 date:   2018-12-5
 categories: VTK
-tags: VTK C++ transform
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 这里介绍通过vtk库实现的简单图形处理
 

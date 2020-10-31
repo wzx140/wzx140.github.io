@@ -3,13 +3,10 @@ layout: post
 title:  "大数据日知录学习(六)：Zookeeper"
 date:   2020-10-18
 categories: 大数据理论与架构
-tags: BigData
+keywords: Zookeeper
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 Yahoo 开源的可拓展高吞吐分布式协调系统。ZK本质是特殊的FS，但用于存储元数据，应用数据需要单独存储
 

@@ -3,13 +3,10 @@ layout: post
 title:  "Scala中的隐式变换"
 date:   2020-8-3
 categories: Scala
-tags: Scala
+keywords: Scala
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 总结scala隐式变换中的容易混淆的概念。
 
@@ -56,7 +53,7 @@ object test {
     // 类型与预期不同
     // 3 * Fraction2Int(Fraction(1, 2))
     3 * Fraction(1, 2)
-    
+
     // 调用不存在成员
     // Fraction2Int(Fraction(1, 2)).toInt
     Fraction(1, 2).toInt
@@ -75,7 +72,7 @@ def smaller[T](a: T, b: T)(implicit order: T => Ordered[T]): T = {
 
 ## 隐式参数
 
-方法可以具有**隐式参数列表**，由参数列表开头的`implicit`关键字标记。 
+方法可以具有**隐式参数列表**，由参数列表开头的`implicit`关键字标记。
 
 如果参数列表中的参数没有传递隐式参数列表中的参数，将从下两个地方寻找**可用单个标识符指定**的**满足类型要求**的替代值
 

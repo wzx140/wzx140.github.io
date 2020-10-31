@@ -3,13 +3,10 @@ layout: post
 title:  "图"
 date:   2019-11-7
 categories: 算法和数据结构
-tags: DataStructure Graph
+keywords: DataStructure Graph
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 图的结构要比相比[二叉树]({% post_url 2019-3-16-binary-tree %})和[森林]({% post_url 2019-11-2-forest %})要更复杂
 

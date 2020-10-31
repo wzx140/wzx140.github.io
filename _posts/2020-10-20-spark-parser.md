@@ -1,15 +1,12 @@
 ---
 layout: post
-title:  "Spark源码阅读(二十七)——SparkSQL之编译器ANTLR4"
+title:  "Spark源码阅读(二十七): SparkSQL之编译器ANTLR4"
 date:   2020-10-20
 categories: Spark
-tags: Spark  SparkSQL
+keywords: Spark ANTLR
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 简述Spark SQL中对SQL语句的解析原理
 

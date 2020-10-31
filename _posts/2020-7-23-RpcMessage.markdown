@@ -3,13 +3,10 @@ layout: post
 title:  "Spark源码阅读(二)：RPC之Inbox、Outbox、Dispatcher"
 date:   2020-7-23
 categories: Spark
-tags: Spark SparkCore RPC
+keywords: Spark SparkCore RPC
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 
 Spark RPC中发送消息和接收消息的底层分发处理

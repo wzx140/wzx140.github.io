@@ -3,13 +3,10 @@ layout: post
 title:  "GTest 基本使用"
 date:   2018-10-31
 categories: Others
-tags: C++ GTest
+tags: GTest
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 简单介绍 *Googletest* 的用法
 

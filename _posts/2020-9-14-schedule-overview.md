@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(十三)：调度系统总览"
 date:   2020-9-14 8:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中的调度系统
 

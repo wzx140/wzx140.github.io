@@ -3,13 +3,10 @@ layout: post
 title:  "VTK volume mapper"
 date:   2018-11-12
 categories: VTK
-tags: VTK C++ volume
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 所有 体绘制Mapper 都继承自 *vtkVolumeMapper*
 ![]({{ site.url }}/assets/img/2018-11-12-1.png)

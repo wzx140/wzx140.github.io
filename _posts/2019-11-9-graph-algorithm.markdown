@@ -3,13 +3,10 @@ layout: post
 title:  "图的算法"
 date:   2019-11-9
 categories: 算法和数据结构
-tags: DataStructure Graph Dijkstra
+keywords: DataStructure Graph Dijkstra
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 最短路径与最小生成树算法
 

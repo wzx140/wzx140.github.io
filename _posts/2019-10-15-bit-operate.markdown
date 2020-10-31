@@ -3,13 +3,10 @@ layout: post
 title:  "Java中的位运算"
 date:   2019-10-15
 categories: Java
-tags: Java bitOperation
+keywords: Java bitOperation
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 在看 **双端队列`ArrayDeque`** 的源码时，发现了一些很奇怪的位运算操作，需要绕些弯子才能理解
 

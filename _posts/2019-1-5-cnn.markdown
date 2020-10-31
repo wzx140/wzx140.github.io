@@ -3,13 +3,10 @@ layout: post
 title:  "卷积神经网络概述"
 date:   2019-1-5
 categories: MachineLearning
-tags: CNN DeepLearning
+keywords: CNN DeepLearning
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 卷积神经网络 (Convolutional Neural Network)，由若干卷积层，池化层和全连接层组成，与其他深度学习结构相比，卷积神经网络在图像和语音识别方面能够给出更好的结果
 - 卷积层 Convolution(CONV)

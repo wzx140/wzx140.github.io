@@ -3,13 +3,10 @@ layout: post
 title:  "二叉树"
 date:   2019-3-16
 categories: 算法和数据结构
-tags: DataStructure BinaryTree
+keywords: DataStructure BinaryTree
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 刚开始接触数据结构，之前只对顺序表，链表，栈和队列有些接触，对二叉树这个概念还是很陌生，所以总结一下
 

@@ -3,13 +3,10 @@ layout: post
 title:  "深入理解Java String"
 date:   2020-3-12
 categories: Java
-tags: Java String
+keywords: Java String
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 解释Java String的不可变性以及字符串常量池。
 

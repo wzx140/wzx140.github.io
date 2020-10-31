@@ -3,13 +3,10 @@ layout: post
 title:  "Hive原理解析"
 date:   2020-3-10
 categories: 大数据理论与架构
-tags: Distribution Hive
+keywords: Distribution Hive
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 Hive是一个建立在Hapoop集群之上的数据仓库，依赖于HDFS的数据存储，依赖于MapReduce完成查询操作
 

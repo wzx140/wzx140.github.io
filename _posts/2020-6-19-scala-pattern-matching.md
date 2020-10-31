@@ -3,13 +3,11 @@ layout: post
 title:  "Scala-模式匹配"
 date:   2020-6-19
 categories: Scala
-tags: Scala CaseMatching
+keywords: Scala CaseMatching
 mathjax: false
 author: wzx
 ---
 
-- 目录
-{:toc}
 Scala中的模式匹配功能很强大，它是Java中的`switch`语句的升级版，同样可以用于替代一系列的 if/else 语句
 
 
@@ -169,7 +167,7 @@ catch {
 
 ## REFERENCE
 
-[1] [[Why does pattern matching in Scala not work with variables?](https://stackoverflow.com/questions/7078022/why-does-pattern-matching-in-scala-not-work-with-variables)  
+[1] [[Why does pattern matching in Scala not work with variables?](https://stackoverflow.com/questions/7078022/why-does-pattern-matching-in-scala-not-work-with-variables)
 
 [2] [Scala doc](https://docs.scala-lang.org/zh-cn/tour/pattern-matching.html)
 

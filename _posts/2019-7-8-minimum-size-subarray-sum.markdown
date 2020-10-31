@@ -3,13 +3,10 @@ layout: post
 title:  "Minimum Size Subarray Sum"
 date:   2019-7-8
 categories: 算法和数据结构
-tags: LeetCode Java
+keywords: LeetCode
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 LeetCode 上的[一个题目](https://leetcode.com/problems/minimum-size-subarray-sum/)。解决这个问题很容易，但很多方法不容易想到，而且自己最先想到的解法的时间复杂度比较大
 

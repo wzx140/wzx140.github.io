@@ -3,16 +3,12 @@ layout: post
 title:  "QT开发环境搭建"
 date:   2018-10-10
 categories: Others
-tags: QT QT-Creator
+keywords: QT QT-Creator
 mathjax: false
 author: wzx
 ---
 
-- 目录
-{:toc}
-
 其实是一个跨平台C++图形用户界面应用程序开发框架，现在还可以开发Android，iOS程序，功能强大。
-
 
 
 
@@ -20,11 +16,12 @@ author: wzx
 ## 开发环境搭建
 推荐IDE：**QT Creator**（qt自家IDE），**vs**+qt插件，**clion**+qt插件（jetbrains大法好）
 下面内容参考的[Qt开发环境的搭建和hello world](http://www.qter.org/portal.php?mod=view&aid=25)
-> 下面主要说一下遇到的坑
 
-> 1. sdk下载网址：[qt sdk](https://download.qt.io/official_releases/qt/)
+下面主要说一下遇到的坑
+
+1. sdk下载网址：[qt sdk](https://download.qt.io/official_releases/qt/)
 选择最新版就好，下载exe文件，一路next，参考[百度经验](https://jingyan.baidu.com/article/656db918d9292ae380249c4f.html)
->2. 关于ico图标问题，**不可以将图片文件直接改拓展名**，要进行转换。[ico在线转换](http://www.bitbug.net/)
+2. 关于ico图标问题，**不可以将图片文件直接改拓展名**，要进行转换。[ico在线转换](http://www.bitbug.net/)
 
 ### QT Creator快捷操作
 
@@ -33,7 +30,7 @@ author: wzx
 2. QT Creator中的`Tool->Option`中的`Text Editor->Completion`里的第一个`Case-sensitive completion`选择`None`
 
 #### 常用快捷键
-> 1. `Ctrl + Tab`快速切换已打开的文件
+1. `Ctrl + Tab`快速切换已打开的文件
 2. 快速添加方法实体(.cpp)定义,将光标移动到h文件中的方法声明。按`Alt + Enter`,选择`Add Definition in xxx.cpp`将在cpp中添加该函数的定义
 3. 修改变量名,并应用到所有使用该变量的地方。将光标移动到需要更改的变量上,按`Ctrl + Shift + R`,当前变量名称外框为红色时,表示已经已激活全局修改功能,当修改此处变量名称时将一同修改代码中所有使用该变量的变量名。
 4. 快速打开输出窗口，按`Alt +数字键(1-7)`可以快速打开对应的输出窗口。
@@ -60,7 +57,7 @@ author: wzx
 2. 建议IDE语言设置为英文，不然git的命令看起来很奇怪。`Tools->Git`下有git的各种命令，`Tools->Git->Git Tools->gitk`用来操作git的分支很好用。
 
 ## 二进制文件发布
-> 1. 将构建程序改为Release，然后构建项目。之后，你会发现在源文件夹内多了一个带有Release字样的文件夹
+1. 将构建程序改为Release，然后构建项目。之后，你会发现在源文件夹内多了一个带有Release字样的文件夹
 2. 将该文件夹内你的运行程序（xxx.exe），复制到一个新的文件夹
 3. 打开QT自带的命令行工具，然后cd到你建立的新文件夹，使用命令`windeployqt    xxx.exe`，**强烈建议关掉360**，完成以上三步以后，就可以点击exe文件直接运行了。
 

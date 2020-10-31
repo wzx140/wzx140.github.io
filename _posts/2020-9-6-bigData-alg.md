@@ -3,14 +3,10 @@ layout: post
 title:  "大数据日知录学习(五)：常用压缩和哈希算法"
 date:   2020-9-6
 categories: 大数据理论与架构
-tags: BigData
+keywords: BigData
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍大数据中的常用压缩和哈希算法
 
@@ -58,7 +54,7 @@ insert(x)
 			T1[H1[x]] = x
 			return
 		x <--> T1[H1[x]] # 交换
-		
+
 		# 第一个桶中被挤出的元素放入第二个哈希桶中，如果有则将里面的元素挤出
 		if T2[H2[x]] == NULL:
 			T2[H2[x]] = x

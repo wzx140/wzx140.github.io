@@ -3,13 +3,10 @@ layout: post
 title:  "深层神经网络中的正则化"
 date:   2018-12-20
 categories: MachineLearning
-tags: Regularization DeepLearning
+keywords: Regularization DeepLearning
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 随着神经网络的深度化，容易出现训练集的精度高，测试集的精度相对不高，这可能是出现了**过拟合**的情况。这时可以通过增加训练集来解决。如果增加训练集的代价太高，正则化是一个很好的选择
 ![]({{ site.url }}/assets/img/2018-12-20-1.png)

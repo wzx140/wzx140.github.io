@@ -3,13 +3,10 @@ layout: post
 title:  "卷积神经网络在锚链焊接质量评估中的应用"
 date:   2019-7-3
 categories: MachineLearning
-tags: Python CNN Welding
+keywords: Python CNN Welding
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 这是本人大学的毕业设计，卷积神经网络在锚链焊接质量评估中的应用，根据焊接过程中的电极间电压，电流以及电极位置的波形图，判断闪光焊接的质量
 

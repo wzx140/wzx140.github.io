@@ -3,13 +3,10 @@ layout: post
 title:  "B树与B+树"
 date:   2019-12-17
 categories: 算法和数据结构
-tags: DataStructure Search Dynamic_index
+keywords: DataStructure Search Dynamic_index
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 [静态索引结构]({% post_url 2019-12-13-linear-search %})在初始创建时就已经定型，而且在运行期间，其结构不发生变化，存取方便，但插入删除效率低。动态索引结构在运行期间，其结构随着增删而调整，以保持最佳搜索效率。B树与B+树就属于动态索引结构。
 

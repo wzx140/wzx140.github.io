@@ -3,13 +3,10 @@ layout: post
 title:  "过采样算法"
 date:   2019-4-8
 categories: MachineLearning
-tags: Pretreatment DeepLearning
+keywords: Pretreatment DeepLearning
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 数据不平衡是机器学习中经常遇到的问题，其根本的解决方法就是收集或制造一些数据扩大数据集。但在实际情况中，收集更多的数据所需要的成本很大，所以我们通过过采样算法来生成新的数据来克服数据不平衡
 

@@ -3,13 +3,10 @@ layout: post
 title:  "CLion+QT+VTK开发环境搭建"
 date:   2018-10-19
 categories: VTK
-tags: QT CMake VTK CLion
+keywords: QT CMake VTK CLion
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 既然都不使用*QMake*而使用*CMake*了，那只要编辑*ui，qrc*文件时用*qt creator*就行了。基于本人*jetbrains*脑残粉，和*CLion*的代码提示等功能非常好用。这里介绍如何在*CLion中使用CMake构建QT+VTK工程*。
 

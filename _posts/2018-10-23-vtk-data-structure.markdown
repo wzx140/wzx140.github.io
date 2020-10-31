@@ -3,13 +3,10 @@ layout: post
 title:  "VTK的数据结构"
 date:   2018-10-23
 categories: VTK
-tags: VTK
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 ![]({{ site.url }}/assets/img/2018-10-23-1.jpg)
 

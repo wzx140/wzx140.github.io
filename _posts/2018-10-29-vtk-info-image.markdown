@@ -3,13 +3,10 @@ layout: post
 title:  "VTK之图像信息的读取与修改"
 date:   2018-10-28
 categories: VTK
-tags: VTK C++ image
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 读取图像的头信息以及像素值，并进行修改。以及有关颜色映射的操作
 

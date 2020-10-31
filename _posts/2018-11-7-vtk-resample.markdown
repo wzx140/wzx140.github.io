@@ -3,13 +3,10 @@ layout: post
 title:  "VTK之重采样"
 date:   2018-11-7
 categories: VTK
-tags: VTK C++ image
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 图像重采样指对数字图像按所需的像素位置或像素间距重新采样，以构成几何变换后的新图像
 

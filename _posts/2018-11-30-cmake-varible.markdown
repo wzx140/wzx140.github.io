@@ -3,13 +3,10 @@ layout: post
 title:  "CMAKE之变量"
 date:   2018-11-30
 categories: Others
-tags: CMake C++
+keywords: CMake
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 *CMake* 中有许多显式或隐式的预定义好的变量，也可以自己定义变量
 

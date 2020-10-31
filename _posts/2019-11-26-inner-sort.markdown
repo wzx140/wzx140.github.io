@@ -3,13 +3,10 @@ layout: post
 title:  "内排序算法"
 date:   2019-11-26
 categories: 算法和数据结构
-tags: DataStructure Sort
+keywords: DataStructure Sort
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 内排序算法的实现和比较
 

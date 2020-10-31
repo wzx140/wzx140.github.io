@@ -3,13 +3,10 @@ layout: post
 title:  "VTK + QT Creator开发环境搭建"
 date:   2018-10-15
 categories: VTK
-tags: QT VTK C++ CMake QT-Creator
+keywords: QT VTK CMake QT-Creator
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 经历了各种报错后，历经千辛万苦终于搭建好了**VTK8.1+QT5.1+QT Creator4.5**的开发环境，先上图。
 ![]({{ site.url }}/assets/img/2018-10-15-1.png){:height="300" width="500"}

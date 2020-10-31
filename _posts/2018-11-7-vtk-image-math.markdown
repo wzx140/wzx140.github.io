@@ -3,13 +3,10 @@ layout: post
 title:  "VTK之图像的计算"
 date:   2018-11-7
 categories: VTK
-tags: VTK C++ image
+tags: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 VTK里提供了许多对一个或多个图像的像素进行计算的类
 

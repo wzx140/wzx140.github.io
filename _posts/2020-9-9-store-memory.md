@@ -3,13 +3,10 @@ layout: post
 title:  "Spark源码阅读(九)：存储体系之内存存储"
 date:   2020-9-9 8:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 
 介绍Spark中的block内存存储。Hadoop只将内存作为计算资源，Spark除将内存作为计算资源外，还将内存的一部分纳入到存储体系中。
@@ -76,7 +73,7 @@ public enum MemoryMode {
     val numBytesToFree = math.max(0, numBytes - memoryFree)
     acquireMemory(blockId, numBytes, numBytesToFree)
   }
-  
+
   def acquireMemory(
     blockId: BlockId,
     numBytesToAcquire: Long,
@@ -375,7 +372,7 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
           }
         }
       }
-  
+
       def dropBlock[T](blockId: BlockId, entry: MemoryEntry[T]): Unit = {
         val data = entry match {
           case DeserializedMemoryEntry(values, _, _) => Left(values)
@@ -393,7 +390,7 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
           blockInfoManager.removeBlock(blockId)
         }
       }
-  
+
       if (freedMemory >= space) {
         var lastSuccessfulBlock = -1
         try {
@@ -451,7 +448,7 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
   def contains(blockId: BlockId): Boolean = {
     entries.synchronized { entries.containsKey(blockId) }
   }
-  
+
   def putBytes[T: ClassTag](
     blockId: BlockId,
     size: Long,
@@ -541,7 +538,7 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
     memoryMode: MemoryMode,
     valuesHolder: ValuesHolder[T]): Either[Long, Long] = {
     require(!contains(blockId), s"Block $blockId is already present in the MemoryStore")
-  
+
     // Number of elements unrolled so far
     var elementsUnrolled = 0
     // Whether there is still enough memory for us to continue unrolling this block
@@ -556,18 +553,18 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
     val memoryGrowthFactor = conf.get(UNROLL_MEMORY_GROWTH_FACTOR)
     // Keep track of unroll memory used by this particular block / putIterator() operation
     var unrollMemoryUsedByThisBlock = 0L
-  
+
     // Request enough memory to begin unrolling
     keepUnrolling =
     reserveUnrollMemoryForThisTask(blockId, initialMemoryThreshold, memoryMode)
-  
+
     if (!keepUnrolling) {
       logWarning(s"Failed to reserve initial memory threshold of " +
                  s"${Utils.bytesToString(initialMemoryThreshold)} for computing block $blockId in memory.")
     } else {
       unrollMemoryUsedByThisBlock += initialMemoryThreshold
     }
-  
+
     // Unroll this block safely, checking whether we have exceeded our threshold periodically
     while (values.hasNext && keepUnrolling) {
       valuesHolder.storeValue(values.next())
@@ -587,7 +584,7 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
       }
       elementsUnrolled += 1
     }
-  
+
     // Make sure that we have enough memory to store the block. By this point, it is possible that
     // the block's actual memory usage has exceeded the unroll memory by a small amount, so we
     // perform one final call to attempt to allocate additional memory if necessary.
@@ -601,7 +598,7 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
           unrollMemoryUsedByThisBlock += amountToRequest
         }
       }
-  
+
       if (keepUnrolling) {
         val entry = entryBuilder.build()
         // Synchronize so that transfer is atomic
@@ -610,11 +607,11 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
           val success = memoryManager.acquireStorageMemory(blockId, entry.size, memoryMode)
           assert(success, "transferring unroll memory to storage memory failed")
         }
-  
+
         entries.synchronized {
           entries.put(blockId, entry)
         }
-  
+
         logInfo("Block %s stored as values in memory (estimated size %s, free %s)".format(blockId,
                                                                                           Utils.bytesToString(entry.size), Utils.bytesToString(maxMemory - blocksMemoryUsed)))
         Right(entry.size)

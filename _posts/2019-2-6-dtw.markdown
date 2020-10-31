@@ -3,13 +3,10 @@ layout: post
 title:  "动态时间规整"
 date:   2019-2-6
 categories: MachineLearning
-tags: Pretreatment Python
+keywords: Pretreatment Python
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 *Dynamic Time Warping(DTW)* 是一种衡量两个时间序列之间的相似度的方法。主要用来解决两个时间序列不“同步”的问题。DTW 使序列在时间维度上非线性地“扭曲”以确定他们的相似度，并且独立于非线性的时间维度变化。
 

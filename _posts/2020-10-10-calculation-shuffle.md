@@ -3,17 +3,12 @@ layout: post
 title:  "Spark源码阅读(二十三)：计算引擎之shuffle"
 date:   2020-10-10
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark shuffle
 mathjax: false
 author: wzx
 ---
 
-- 目录
-{:toc}
-
-
 Spark计算引擎中的shuffle管理器
-
 
 
 
@@ -59,13 +54,13 @@ def apply(loc: BlockManagerId, uncompressedSizes: Array[Long]): MapStatus = {
 
 下面是重要的成员方法
 
-- `getDataFile()`, `getIndexFile()`: 根据shuffle id和map id(实际上案例类转化为了文件名)调用`DiskBlockManager.getFile()`**获取shuffle的数据和索引文件** 
+- `getDataFile()`, `getIndexFile()`: 根据shuffle id和map id(实际上案例类转化为了文件名)调用`DiskBlockManager.getFile()`**获取shuffle的数据和索引文件**
 
   ```scala
   def getDataFile(shuffleId: Int, mapId: Int): File = {
     blockManager.diskBlockManager.getFile(ShuffleDataBlockId(shuffleId, mapId, NOOP_REDUCE_ID))
   }
-  
+
   private def getIndexFile(shuffleId: Int, mapId: Int): File = {
     blockManager.diskBlockManager.getFile(ShuffleIndexBlockId(shuffleId, mapId, NOOP_REDUCE_ID))
   }
@@ -81,7 +76,7 @@ def apply(loc: BlockManagerId, uncompressedSizes: Array[Long]): MapStatus = {
         logWarning(s"Error deleting data ${file.getPath()}")
       }
     }
-  
+
     file = getIndexFile(shuffleId, mapId)
     if (file.exists()) {
       if (!file.delete()) {
@@ -137,7 +132,7 @@ def apply(loc: BlockManagerId, uncompressedSizes: Array[Long]): MapStatus = {
           } {
             out.close()
           }
-  
+
           if (indexFile.exists()) {
             indexFile.delete()
           }
@@ -171,7 +166,7 @@ def apply(loc: BlockManagerId, uncompressedSizes: Array[Long]): MapStatus = {
     // The block is actually going to be a range of a single map output file for this map, so
     // find out the consolidated file, then the offset within that from our index
     val indexFile = getIndexFile(blockId.shuffleId, blockId.mapId)
-  
+
     val channel = Files.newByteChannel(indexFile.toPath)
     channel.position(blockId.reduceId * 8L)
     val in = new DataInputStream(Channels.newInputStream(channel))
@@ -283,7 +278,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
         context, aggregator = None, Some(dep.partitioner), ordering = None, dep.serializer)
     }
     sorter.insertAll(records)
-  
+
     val output = shuffleBlockResolver.getDataFile(dep.shuffleId, mapId)
     val tmp = Utils.tempFileWith(output)
     try {
@@ -366,19 +361,19 @@ private[spark] abstract class ShuffleWriter[K, V] {
     // the disk, and can take a long time in aggregate when we open many files, so should be
     // included in the shuffle write time.
     writeMetrics.incWriteTime(System.nanoTime() - openStartTime);
-  
+
     while (records.hasNext()) {
       final Product2<K, V> record = records.next();
       final K key = record._1();
       partitionWriters[partitioner.getPartition(key)].write(key, record._2());
     }
-  
+
     for (int i = 0; i < numPartitions; i++) {
       final DiskBlockObjectWriter writer = partitionWriters[i];
       partitionWriterSegments[i] = writer.commitAndGet();
       writer.close();
     }
-  
+
     File output = shuffleBlockResolver.getDataFile(shuffleId, mapId);
     File tmp = Utils.tempFileWith(output);
     try {
@@ -408,7 +403,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
       // We were passed an empty iterator
       return lengths;
     }
-  
+
     final FileOutputStream out = new FileOutputStream(outputFile, true);
     final long writeStartTime = System.nanoTime();
     boolean threwException = true;
@@ -514,10 +509,10 @@ private[spark] abstract class ShuffleWriter[K, V] {
     serOutputStream.writeKey(key, OBJECT_CLASS_TAG);
     serOutputStream.writeValue(record._2(), OBJECT_CLASS_TAG);
     serOutputStream.flush();
-  
+
     final int serializedRecordSize = serBuffer.size();
     assert (serializedRecordSize > 0);
-  
+
     sorter.insertRecord(
       serBuffer.getBuf(), Platform.BYTE_ARRAY_OFFSET, serializedRecordSize, partitionId);
   }
@@ -620,7 +615,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
   - 遍历`blocksByAddress`中缓存的按照`BlockManagerId`分组的block id列表
   - 如果`BlockManagerId`所在的executor与当前executor一致，将所有block id放入`localBlocks`列表中
   - 如果不一致，迭代要获取的远端executor上的block id列表，将所有大小大于0的block id放入`remoteBlocks`中，并将block大小累加到`curRequestSize`中，**直到`curRequestSize`大于`maxBytesInFlight`的五分之一，或者当前block大于`maxBlocksInFlightPerAddress`**，将已遍历的block放入一个`FetchRequest`并保存到`remoteRequests`列表中。末尾剩余的block也会放入一个`FetchRequest`并保存到`remoteRequests`列表中
-  
+
   ```scala
   private[this] def splitLocalRemoteBlocks(): ArrayBuffer[FetchRequest] = {
     // Make remote requests at most maxBytesInFlight / 5 in length; the reason to keep them
@@ -629,11 +624,11 @@ private[spark] abstract class ShuffleWriter[K, V] {
     val targetRequestSize = math.max(maxBytesInFlight / 5, 1L)
     logDebug("maxBytesInFlight: " + maxBytesInFlight + ", targetRequestSize: " + targetRequestSize
              + ", maxBlocksInFlightPerAddress: " + maxBlocksInFlightPerAddress)
-  
+
     // Split local and remote blocks. Remote blocks are further split into FetchRequests of size
     // at most maxBytesInFlight in order to limit the amount of data in flight.
     val remoteRequests = new ArrayBuffer[FetchRequest]
-  
+
     for ((address, blockInfos) <- blocksByAddress) {
       if (address.executorId == blockManager.blockManagerId.executorId) {
         blockInfos.find(_._2 <= 0) match {
@@ -682,7 +677,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
     remoteRequests
   }
   ```
-  
+
 - `fetchLocalBlocks()`: **获取本地block**
 
   - 遍历`splitLocalRemoteBlocks()`方法划分的本地block列表`localBlocks`
@@ -726,7 +721,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
   private[this] def initialize(): Unit = {
     // Add a task completion callback (called in both success case and failure case) to cleanup.
     context.addTaskCompletionListener[Unit](_ => cleanup())
-  
+
     // Split local and remote blocks.
     val remoteRequests = splitLocalRemoteBlocks()
     // Add the remote requests into our queue in a random order
@@ -734,13 +729,13 @@ private[spark] abstract class ShuffleWriter[K, V] {
     assert ((0 == reqsInFlight) == (0 == bytesInFlight),
             "expected reqsInFlight = 0 but found reqsInFlight = " + reqsInFlight +
             ", expected bytesInFlight = 0 but found bytesInFlight = " + bytesInFlight)
-  
+
     // Send out initial requests for blocks, up to our maxBytesInFlight
     fetchUpToMaxBytes()
-  
+
     val numFetches = remoteRequests.size - fetchRequests.size
     logInfo("Started " + numFetches + " remote fetches in" + Utils.getUsedTimeMs(startTime))
-  
+
     // Get Local Blocks
     fetchLocalBlocks()
     logDebug("Got local blocks in " + Utils.getUsedTimeMs(startTime))
@@ -752,14 +747,14 @@ private[spark] abstract class ShuffleWriter[K, V] {
 
   ```scala
   override def hasNext: Boolean = numBlocksProcessed < numBlocksToFetch
-  
+
   override def next(): (BlockId, InputStream) = {
     if (!hasNext) {
       throw new NoSuchElementException
     }
-  
+
     numBlocksProcessed += 1
-  
+
     var result: FetchResult = null
     var input: InputStream = null
     // Take the next fetched result and try to decompress it to detect data corruption,
@@ -771,7 +766,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
       result = results.take()
       val stopFetchWait = System.currentTimeMillis()
       shuffleMetrics.incFetchWaitTime(stopFetchWait - startFetchWait)
-  
+
       result match {
         case r @ SuccessFetchResult(blockId, address, size, buf, isNetworkReqDone) =>
         if (address != blockManager.blockManagerId) {
@@ -789,13 +784,13 @@ private[spark] abstract class ShuffleWriter[K, V] {
           reqsInFlight -= 1
           logDebug("Number of requests in flight " + reqsInFlight)
         }
-  
+
         if (buf.size == 0) {
           val msg = s"Received a zero-size buffer for block $blockId from $address " +
           s"(expectedApproxSize = $size, isNetworkReqDone=$isNetworkReqDone)"
           throwFetchFailedException(blockId, address, new IOException(msg))
         }
-  
+
         val in = try {
           buf.createInputStream()
         } catch {
@@ -835,15 +830,15 @@ private[spark] abstract class ShuffleWriter[K, V] {
             in.close()
           }
         }
-  
+
         case FailureFetchResult(blockId, address, e) =>
         throwFetchFailedException(blockId, address, e)
       }
-  
+
       // Send fetch requests up to maxBytesInFlight
       fetchUpToMaxBytes()
     }
-  
+
     currentResult = result.asInstanceOf[SuccessFetchResult]
     (currentResult.blockId, new BufferReleasingInputStream(input, this))
   }
@@ -871,7 +866,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
     - **如果`dep.mapSideCombine`为真，说明value已经被合并过了，value都是聚合过的类型**，使用`Aggregator.combineCombinersByKey()`去聚合
   - **如果`dep.mapSideCombine`为假，说明value没有合并过，value都是原始类型**，使用`Aggregator.combineValuesByKey()`去聚合
   - 如果此依赖定义了排序器，则创建`ExternalSorter`进行排序，封装为`CompletionIterator`并返回
-  
+
   ```scala
   // Aggregator
   def combineValuesByKey(
@@ -891,7 +886,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
     updateMetrics(context, combiners)
     combiners.iterator
   }
-  
+
   override def read(): Iterator[Product2[K, C]] = {
     val wrappedStreams = new ShuffleBlockFetcherIterator(
       context,
@@ -905,9 +900,9 @@ private[spark] abstract class ShuffleWriter[K, V] {
       SparkEnv.get.conf.get(config.REDUCER_MAX_BLOCKS_IN_FLIGHT_PER_ADDRESS),
       SparkEnv.get.conf.get(config.MAX_REMOTE_BLOCK_SIZE_FETCH_TO_MEM),
       SparkEnv.get.conf.getBoolean("spark.shuffle.detectCorrupt", true))
-  
+
     val serializerInstance = dep.serializer.newInstance()
-  
+
     // Create a key/value iterator for each stream
     val recordIter = wrappedStreams.flatMap { case (blockId, wrappedStream) =>
       // Note: the asKeyValueIterator below wraps a key/value iterator inside of a
@@ -915,7 +910,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
       // underlying InputStream when all records have been read.
       serializerInstance.deserializeStream(wrappedStream).asKeyValueIterator
     }
-  
+
     // Update the context task metrics for each record read.
     val readMetrics = context.taskMetrics.createTempShuffleReadMetrics()
     val metricIter = CompletionIterator[(Any, Any), Iterator[(Any, Any)]](
@@ -924,10 +919,10 @@ private[spark] abstract class ShuffleWriter[K, V] {
         record
       },
       context.taskMetrics().mergeShuffleReadMetrics())
-  
+
     // An interruptible iterator must be used here in order to support task cancellation
     val interruptibleIter = new InterruptibleIterator[(Any, Any)](context, metricIter)
-  
+
     val aggregatedIter: Iterator[Product2[K, C]] = if (dep.aggregator.isDefined) {
       if (dep.mapSideCombine) {
         // We are reading values that are already combined
@@ -943,7 +938,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
     } else {
       interruptibleIter.asInstanceOf[Iterator[Product2[K, C]]]
     }
-  
+
     // Sort the output if there is a sort ordering defined.
     val resultIter = dep.keyOrdering match {
       case Some(keyOrd: Ordering[K]) =>
@@ -962,7 +957,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
       case None =>
       aggregatedIter
     }
-  
+
     resultIter match {
       case _: InterruptibleIterator[Product2[K, C]] => resultIter
       case _ =>
@@ -1008,7 +1003,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
     }
   }
   ```
-  
+
 - `unregisterShuffle()`: **注销shuffle id标记的shuffle**。调用`shuffleBlockResolver.removeDataByMap()`删除此Shuffle过程的所有map任务的数据文件和索引文件
 
   ```scala
@@ -1069,7 +1064,7 @@ private[spark] abstract class ShuffleWriter[K, V] {
   }
   ```
 
-  
+
 
 ## 总结
 

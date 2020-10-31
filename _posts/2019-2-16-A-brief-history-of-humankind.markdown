@@ -3,13 +3,10 @@ layout: post
 title:  "从智人到造物主 ——读《人类简史》"
 date:   2019-2-16
 categories: BookReview
-tags: BookReview
+keywords: 人类简史
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 作者以独特的视角讲述了智人这个人种的发展历史，对发展中的问题进行了深刻讨论，并对未来展开了无限遐想与担忧。
 

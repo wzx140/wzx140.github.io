@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(四)：RPC之Transport传输层"
 date:   2020-9-2
 categories: Spark
-tags: Spark SparkCore RPC
+keywords: Spark SparkCore RPC
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 Spark Rpc中的传输层，介绍`TransportContext`, `TransportClientFactory`, `TransportResponseHandler`, `TransportRequestHandler`, `TransportChannelHandler`, `TransportClient`, `TransportServer`
 
@@ -94,7 +90,7 @@ public TransportChannelHandler initializePipeline(
   private static class ClientPool {
     TransportClient[] clients;
   	Object[] locks;
-  
+
     ClientPool(int size) {
       clients = new TransportClient[size];
       locks = new Object[size];
@@ -375,7 +371,7 @@ client.sendRPC(new CloseStream(100))
     if (logger.isDebugEnabled()) {
       logger.debug("Sending fetch chunk request {} to {}", chunkIndex, getRemoteAddress(channel));
     }
-  
+
     StreamChunkId streamChunkId = new StreamChunkId(streamId, chunkIndex);
     StdChannelListener listener = new StdChannelListener(streamChunkId) {
       @Override
@@ -385,7 +381,7 @@ client.sendRPC(new CloseStream(100))
       }
     };
     handler.addFetchRequest(streamChunkId, callback);
-  
+
     channel.writeAndFlush(new ChunkFetchRequest(streamChunkId)).addListener(listener);
   }
   ```
@@ -397,14 +393,14 @@ client.sendRPC(new CloseStream(100))
     if (logger.isTraceEnabled()) {
       logger.trace("Sending RPC to {}", getRemoteAddress(channel));
     }
-  
+
     long requestId = requestId();
     handler.addRpcRequest(requestId, callback);
-  
+
     RpcChannelListener listener = new RpcChannelListener(requestId, callback);
     channel.writeAndFlush(new RpcRequest(requestId, new NioManagedBuffer(message)))
       .addListener(listener);
-  
+
     return requestId;
   }
   ```

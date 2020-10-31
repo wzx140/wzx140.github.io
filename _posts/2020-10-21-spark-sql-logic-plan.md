@@ -1,17 +1,14 @@
 ---
 layout: post
-title:  "Spark源码阅读(二十八)——SparkSQL之unresolved逻辑计划"
+title:  "Spark源码阅读(二十八): SparkSQL之unresolved逻辑计划"
 date:   2020-10-21
 categories: Spark
-tags: Spark  SparkSQL
+keywords: Spark 逻辑计划
 mathjax: false
 author: wzx
 ---
 
-- 目录
-{:toc}
-
-SQL语句经由ANTLR4解析树转换为未解析的逻辑算子树，逻辑计划本质上是一种中间过程表示，与Spark平台无关， 后续阶段会进一步解析占位符并映射为可执行的物理计划 
+SQL语句经由ANTLR4解析树转换为未解析的逻辑算子树，逻辑计划本质上是一种中间过程表示，与Spark平台无关， 后续阶段会进一步解析占位符并映射为可执行的物理计划
 
 
 

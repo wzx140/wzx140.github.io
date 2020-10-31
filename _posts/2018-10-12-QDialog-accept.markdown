@@ -3,13 +3,10 @@ layout: post
 title:  "QDialog中accept的问题"
 date:   2018-10-12
 categories: Others
-tags: QT C++
+keywords: QT
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 要学好QT：
 * C++基本语法一定要扎实啊，建议先看*c++ primer plus*这本书，有能力的可以看看英文的
@@ -20,7 +17,7 @@ author: wzx
 
 
 
-### 问题
+## 问题
 1. 在`QDialog`里放入一个`Push Button`，关联`pushButton`的`clicked()``信号和`QDialog`的`accept()`槽。
 2. 代码
 
@@ -50,5 +47,5 @@ int main(int argc, char *argv[])
 
 点击按钮之后明明只是QDialog只是隐藏，`exec()`为什么会返回参数呢？
 
-### 解决
+## 解决
 原来只要hide QDialog就会exec()停止阻塞并返回参数。可以参考[QDialog在hide()之后，就被销毁的原因](https://blog.csdn.net/lengyuezuixue/article/details/81012763)

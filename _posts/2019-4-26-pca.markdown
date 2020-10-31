@@ -3,13 +3,10 @@ layout: post
 title:  "浅谈主成分分析与奇异值分解"
 date:   2019-4-25
 categories: MachineLearning
-tags: PCA SVD
+keywords: PCA SVD
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 主成分分析(PCA)是针对多元数据的一种分析方法，对多元数据进行降纬。奇异值分解(SVD)主要用于估计矩阵的秩，由于其迭代算法比本征值分解更快更精确，所以奇异值分解是进行主成分分析的主要工具
 

@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(十七)：调度系统之task调度"
 date:   2020-9-15 9:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中的`TaskSchedulerImpl`及其依赖的组件
 
@@ -52,7 +48,7 @@ author: wzx
       true
     }
   }
-  
+
   def enqueueSuccessfulTask(
     taskSetManager: TaskSetManager,
     tid: Long,
@@ -100,7 +96,7 @@ author: wzx
             sparkEnv.blockManager.master.removeBlock(blockId)
             (deserializedResult, size)
           }
-  
+
           // Set the task result size in the accumulator updates received from the executors.
           // We need to do this here on the driver because if we did this on the executors then
           // we would have to serialize the result again after updating the size.
@@ -114,7 +110,7 @@ author: wzx
               a
             }
           }
-  
+
           scheduler.handleSuccessfulTask(taskSetManager, tid, result)
         } catch {
           case cnf: ClassNotFoundException =>
@@ -250,14 +246,14 @@ author: wzx
   override def receive: PartialFunction[Any, Unit] = {
     case ReviveOffers =>
     reviveOffers()
-  
+
     case StatusUpdate(taskId, state, serializedData) =>
     scheduler.statusUpdate(taskId, state, serializedData)
     if (TaskState.isFinished(state)) {
       freeCores += scheduler.CPUS_PER_TASK
       reviveOffers()
     }
-  
+
     case KillTask(taskId, interruptThread, reason) =>
     executor.killTask(taskId, interruptThread, reason)
   }
@@ -358,7 +354,7 @@ author: wzx
   ```scala
   override def start() {
     backend.start()
-  
+
     if (!isLocal && conf.getBoolean("spark.speculation", false)) {
       logInfo("Starting speculative execution thread")
       speculationScheduler.scheduleWithFixedDelay(new Runnable {
@@ -398,7 +394,7 @@ author: wzx
     maxTaskFailures: Int): TaskSetManager = {
     new TaskSetManager(this, taskSet, maxTaskFailures, blacklistTrackerOpt)
   }
-  
+
   override def submitTasks(taskSet: TaskSet) {
     val tasks = taskSet.tasks
     logInfo("Adding task set " + taskSet.id + " with " + tasks.length + " tasks")
@@ -407,13 +403,13 @@ author: wzx
       val stage = taskSet.stageId
       val stageTaskSets =
       taskSetsByStageIdAndAttempt.getOrElseUpdate(stage, new HashMap[Int, TaskSetManager])
-  
+
       stageTaskSets.foreach { case (_, ts) =>
         ts.isZombie = true
       }
       stageTaskSets(taskSet.stageAttemptId) = manager
       schedulableBuilder.addTaskSetManager(manager, manager.taskSet.properties)
-  
+
       if (!isLocal && !hasReceivedTask) {
         starvationTimer.scheduleAtFixedRate(new TimerTask() {
           override def run() {
@@ -492,12 +488,12 @@ author: wzx
   - 调用`rootPool.getSortedTaskSetQueue()`获取**按照调度算法排序好**的调度池中的所有`TaskSetManager`
   - 遍历之前排序好的`TaskSetManager`，跳过屏障调度的`TaskSetManager`并且资源不够执行的`TaskSetManager`。**按其允许的本地性等级(即`TaskSetManager.myLocalityLevels`属性)从高到低**作为参数，调用`resourceOfferSingleTaskSet()`给每个`TaskSetManager`分配资源。如果没有给任何task分配资源则做失败处理，如果使用了屏障调度并且并没有给所有task都分配资源则抛出异常并终止
   - 标记`hasLaunchedTask`已执行task并返回获得资源的task列表
-  
+
   ```scala
   protected def shuffleOffers(offers: IndexedSeq[WorkerOffer]): IndexedSeq[WorkerOffer] = {
     Random.shuffle(offers)
   }
-  
+
   def resourceOffers(offers: IndexedSeq[WorkerOffer]): Seq[Seq[TaskDescription]] = synchronized {
     var newExecAvail = false
     for (o <- offers) {
@@ -515,16 +511,16 @@ author: wzx
         hostsByRack.getOrElseUpdate(rack, new HashSet[String]()) += o.host
       }
     }
-  
+
     blacklistTrackerOpt.foreach(_.applyBlacklistTimeout())
-  
+
     val filteredOffers = blacklistTrackerOpt.map { blacklistTracker =>
       offers.filter { offer =>
         !blacklistTracker.isNodeBlacklisted(offer.host) &&
         !blacklistTracker.isExecutorBlacklisted(offer.executorId)
       }
     }.getOrElse(offers)
-  
+
     val shuffledOffers = shuffleOffers(filteredOffers)
     // Build a list of tasks to assign to each worker.
     val tasks = shuffledOffers.map(o => new ArrayBuffer[TaskDescription](o.cores / CPUS_PER_TASK))
@@ -537,7 +533,7 @@ author: wzx
         taskSet.executorAdded()
       }
     }
-  
+
     for (taskSet <- sortedTaskSets) {
       val availableSlots = availableCpus.map(c => c / CPUS_PER_TASK).sum
       if (taskSet.isBarrier && availableSlots < taskSet.numTasks) {
@@ -556,14 +552,14 @@ author: wzx
             launchedAnyTask |= launchedTaskAtCurrentMaxLocality
           } while (launchedTaskAtCurrentMaxLocality)
         }
-  
+
         if (!launchedAnyTask) {
           taskSet.getCompletelyBlacklistedTaskIfAny(hostToExecutors).foreach { taskIndex =>
             executorIdToRunningTaskIds.find(x => !isExecutorBusy(x._1)) match {
               case Some ((executorId, _)) =>
               if (!unschedulableTaskSetToExpiryTime.contains(taskSet)) {
                 blacklistTrackerOpt.foreach(blt => blt.killBlacklistedIdleExecutor(executorId))
-  
+
                 val timeout = conf.get(config.UNSCHEDULABLE_TASKSET_TIMEOUT) * 1000
                 unschedulableTaskSetToExpiryTime(taskSet) = clock.getTimeMillis() + timeout
                 logInfo(s"Waiting for $timeout ms for completely "
@@ -584,7 +580,7 @@ author: wzx
             unschedulableTaskSetToExpiryTime.clear()
           }
         }
-  
+
         if (launchedAnyTask && taskSet.isBarrier) {
           if (addressesWithDescs.size != taskSet.numTasks) {
             val errorMsg =
@@ -598,10 +594,10 @@ author: wzx
             taskSet.abort(errorMsg)
             throw new SparkException(errorMsg)
           }
-  
+
           // materialize the barrier coordinator.
           maybeInitBarrierCoordinator()
-  
+
           // Update the taskInfos into all the barrier task properties.
           val addressesStr = addressesWithDescs
           // Addresses ordered by partitionId
@@ -609,13 +605,13 @@ author: wzx
           .map(_._1)
           .mkString(",")
           addressesWithDescs.foreach(_._2.properties.setProperty("addresses", addressesStr))
-  
+
           logInfo(s"Successfully scheduled all the ${addressesWithDescs.size} tasks for barrier " +
                   s"stage ${taskSet.stageId}.")
         }
       }
     }
-  
+
     if (tasks.size > 0) {
       hasLaunchedTask = true
     }

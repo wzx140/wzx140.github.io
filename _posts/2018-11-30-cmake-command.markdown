@@ -3,13 +3,10 @@ layout: post
 title:  "CMAKE常用指令"
 date:   2018-11-30
 categories: Others
-tags: CMake C++
+keywords: CMake
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 *CMake* 包含许多指令可以方便构建
 

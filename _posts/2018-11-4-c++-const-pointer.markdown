@@ -3,13 +3,10 @@ layout: post
 title:  "Pointer and const"
 date:   2018-11-4
 categories: Others
-tags: C++ Pointer
+keywords: C++ Pointer
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 将const用于指针总能产生一些神奇的效果
 

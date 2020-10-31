@@ -3,14 +3,10 @@ layout: post
 title:  "HDFS原理解析"
 date:   2020-2-25
 categories: 大数据理论与架构
-tags: Distribution Hadoop HDFS
+keywords: Distribution Hadoop HDFS
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 HDFS是一个**高容错**，**大文件存储**，**高吞吐量**的**分布式文件系统**
 

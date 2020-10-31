@@ -3,13 +3,10 @@ layout: post
 title:  "二分查找算法分析"
 date:   2020-3-3
 categories: 算法和数据结构
-tags: DataStructure BinarySearch
+keywords: DataStructure BinarySearch
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 从**搜索区间，终止条件和搜索策略**三个方面分析二分查找算法，目标查找和上下边界的查找。
 

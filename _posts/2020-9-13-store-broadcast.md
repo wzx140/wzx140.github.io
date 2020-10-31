@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(十二)：存储体系之Broadcast"
 date:   2020-9-13
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中的广播实现方式
 
@@ -62,7 +58,7 @@ author: wzx
   def newBroadcast[T: ClassTag](value_ : T, isLocal: Boolean): Broadcast[T] = {
     broadcastFactory.newBroadcast[T](value_, isLocal, nextBroadcastId.getAndIncrement())
   }
-  
+
   // TorrentBroadcastFactory
   override def newBroadcast[T: ClassTag](value_ : T, isLocal: Boolean, id: Long): Broadcast[T] = {
     new TorrentBroadcast[T](value_, id)
@@ -75,7 +71,7 @@ author: wzx
   def unbroadcast(id: Long, removeFromDriver: Boolean, blocking: Boolean) {
     broadcastFactory.unbroadcast(id, removeFromDriver, blocking)
   }
-  
+
   // TorrentBroadcastFactory
   override def unbroadcast(id: Long, removeFromDriver: Boolean, blocking: Boolean) {
     TorrentBroadcast.unpersist(id, removeFromDriver, blocking)
@@ -155,7 +151,7 @@ author: wzx
   private def readBroadcastBlock(): T = Utils.tryOrIOException {
     TorrentBroadcast.synchronized {
       val broadcastCache = SparkEnv.get.broadcastManager.cachedValues
-  
+
       Option(broadcastCache.get(broadcastId)).map(_.asInstanceOf[T]).getOrElse {
         setConf(SparkEnv.get.conf)
         val blockManager = SparkEnv.get.blockManager
@@ -164,11 +160,11 @@ author: wzx
           if (blockResult.data.hasNext) {
             val x = blockResult.data.next().asInstanceOf[T]
             releaseLock(broadcastId)
-  
+
             if (x != null) {
               broadcastCache.put(broadcastId, x)
             }
-  
+
             x
           } else {
             throw new SparkException(s"Failed to get locally stored broadcast data: $broadcastId")
@@ -178,7 +174,7 @@ author: wzx
           val startTimeMs = System.currentTimeMillis()
           val blocks = readBlocks()
           logInfo("Reading broadcast variable " + id + " took" + Utils.getUsedTimeMs(startTimeMs))
-  
+
           try {
             val obj = TorrentBroadcast.unBlockifyObject[T](
               blocks.map(_.toInputStream()), SparkEnv.get.serializer, compressionCodec)
@@ -188,11 +184,11 @@ author: wzx
             if (!blockManager.putSingle(broadcastId, obj, storageLevel, tellMaster = false)) {
               throw new SparkException(s"Failed to store $broadcastId in BlockManager")
             }
-  
+
             if (obj != null) {
               broadcastCache.put(broadcastId, obj)
             }
-  
+
             obj
           } finally {
             blocks.foreach(_.dispose())
@@ -216,7 +212,7 @@ author: wzx
     // to the driver, so other executors can pull these chunks from this executor as well.
     val blocks = new Array[BlockData](numBlocks)
     val bm = SparkEnv.get.blockManager
-  
+
     for (pid <- Random.shuffle(Seq.range(0, numBlocks))) {
       val pieceId = BroadcastBlockId(id, "piece" + pid)
       logDebug(s"Reading piece $pieceId of $broadcastId")

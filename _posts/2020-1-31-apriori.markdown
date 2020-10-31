@@ -3,13 +3,10 @@ layout: post
 title:  "基于Spark的Apriori算法"
 date:   2020-1-31
 categories: Spark
-tags: Distribution Spark Apriori
+keywords: Spark Apriori
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 用`Spark`实现了频繁项集挖掘算法，记录自己实践中的思考
 

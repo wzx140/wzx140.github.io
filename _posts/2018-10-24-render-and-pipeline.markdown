@@ -3,13 +3,10 @@ layout: post
 title:  "VTK的渲染引擎和可视化管线"
 date:   2018-10-24
 categories: VTK
-tags: VTK
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 **Rendering Engine**(渲染引擎)负责数据的可视化表达。**Visualization Pipeline**(可视化管线)用于获取或创建数据，处理数据，把数据传递给 *Writer*（写入文件）或 *Rendering Engine* 进行显示
 

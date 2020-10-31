@@ -3,13 +3,10 @@ layout: post
 title:  "VTK之Marching Cubes算法"
 date:   2018-10-22
 categories: VTK
-tags: C++ VTK
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 **Marching Cubes**算法用于在三维离散数据场中提取等值面。
 

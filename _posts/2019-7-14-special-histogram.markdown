@@ -3,13 +3,10 @@ layout: post
 title:  "特殊直方图处理"
 date:   2019-7-14
 categories: Others
-tags: OpenCV Histogram Python
+keywords: OpenCV Histogram Python
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 如前文所述，[直方图均衡]({% post_url 2019-7-10-histogram-equalization %})能自动的确定变换函数，使图像的颜色分布更均匀。但有时这种图像增强并不是我们想要的，我们就可以运用特殊的直方图处理技术，直方图规定化，[AHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization)，[CLAHE](https://en.wikipedia.org/wiki/Adaptive_histogram_equalization#Contrast_Limited_AHE)
 

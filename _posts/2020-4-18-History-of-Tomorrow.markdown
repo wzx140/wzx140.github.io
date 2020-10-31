@@ -3,17 +3,12 @@ layout: post
 title:  "上帝已死，邪恶的时代 ——读《未来简史》"
 date:   2020-4-18
 categories: BookReview
-tags: BookReview
+keywords: 未来简史
 mathjax: false
 author: wzx
 ---
 
-- 目录
-{:toc}
-
-对书中的内容感触颇深，记录一些自己荒诞的感悟。
-
-未来，可能正如进化论对于教徒，这是一个我不想去接受的时代。
+对书中的内容感触颇深，记录一些自己荒诞的感悟。未来，可能正如进化论对于教徒，这是一个我不想去接受的时代。
 
 
 

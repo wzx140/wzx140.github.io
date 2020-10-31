@@ -3,13 +3,10 @@ layout: post
 title:  "每个人都该有经济学思维 ——读《薛兆丰经济学讲义》"
 date:   2019-3-17
 categories: BookReview
-tags: BookReview
+keywords: 薛兆丰经济学讲义
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 经济学思维展示了一种理性的，洞悉事物本质的，全面的思考方式。从这本书中，所得到的经济学知识是有限的，但如果能了解生活中的经济学原理，建立经济学思维，对个人的发展将是有益的。
 

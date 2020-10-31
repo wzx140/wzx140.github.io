@@ -3,12 +3,10 @@ layout: post
 title:  "QT Creator与CMake开发环境搭建"
 date:   2018-10-17
 categories: Others
-tags: QT CMake QT-Creator
+keywords: QT CMake QT-Creator
 mathjax: false
 author: wzx
 ---
-- 目录
-{:toc}
 
 *qmake* 是为 *Qt* 量身打造的，如果只是开发**轻量级**的qt应用程序，使用起来非常方便。*cmake* 虽然使用上不如*qmake*简单直接，但复杂换来的是强大的功能
 

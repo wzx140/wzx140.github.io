@@ -3,13 +3,10 @@ layout: post
 title:  "线性表检索与静态索引检索"
 date:   2019-12-13
 categories: 算法和数据结构
-tags: DataStructure Search Static_index
+keywords: DataStructure Search Static_index
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 线性表检索与静态索引检索的实现与比较
 

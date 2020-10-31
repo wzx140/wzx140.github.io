@@ -3,14 +3,10 @@ layout: post
 title:  "Spark源码阅读(十五)：调度系统之stage调度"
 date:   2020-9-14 10:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
-
 
 介绍Spark中的stage切分和调度
 
@@ -177,7 +173,7 @@ override def findMissingPartitions(): Seq[Int] = {
 表示**已经激活的Job**，即被`DAGScheduler`接收处理的Job。有以下重要属性
 
 - `jobId`
-- `finalStage`: Job的最下游`Stage` 
+- `finalStage`: Job的最下游`Stage`
 - `callSite`: 应用程序调用栈
 - `listener`: 监听当前Job的`JobListener`
 - `properties`
@@ -291,7 +287,7 @@ override def findMissingPartitions(): Seq[Int] = {
   def getPreferredLocs(rdd: RDD[_], partition: Int): Seq[TaskLocation] = {
     getPreferredLocsInternal(rdd, partition, new HashSet)
   }
-  
+
   private def getPreferredLocsInternal(
     rdd: RDD[_],
     partition: Int,
@@ -312,7 +308,7 @@ override def findMissingPartitions(): Seq[Int] = {
     if (rddPrefs.nonEmpty) {
       return rddPrefs.map(TaskLocation(_))
     }
-  
+
     // If the RDD has narrow dependencies, pick the first partition of the first narrow dependency
     // that has any placement preferences. Ideally we would choose based on transfer sizes,
     // but this will do for now.
@@ -324,10 +320,10 @@ override def findMissingPartitions(): Seq[Int] = {
           return locs
         }
       }
-  
+
       case _ =>
     }
-  
+
     Nil
   }
   ```
@@ -397,7 +393,7 @@ override def findMissingPartitions(): Seq[Int] = {
   - 根据当前`ShuffleDependency`找到注册在`shuffleIdToMapStage`的`ShuffleMapStage`并返回
   - 如果没有，则调用`getMissingAncestorShuffleDependencies()`找到所有还未注册(同时也未创建过`ShuffleMapStage`)的`ShuffleMapStage`的祖先`ShuffleDependency`，调用`createShuffleMapStage()`创建并注册这些祖先`ShuffleDependency`和当前`ShuffleDependency`的`ShuffleMapStage`
   - **这个方法存在递归调用，具体看`createShuffleMapStage()`中的分析**
-  
+
   ```scala
   private def getOrCreateShuffleMapStage(
     shuffleDep: ShuffleDependency[_, _, _],
@@ -405,7 +401,7 @@ override def findMissingPartitions(): Seq[Int] = {
     shuffleIdToMapStage.get(shuffleDep.shuffleId) match {
       case Some(stage) =>
       stage
-  
+
       case None =>
       // Create stages for all missing ancestor shuffle dependencies.
       getMissingAncestorShuffleDependencies(shuffleDep.rdd).foreach { dep =>
@@ -429,7 +425,7 @@ override def findMissingPartitions(): Seq[Int] = {
 	<img src="{{ site.url }}/assets/img/2020-9-14-4.png" style="zoom: 33%;" />
 
 	- 从当前RDD(绿色)开始，调用`getShuffleDependencies()`获取该RDD的所有直接`ShuffleDependency`(橙色)
-	- 调用`getOrCreateShuffleMapStage()`，里面首先调用`getMissingAncestorShuffleDependencies()`从橙色的依赖开始找到祖先`ShuffleDependency`(红色)，再由所有这些依赖创建`ShuffleMapStage` 
+	- 调用`getOrCreateShuffleMapStage()`，里面首先调用`getMissingAncestorShuffleDependencies()`从橙色的依赖开始找到祖先`ShuffleDependency`(红色)，再由所有这些依赖创建`ShuffleMapStage`
 	- **这个方法存在递归调用，具体看`createShuffleMapStage()`中的分析**
 
 	```scala
@@ -458,11 +454,11 @@ override def findMissingPartitions(): Seq[Int] = {
     val id = nextStageId.getAndIncrement()
     val stage = new ShuffleMapStage(
       id, rdd, numTasks, parents, jobId, rdd.creationSite, shuffleDep, mapOutputTracker)
-  
+
     stageIdToStage(id) = stage
     shuffleIdToMapStage(shuffleDep.shuffleId) = stage
     updateJobIdStageIdMaps(jobId, stage)
-  
+
     if (!mapOutputTracker.containsShuffle(shuffleDep.shuffleId)) {
       // Kind of ugly: need to register RDDs with the cache and map output tracker here
       // since we can't do it in the RDD constructor because # of partitions is unknown
@@ -537,7 +533,7 @@ override def findMissingPartitions(): Seq[Int] = {
   }
   ```
 
-  
+
 
 下面介绍提交job以及stage提交有关的方法
 
@@ -562,13 +558,13 @@ override def findMissingPartitions(): Seq[Int] = {
         "Attempting to access a non-existent partition: " + p + ". " +
         "Total number of partitions: " + maxPartitions)
     }
-  
+
     val jobId = nextJobId.getAndIncrement()
     if (partitions.size == 0) {
       // Return immediately if the job is running 0 tasks
       return new JobWaiter[U](this, jobId, 0, resultHandler)
     }
-  
+
     assert(partitions.size > 0)
     val func2 = func.asInstanceOf[(TaskContext, Iterator[_]) => _]
     val waiter = new JobWaiter(this, jobId, partitions.size, resultHandler)
@@ -591,7 +587,7 @@ override def findMissingPartitions(): Seq[Int] = {
   - 创建并注册`ActiveJob`并清空`cacheLocs`
   - 获取当前Job的所有`Stage`对应的`StageInfo`(不只是当前的`Stage`，由于调用了`createResultStage()`，所以还包括依赖的父`Stage`)，并向`LiveListenerBus`投递`SparkListenerJobStart`事件，进而引发所有关注此事件的监听器执行相应的操作
   - 调用`submitStage()`提交当前`Stage`
-  
+
   ```scala
   private[scheduler] def handleJobSubmitted(jobId: Int,
                                             finalRDD: RDD[_],
@@ -627,7 +623,7 @@ override def findMissingPartitions(): Seq[Int] = {
         listener.jobFailed(e)
         return
       }
-  
+
       case e: Exception =>
       logWarning("Creating new stage failed due to exception - job: " + jobId, e)
       listener.jobFailed(e)
@@ -635,7 +631,7 @@ override def findMissingPartitions(): Seq[Int] = {
     }
     // Job submitted, clear internal data.
     barrierJobIdToNumTasksCheckFailures.remove(jobId)
-  
+
     val job = new ActiveJob(jobId, finalStage, callSite, listener, properties)
     clearCacheLocs()
     logInfo("Got job %s (%s) with %d output partitions".format(
@@ -643,7 +639,7 @@ override def findMissingPartitions(): Seq[Int] = {
     logInfo("Final stage: " + finalStage + " (" + finalStage.name + ")")
     logInfo("Parents of final stage: " + finalStage.parents)
     logInfo("Missing parents: " + getMissingParentStages(finalStage))
-  
+
     val jobSubmissionTime = clock.getTimeMillis()
     jobIdToActiveJob(jobId) = job
     activeJobs += job
@@ -698,18 +694,18 @@ override def findMissingPartitions(): Seq[Int] = {
   - 如果当前`Stage`是`ShuffleMapStage`，则为`ShuffleMapStage`的每一个待计算partition创建一个`ShuffleMapTask`。如果当前`Stage`是`ResultStage`，则为`ResultStage`的每一个待计算partition创建一个`ResultTask`
   - 如果在上一个步骤中创建了`Task`，则为刚创建的那批`Task`创建`TaskSet`，并**调用`TaskScheduler.submitTasks()`方法提交此`TaskSet`**
   - 如果没有创建`Task`，则标记当前`Stage`已经完成，并调用`submitWaitingChildStages()`提交子stage
-  
+
   ```scala
   private def submitMissingTasks(stage: Stage, jobId: Int) {
     logDebug("submitMissingTasks(" + stage + ")")
-  
+
     // First figure out the indexes of partition ids to compute.
     val partitionsToCompute: Seq[Int] = stage.findMissingPartitions()
-  
+
     // Use the scheduling pool, job group, description, etc. from an ActiveJob associated
     // with this Stage
     val properties = jobIdToActiveJob(jobId).properties
-  
+
     runningStages += stage
     // SparkListenerStageSubmitted should be posted before testing whether tasks are
     // serializable. If tasks are not serializable, a SparkListenerStageCompleted event
@@ -741,9 +737,9 @@ override def findMissingPartitions(): Seq[Int] = {
       runningStages -= stage
       return
     }
-  
+
     stage.makeNewStageAttempt(partitionsToCompute.size, taskIdToLocations.values.toSeq)
-  
+
     // If there are tasks to execute, record the submission time of the stage. Otherwise,
     // post the even without the submission time, which indicates that this stage was
     // skipped.
@@ -751,7 +747,7 @@ override def findMissingPartitions(): Seq[Int] = {
       stage.latestInfo.submissionTime = Some(clock.getTimeMillis())
     }
     listenerBus.post(SparkListenerStageSubmitted(stage.latestInfo, properties))
-  
+
     var taskBinary: Broadcast[Array[Byte]] = null
     var partitions: Array[Partition] = null
     try {
@@ -769,27 +765,27 @@ override def findMissingPartitions(): Seq[Int] = {
           case stage: ResultStage =>
           JavaUtils.bufferToArray(closureSerializer.serialize((stage.rdd, stage.func): AnyRef))
         }
-  
+
         partitions = stage.rdd.partitions
       }
-  
+
       taskBinary = sc.broadcast(taskBinaryBytes)
     } catch {
       // In the case of a failure during serialization, abort the stage.
       case e: NotSerializableException =>
       abortStage(stage, "Task not serializable: " + e.toString, Some(e))
       runningStages -= stage
-  
+
       // Abort execution
       return
       case e: Throwable =>
       abortStage(stage, s"Task serialization failed: $e\n${Utils.exceptionString(e)}", Some(e))
       runningStages -= stage
-  
+
       // Abort execution
       return
     }
-  
+
     val tasks: Seq[Task[_]] = try {
       val serializedTaskMetrics = closureSerializer.serialize(stage.latestInfo.taskMetrics).array()
       stage match {
@@ -801,7 +797,7 @@ override def findMissingPartitions(): Seq[Int] = {
           stage.pendingPartitions += id
           new ShuffleMapTask(stage.id, stage.latestInfo.attemptNumber, taskBinary, part, locs, properties, serializedTaskMetrics, Option(jobId), Option(sc.applicationId), sc.applicationAttemptId, stage.rdd.isBarrier())
         }
-  
+
         case stage: ResultStage =>
         partitionsToCompute.map { id =>
           val p: Int = stage.partitions(id)
@@ -816,7 +812,7 @@ override def findMissingPartitions(): Seq[Int] = {
       runningStages -= stage
       return
     }
-  
+
     if (tasks.size > 0) {
       logInfo(s"Submitting ${tasks.size} missing tasks from $stage (${stage.rdd}) (first 15 " +
               s"tasks are for partitions ${tasks.take(15).map(_.partitionId)})")
@@ -826,7 +822,7 @@ override def findMissingPartitions(): Seq[Int] = {
       // Because we posted SparkListenerStageSubmitted earlier, we should mark
       // the stage as completed here in case there are no tasks to run
       markStageAsFinished(stage, None)
-  
+
       stage match {
         case stage: ShuffleMapStage =>
         logDebug(s"Stage ${stage} is actually done; " +
@@ -841,7 +837,7 @@ override def findMissingPartitions(): Seq[Int] = {
     }
   }
   ```
-  
+
 - `submitWaitingChildStages()`: **从`waitingStages`中取出`Stage`并通过`submitStage()`提交**
 
   ```scala
@@ -877,7 +873,7 @@ override def findMissingPartitions(): Seq[Int] = {
   ```
 
 - `handleTaskCompletion()`: 标记当前task已经完成，然后做以下操作
-  
+
   - 如果是`ResultTask`，如果所有`ResultTask`都执行成功，则标记`ResultStage`为成功，并调用`JobWaiter.resultHandler()`回调函数来处理Job中每个Task的执行结果
   - 如果是`ShuffleMapTask`，调用`MapOutputTrackerMaster.registerMapOutput()`将完成信息注册。如果所有partition都执行完了，则判断`shuffleStage.isAvailable`并进行失败重试，否则标记stage成功并调用`submitWaitingChildStages()`方法处理子stage
 

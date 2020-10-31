@@ -3,13 +3,10 @@ layout: post
 title:  "Hadoop MapReduce原理解析"
 date:   2020-2-27
 categories: 大数据理论与架构
-tags: Distribution Hadoop MapReduce
+keywords: Distribution Hadoop MapReduce
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 MapReduce编程模型实现了并行化，高容错的方式来处理大规模计算
 

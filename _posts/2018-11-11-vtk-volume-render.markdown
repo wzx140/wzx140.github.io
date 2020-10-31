@@ -3,13 +3,10 @@ layout: post
 title:  "VTK之体绘制渲染管线"
 date:   2018-11-11
 categories: VTK
-tags: VTK C++ volume
+keywords: VTK
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 VTK中体绘制与几何渲染相似，有体绘制管线和渲染引擎
 ![]({{ site.url }}/assets/img/2018-11-11-1.png)

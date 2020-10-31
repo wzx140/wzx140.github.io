@@ -3,13 +3,10 @@ layout: post
 title:  "Spark源码阅读(二十二)：计算引擎之排序器"
 date:   2020-9-28 9:00
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 Spark计算引擎中的排序器
 
@@ -156,7 +153,7 @@ Spark计算引擎中的排序器
   ```scala
   def insertAll(records: Iterator[Product2[K, V]]): Unit = {
     val shouldCombine = aggregator.isDefined
-  
+
     if (shouldCombine) {
       // Combine values in-memory first using our AppendOnlyMap
       val mergeValue = aggregator.get.mergeValue
@@ -181,7 +178,7 @@ Spark计算引擎中的排序器
       }
     }
   }
-  
+
   private def getPartition(key: K): Int = {
     if (shouldPartition) partitioner.get.getPartition(key) else 0
   }
@@ -207,7 +204,7 @@ Spark计算引擎中的排序器
         buffer = new PartitionedPairBuffer[K, C]
       }
     }
-  
+
     if (estimatedSize > _peakMemoryUsedBytes) {
       _peakMemoryUsedBytes = estimatedSize
     }
@@ -229,26 +226,26 @@ Spark计算引擎中的排序器
     val spillFile = spillMemoryIteratorToDisk(inMemoryIterator)
     spills += spillFile
   }
-  
+
   private[this] def spillMemoryIteratorToDisk(inMemoryIterator: WritablePartitionedIterator)
   : SpilledFile = {
     // Because these files may be read during shuffle, their compression must be controlled by
     // spark.shuffle.compress instead of spark.shuffle.spill.compress, so we need to use
     // createTempShuffleBlock here; see SPARK-3426 for more context.
     val (blockId, file) = diskBlockManager.createTempShuffleBlock()
-  
+
     // These variables are reset after each flush
     var objectsWritten: Long = 0
     val spillMetrics: ShuffleWriteMetrics = new ShuffleWriteMetrics
     val writer: DiskBlockObjectWriter =
     blockManager.getDiskWriter(blockId, file, serInstance, fileBufferSize, spillMetrics)
-  
+
     // List of batch sizes (bytes) in the order they are written to disk
     val batchSizes = new ArrayBuffer[Long]
-  
+
     // How many elements we have in each partition
     val elementsPerPartition = new Array[Long](numPartitions)
-  
+
     // Flush the disk writer's contents to disk, and update relevant variables.
     // The writer is committed at the end of this process.
     def flush(): Unit = {
@@ -257,7 +254,7 @@ Spark计算引擎中的排序器
       _diskBytesSpilled += segment.length
       objectsWritten = 0
     }
-  
+
     var success = false
     try {
       while (inMemoryIterator.hasNext) {
@@ -267,7 +264,7 @@ Spark计算引擎中的排序器
         inMemoryIterator.writeNext(writer)
         elementsPerPartition(partitionId) += 1
         objectsWritten += 1
-  
+
         if (objectsWritten == serializerBatchSize) {
           flush()
         }
@@ -292,7 +289,7 @@ Spark计算引擎中的排序器
         }
       }
     }
-  
+
     SpilledFile(file, blockId, batchSizes.toArray, elementsPerPartition)
   }
   ```
@@ -301,7 +298,7 @@ Spark计算引擎中的排序器
 
   - 每个`IteratorForPartition`都使用了相同的数据源，但是仍然能区分出当前partition的数据
   - 外层迭代器是按照partition顺序返回的`IteratorForPartition`迭代器，所以内层数据源迭代器`data`总是按照partition顺序遍历的
-  
+
   ```scala
   private def groupByPartition(data: Iterator[((Int, K), C)])
   : Iterator[(Int, Iterator[Product2[K, C]])] =
@@ -310,12 +307,12 @@ Spark计算引擎中的排序器
     val buffered = data.buffered
     (0 until numPartitions).iterator.map(p => (p, new IteratorForPartition(p, buffered)))
   }
-  
+
   private[this] class IteratorForPartition(partitionId: Int, data: BufferedIterator[((Int, K), C)])
   extends Iterator[Product2[K, C]]
   {
     override def hasNext: Boolean = data.hasNext && data.head._1._1 == partitionId
-  
+
     override def next(): Product2[K, C] = {
       if (!hasNext) {
         throw new NoSuchElementException
@@ -325,7 +322,7 @@ Spark计算引擎中的排序器
     }
   }
   ```
-  
+
 - `partitionedIterator()`: **将集合(内存中的和溢出文件中的)进行聚合排序，并且调用`groupByPartition()`按照partition id分组生成嵌套迭代器**
 
   - 由是否使用聚合函数来确定当前使用的数据结构
@@ -355,7 +352,7 @@ Spark计算引擎中的排序器
         collection.partitionedDestructiveSortedIterator(comparator)))
     }
   }
-  
+
   def destructiveIterator(memoryIterator: Iterator[((Int, K), C)]): Iterator[((Int, K), C)] = {
     if (isShuffleSort) {
       memoryIterator
@@ -364,7 +361,7 @@ Spark计算引擎中的排序器
       readingIterator
     }
   }
-  
+
   private def merge(spills: Seq[SpilledFile], inMemory: Iterator[((Int, K), C)])
   : Iterator[(Int, Iterator[Product2[K, C]])] = {
     val readers = spills.map(new SpillReader(_))
@@ -385,7 +382,7 @@ Spark计算引擎中的排序器
       }
     }
   }
-  
+
   private def mergeSort(iterators: Seq[Iterator[Product2[K, C]]], comparator: Comparator[K])
   : Iterator[Product2[K, C]] =
   {
@@ -398,7 +395,7 @@ Spark计算引擎中的排序器
     heap.enqueue(bufferedIters: _*)  // Will contain only the iterators with hasNext = true
     new Iterator[Product2[K, C]] {
       override def hasNext: Boolean = !heap.isEmpty
-  
+
       override def next(): Product2[K, C] = {
         if (!hasNext) {
           throw new NoSuchElementException
@@ -427,12 +424,12 @@ Spark计算引擎中的排序器
   def writePartitionedFile(
     blockId: BlockId,
     outputFile: File): Array[Long] = {
-  
+
     // Track location of each range in the output file
     val lengths = new Array[Long](numPartitions)
     val writer = blockManager.getDiskWriter(blockId, outputFile, serInstance, fileBufferSize,
                                             context.taskMetrics().shuffleWriteMetrics)
-  
+
     if (spills.isEmpty) {
       // Case where we only have in-memory data
       val collection = if (aggregator.isDefined) map else buffer
@@ -457,12 +454,12 @@ Spark计算引擎中的排序器
         }
       }
     }
-  
+
     writer.close()
     context.taskMetrics().incMemoryBytesSpilled(memoryBytesSpilled)
     context.taskMetrics().incDiskBytesSpilled(diskBytesSpilled)
     context.taskMetrics().incPeakExecutionMemory(peakMemoryUsedBytes)
-  
+
     lengths
   }
   ```
@@ -491,7 +488,7 @@ Spark计算引擎中的排序器
   ```java
   public void insertRecord(Object recordBase, long recordOffset, int length, int partitionId)
   throws IOException {
-  
+
     // for tests
     assert(inMemSorter != null);
     if (inMemSorter.numRecords() >= numElementsForSpillThreshold) {
@@ -499,13 +496,13 @@ Spark计算引擎中的排序器
                   numElementsForSpillThreshold);
       spill();
     }
-  
+
     growPointerArrayIfNecessary();
     final int uaoSize = UnsafeAlignedOffset.getUaoSize();
     // Need 4 or 8 bytes to store the record length.
     final int required = length + uaoSize;
     acquireNewPageIfNecessary(required);
-  
+
     assert(currentPage != null);
     final Object base = currentPage.getBaseObject();
     final long recordAddress = taskMemoryManager.encodePageNumberAndOffset(currentPage, pageCursor);
@@ -525,13 +522,13 @@ Spark计算引擎中的排序器
     if (trigger != this || inMemSorter == null || inMemSorter.numRecords() == 0) {
       return 0L;
     }
-  
+
     logger.info("Thread {} spilling sort data of {} to disk ({} {} so far)",
                 Thread.currentThread().getId(),
                 Utils.bytesToString(getMemoryUsage()),
                 spills.size(),
                 spills.size() > 1 ? " times" : " time");
-  
+
     writeSortedFile(false);
     final long spillSize = freeMemory();
     inMemSorter.reset();

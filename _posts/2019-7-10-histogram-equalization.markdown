@@ -3,13 +3,10 @@ layout: post
 title:  "直方图均衡化"
 date:   2019-7-10
 categories: Others
-tags: OpenCV Histogram Python
+keywords: OpenCV Histogram Python
 mathjax: true
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 直方图是多种空间域处理技术的基础。直方图均衡化是将一幅图像的像素倾向于占据整个可能的灰度级并且分布均匀，这样处理过后的图像具有高对比度并且较高的还原了灰度细节
 

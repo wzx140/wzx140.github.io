@@ -3,13 +3,11 @@ layout: post
 title:  "Spark源码阅读(十九)：计算引擎之task计算内存管理"
 date:   2020-9-24
 categories: Spark
-tags: Spark SparkCore
+keywords: Spark SparkCore
 mathjax: true
 author: wzx
 ---
 
-- 目录
-{:toc}
 **Tungsten是一种内存分配与释放的实现，包括堆内内存和堆外内存**。Tungsten使用`sun.misc.Unsafe`直接操作系统内存，避免了在JVM中加载额外的类，也不用创建额外的对象，因而减少了不必要的内存开销，降低了GC扫描和回收的频率，提升了处理性能。堆外内存可以被精确地申请和释放，而且序列化的数据占用的空间可以被精确计算，所以相比堆内存来说降低了管理的难度，也降低了误差。
 
 
@@ -172,20 +170,20 @@ public class MemoryLocation {
             || (memory.pageNumber == MemoryBlock.FREED_IN_TMM_PAGE_NUMBER)) :
     "TMM-allocated pages must first be freed via TMM.freePage(), not directly in allocator " +
       "free()";
-  
+
     final long size = memory.size();
     if (MemoryAllocator.MEMORY_DEBUG_FILL_ENABLED) {
       memory.fill(MemoryAllocator.MEMORY_DEBUG_FILL_FREED_VALUE);
     }
-  
+
     // Mark the page as freed (so we can detect double-frees).
     memory.pageNumber = MemoryBlock.FREED_IN_ALLOCATOR_PAGE_NUMBER;
-  
+
     // As an additional layer of defense against use-after-free bugs, we mutate the
     // MemoryBlock to null out its reference to the long[] array.
     long[] array = (long[]) memory.obj;
     memory.setObjAndOffset(null, 0);
-  
+
     long alignedSize = ((size + 7) / 8) * 8;
     if (shouldPool(alignedSize)) {
       synchronized (this) {
@@ -232,7 +230,7 @@ public class MemoryLocation {
     assert ((memory.pageNumber == MemoryBlock.NO_PAGE_NUMBER)
             || (memory.pageNumber == MemoryBlock.FREED_IN_TMM_PAGE_NUMBER)) :
     "TMM-allocated pages must be freed via TMM.freePage(), not directly in allocator free()";
-  
+
     if (MemoryAllocator.MEMORY_DEBUG_FILL_ENABLED) {
       memory.fill(MemoryAllocator.MEMORY_DEBUG_FILL_FREED_VALUE);
     }
@@ -281,10 +279,10 @@ public class MemoryLocation {
     assert(required >= 0);
     assert(consumer != null);
     MemoryMode mode = consumer.getMode();
-  
+
     synchronized (this) {
       long got = memoryManager.acquireExecutionMemory(required, taskAttemptId, mode);
-  
+
       // Try to release memory from other consumers first, then we can reduce the frequency of
       // spilling, avoid to have too many spilled files.
       if (got < required) {
@@ -338,7 +336,7 @@ public class MemoryLocation {
           }
         }
       }
-  
+
       // call spill() on itself
       if (got < required) {
         try {
@@ -358,7 +356,7 @@ public class MemoryLocation {
                                           + e.getMessage());
         }
       }
-  
+
       consumers.add(consumer);
       logger.debug("Task {} acquired {} for {}", taskAttemptId, Utils.bytesToString(got), consumer);
       return got;
@@ -384,7 +382,7 @@ public class MemoryLocation {
   - **调用`MemoryAllocator.allocate()`获取封装成`MemoryBlock`的页**
   - 如果OOM则说明物理内存大小小于`MemoryManager`认为自己管理的逻辑内存大小，此时需要更新`acquiredButNotUsed`，从`allocatedPages`中清除此页号并再次调用`allocatePage()`方法
   - 将`MemoryBlock`放入`pageTable`中并返回
-  
+
   ```java
   public MemoryBlock allocatePage(long size, MemoryConsumer consumer) {
     assert(consumer != null);
@@ -392,12 +390,12 @@ public class MemoryLocation {
     if (size > MAXIMUM_PAGE_SIZE_BYTES) {
       throw new TooLargePageException(size);
     }
-  
+
     long acquired = acquireExecutionMemory(size, consumer);
     if (acquired <= 0) {
       return null;
     }
-  
+
     final int pageNumber;
     synchronized (this) {
       pageNumber = allocatedPages.nextClearBit(0);
@@ -430,7 +428,7 @@ public class MemoryLocation {
     return page;
   }
   ```
-  
+
 - `freePage()`: **释放分配给`MemoryConsumer`的`MemoryBlock`**
 
   - 清理`pageTable`和`allocatedPages`中的信息
@@ -474,7 +472,7 @@ public class MemoryLocation {
     assert (pageNumber >= 0) : "encodePageNumberAndOffset called with invalid page";
     return (((long) pageNumber) << OFFSET_BITS) | (offsetInPage & MASK_LONG_LOWER_51_BITS);
   }
-  
+
   public long encodePageNumberAndOffset(MemoryBlock page, long offsetInPage) {
     if (tungstenMemoryMode == MemoryMode.OFF_HEAP) {
       // offset
@@ -552,7 +550,7 @@ public class MemoryLocation {
         }
       }
       consumers.clear();
-  
+
       for (MemoryBlock page : pageTable) {
         if (page != null) {
           logger.debug("unreleased page: " + page + " in task " + taskAttemptId);
@@ -562,10 +560,10 @@ public class MemoryLocation {
       }
       Arrays.fill(pageTable, null);
     }
-  
+
     // release the memory that is not used by any consumer (acquired for pages in tungsten mode).
     memoryManager.releaseExecutionMemory(acquiredButNotUsed, taskAttemptId, tungstenMemoryMode);
-  
+
     return memoryManager.releaseAllExecutionMemoryForTask(taskAttemptId);
   }
   ```
@@ -590,7 +588,7 @@ public class MemoryLocation {
   - 调用`TaskMemoryManager.allocatePage()`给当前consumer分配相应大小的`MemoryBlock`
   - 如果得到的`MemoryBlock`小于所需大小则调用`TaskMemoryManager.freePage()`释放`MemoryBlock`并抛出OOM
   - 记录到`used`中并创建`LongArray`，此类调用`sun.misc.Unsafe`的`putLong(object, offset,value)`和`getLong(object, offset)`两个方法来模拟实现长整型数组
-  
+
   ```java
   public LongArray allocateArray(long size) {
     long required = size * 8L;
@@ -601,7 +599,7 @@ public class MemoryLocation {
     used += required;
     return new LongArray(page);
   }
-  
+
   private void throwOom(final MemoryBlock page, final long required) {
     long got = 0;
     if (page != null) {
@@ -613,14 +611,14 @@ public class MemoryLocation {
                                     got);
   }
   ```
-  
+
 - `freeArray()`: 释放`LongArray`
 
   ```java
   public void freeArray(LongArray array) {
     freePage(array.memoryBlock());
   }
-  
+
   protected void freePage(MemoryBlock page) {
     used -= page.size();
     taskMemoryManager.freePage(page, this);
@@ -656,7 +654,7 @@ public class MemoryLocation {
 2. 如果没达到池化的要求或者虚引用池没有，则创建long数组封装为`MemoryBlock`并返回
 3. 释放`MemoryBlock`时，如果达到池化要求则**将long数组放入`bufferPoolsBySize`中**
 
-序号4表示**`obj`变量保存了对象在堆内内存的地址**，序号5表示**`offset`变量保存了`MemoryBlock`相对于`obj`地址的偏移量**，序号6表示**`length`变量保存了`MemoryBlock`的大小**  
+序号4表示**`obj`变量保存了对象在堆内内存的地址**，序号5表示**`offset`变量保存了`MemoryBlock`相对于`obj`地址的偏移量**，序号6表示**`length`变量保存了`MemoryBlock`的大小**
 
 <br>
 <br>
@@ -671,7 +669,7 @@ public class MemoryLocation {
 5. 之前调用方已经将此`MemoryBlock`的引用设置为null
 6. 调用`sun.misc.Unsafe`下的方法释放内存
 
-序号7表示**`offset`变量保存内存block起始地址**，序号8表示**`length`保存内存block大小**  
+序号7表示**`offset`变量保存内存block起始地址**，序号8表示**`length`保存内存block大小**
 
 
 <br>

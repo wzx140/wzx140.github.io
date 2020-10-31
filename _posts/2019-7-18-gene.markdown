@@ -3,13 +3,10 @@ layout: post
 title:  "基因的战争 ——读《自私的基因》"
 date:   2019-7-18
 categories: BookReview
-tags: BookReview
+keywords: 自私的基因
 mathjax: false
 author: wzx
 ---
-
-- 目录
-{:toc}
 
 独立的DNA复制因子如羚羊般灵活，它们自由奔放地随世代相传，在一次性的生物容器中临时组合，而不朽的双螺旋则不停改组演替，在形成终将腐朽的肉体时磨炼，最终走向各自的永恒。
 

@@ -16,10 +16,10 @@ layout: compress
   var titleTime;
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
-      document.title = '(●—●)喔哟，崩溃啦！';
+      document.title = '(●—●)我藏好了哟~ '+ OriginTitle;
       clearTimeout(titleTime);
     }else {
-      document.title = '(/≧▽≦/)咦！又好了！' + OriginTitle;
+      document.title = '(/≧▽≦/)被你发现啦！' + OriginTitle;
       titleTime = setTimeout(function () {
         document.title = OriginTitle;
       }, 2000);

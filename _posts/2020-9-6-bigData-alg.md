@@ -3,7 +3,7 @@ layout: post
 title:  "大数据日知录学习(五)：常用压缩和哈希算法"
 date:   2020-9-6
 categories: 大数据理论与架构
-keywords: BigData
+keywords: LZSS, Snappy, Cuckoo
 mathjax: true
 author: wzx
 ---

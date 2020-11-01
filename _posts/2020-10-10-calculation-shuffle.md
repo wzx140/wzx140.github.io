@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(二十三)：计算引擎之shuffle"
 date:   2020-10-10
 categories: Spark
-keywords: Spark shuffle
+keywords: Spark, Shuffle
 mathjax: false
 author: wzx
 ---

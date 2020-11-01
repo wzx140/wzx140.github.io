@@ -3,7 +3,7 @@ layout: post
 title:  "VTK + QT Creator开发环境搭建"
 date:   2018-10-15
 categories: VTK
-keywords: QT VTK CMake QT-Creator
+keywords: QT, VTK, CMake, QT-Creator
 mathjax: true
 author: wzx
 ---

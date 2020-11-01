@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(十七)：调度系统之task调度"
 date:   2020-9-15 9:00
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 调度系统
 mathjax: false
 author: wzx
 ---

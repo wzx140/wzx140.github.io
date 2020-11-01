@@ -3,7 +3,7 @@ layout: post
 title:  "VTK之SmartPointer"
 date:   2018-11-1
 categories: VTK
-keywords: VTK Pointer
+keywords: VTK, SmartPointer
 mathjax: false
 author: wzx
 ---

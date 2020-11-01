@@ -3,7 +3,7 @@ layout: post
 title:  "QT Creator与CMake开发环境搭建"
 date:   2018-10-17
 categories: Others
-keywords: QT CMake QT-Creator
+keywords: QT, CMake, QT-Creator
 mathjax: false
 author: wzx
 ---

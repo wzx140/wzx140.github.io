@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(二)：RPC之Inbox、Outbox、Dispatcher"
 date:   2020-7-23
 categories: Spark
-keywords: Spark SparkCore RPC
+keywords: Spark, RPC
 mathjax: false
 author: wzx
 ---

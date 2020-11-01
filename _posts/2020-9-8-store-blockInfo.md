@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(七)：存储体系之block信息管理"
 date:   2020-9-8 8:00
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 存储体系
 mathjax: false
 author: wzx
 ---

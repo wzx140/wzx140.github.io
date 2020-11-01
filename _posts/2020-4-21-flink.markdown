@@ -3,7 +3,7 @@ layout: post
 title:  "Flink基本概念"
 date:   2020-4-21
 categories: 大数据理论与架构
-keywords: Distribution Flink
+keywords: Flink
 mathjax: true
 author: wzx
 ---

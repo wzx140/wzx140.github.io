@@ -3,7 +3,7 @@ layout: post
 title:  "Median of Two Sorted Arrays"
 date:   2019-7-31
 categories: 算法和数据结构
-tags: LeetCode
+keywords: LeetCode, 4.MedianOfTwoSortedArrays
 mathjax: true
 author: wzx
 ---

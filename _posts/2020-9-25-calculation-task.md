@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(二十)：计算引擎之Task与TaskContext"
 date:   2020-9-25
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 计算引擎
 mathjax: false
 author: wzx
 ---

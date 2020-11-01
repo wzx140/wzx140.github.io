@@ -3,7 +3,7 @@ layout: post
 title:  "玄学的学习率"
 date:   2018-12-23
 categories: MachineLearning
-keywords: DeepLearning LR
+keywords: DeepLearning, LR
 mathjax: false
 author: wzx
 ---

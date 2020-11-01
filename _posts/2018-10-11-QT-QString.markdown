@@ -3,7 +3,7 @@ layout: post
 title:  "QString总结"
 date:   2018-10-11
 categories: Others
-keywords: QT String
+keywords: QT, QString
 mathjax: false
 author: wzx
 ---

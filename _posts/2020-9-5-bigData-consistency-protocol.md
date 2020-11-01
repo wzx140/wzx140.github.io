@@ -3,7 +3,7 @@ layout: post
 title:  "大数据日知录学习(三)：一致性协议"
 date:   2020-9-5 11:20
 categories: 大数据理论与架构
-keywords: BigData
+keywords: 一致性模型
 mathjax: true
 author: wzx
 ---

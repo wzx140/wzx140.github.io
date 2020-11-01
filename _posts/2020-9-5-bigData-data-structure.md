@@ -3,7 +3,7 @@ layout: post
 title:  "大数据日知录学习(四)：常用数据结构"
 date:   2020-9-5 16:00
 categories: 大数据理论与架构
-keywords: BigData
+keywords: 布隆过滤器, 跳表, LSM, 哈希树
 mathjax: true
 author: wzx
 ---

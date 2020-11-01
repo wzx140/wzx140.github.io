@@ -3,7 +3,7 @@ layout: post
 title:  "图的算法"
 date:   2019-11-9
 categories: 算法和数据结构
-keywords: DataStructure Graph Dijkstra
+keywords: Graph, Dijkstra, Floyd, Prim, Kruskal
 mathjax: true
 author: wzx
 ---

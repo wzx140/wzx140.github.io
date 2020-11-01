@@ -3,7 +3,7 @@ layout: post
 title:  "特殊直方图处理"
 date:   2019-7-14
 categories: Others
-keywords: OpenCV Histogram Python
+keywords: OpenCV, Histogram, Python
 mathjax: true
 author: wzx
 ---

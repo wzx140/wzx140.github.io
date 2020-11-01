@@ -3,7 +3,7 @@ layout: post
 title:  "Scala中的泛型"
 date:   2020-8-3
 categories: Scala
-keywords: Scala
+keywords: Scala, 泛型
 mathjax: false
 author: wzx
 ---

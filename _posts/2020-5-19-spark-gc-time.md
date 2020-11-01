@@ -3,7 +3,7 @@ layout: post
 title:  "Spark作业gc时间过长"
 date:   2020-5-19
 categories: Spark
-keywords: Distribution Spark GC
+keywords: Spark, GC
 mathjax: false
 author: wzx
 ---

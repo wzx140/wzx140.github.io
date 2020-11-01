@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(三)：RPC之StreamManager、RpcHandler"
 date:   2020-9-1
 categories: Spark
-keywords: Spark SparkCore RPC
+keywords: Spark, RPC
 mathjax: false
 author: wzx
 ---

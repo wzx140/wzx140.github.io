@@ -3,7 +3,7 @@ layout: post
 title:  "QT绘图体系"
 date:   2019-9-8
 categories: Others
-keywords: QT Graphics Painter
+keywords: QT, Graphics, Painter
 mathjax: false
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "线性表检索与静态索引检索"
 date:   2019-12-13
 categories: 算法和数据结构
-keywords: DataStructure Search Static_index
+keywords: Search, Static_index
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "CMake之find_package"
 date:   2018-10-31
 categories: Others
-tags: CMake
+keywords: CMake
 mathjax: false
 author: wzx
 ---

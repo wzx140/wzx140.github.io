@@ -3,7 +3,7 @@ layout: post
 title:  "图"
 date:   2019-11-7
 categories: 算法和数据结构
-keywords: DataStructure Graph
+keywords: Graph
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "外排序算法"
 date:   2019-11-30
 categories: 算法和数据结构
-keywords: DataStructure Sort
+keywords: Sort
 mathjax: true
 author: wzx
 ---

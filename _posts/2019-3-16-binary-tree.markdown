@@ -3,7 +3,7 @@ layout: post
 title:  "二叉树"
 date:   2019-3-16
 categories: 算法和数据结构
-keywords: DataStructure BinaryTree
+keywords: 二叉树
 mathjax: true
 author: wzx
 ---

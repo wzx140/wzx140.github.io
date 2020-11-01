@@ -3,7 +3,7 @@ layout: post
 title:  "浅谈主成分分析与奇异值分解"
 date:   2019-4-25
 categories: MachineLearning
-keywords: PCA SVD
+keywords: PCA, SVD
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "在spark-submit中自定义日志配置"
 date:   2020-5-14
 categories: Spark
-keywords: Distribution Spark
+keywords: Spark, spark-submit
 mathjax: true
 author: wzx
 ---

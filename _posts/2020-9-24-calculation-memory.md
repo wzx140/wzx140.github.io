@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(十九)：计算引擎之task计算内存管理"
 date:   2020-9-24
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 计算引擎
 mathjax: true
 author: wzx
 ---

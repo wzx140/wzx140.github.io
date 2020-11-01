@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(二十二)：计算引擎之排序器"
 date:   2020-9-28 9:00
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 计算引擎
 mathjax: false
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "Spark RDD 算子 共享变量"
 date:   2020-1-28
 categories: Spark
-keywords: Spark RDD
+keywords: Spark, RDD, Broadcast, Accumulator
 mathjax: true
 author: wzx
 ---

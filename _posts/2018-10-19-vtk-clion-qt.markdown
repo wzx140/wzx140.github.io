@@ -3,7 +3,7 @@ layout: post
 title:  "CLion+QT+VTK开发环境搭建"
 date:   2018-10-19
 categories: VTK
-keywords: QT CMake VTK CLion
+keywords: QT, CMake, VTK, CLion
 mathjax: false
 author: wzx
 ---

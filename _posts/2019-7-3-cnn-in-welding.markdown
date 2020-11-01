@@ -3,7 +3,7 @@ layout: post
 title:  "卷积神经网络在锚链焊接质量评估中的应用"
 date:   2019-7-3
 categories: MachineLearning
-keywords: Python CNN Welding
+keywords: Python, CNN, Welding
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(十八)：调度系统之map输出跟踪器"
 date:   2020-9-22
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 调度系统
 mathjax: false
 author: wzx
 ---

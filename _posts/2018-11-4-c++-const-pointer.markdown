@@ -3,7 +3,7 @@ layout: post
 title:  "Pointer and const"
 date:   2018-11-4
 categories: Others
-keywords: C++ Pointer
+keywords: C++, Pointer
 mathjax: false
 author: wzx
 ---

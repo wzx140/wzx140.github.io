@@ -3,7 +3,7 @@ layout: post
 title:  "大数据日知录学习(二)：一致性分类"
 date:   2020-9-5 11:00
 categories: 大数据理论与架构
-keywords: BigData
+keywords: 一致性模型
 mathjax: false
 author: wzx
 ---

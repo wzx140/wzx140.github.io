@@ -3,7 +3,7 @@ layout: post
 title:  "浅析字符串匹配算法"
 date:   2020-10-3
 categories: 算法和数据结构
-tags: LeetCode
+keywords: RK, KMP, BM
 mathjax: true
 author: wzx
 ---

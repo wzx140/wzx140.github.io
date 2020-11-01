@@ -3,7 +3,7 @@ layout: post
 title:  "深层神经网络中的正则化"
 date:   2018-12-20
 categories: MachineLearning
-keywords: Regularization DeepLearning
+keywords: Regularization, DeepLearning
 mathjax: true
 author: wzx
 ---

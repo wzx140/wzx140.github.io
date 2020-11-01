@@ -3,7 +3,7 @@ layout: post
 title:  "Hive原理解析"
 date:   2020-3-10
 categories: 大数据理论与架构
-keywords: Distribution Hive
+keywords: Hadoop, Hive
 mathjax: true
 author: wzx
 ---

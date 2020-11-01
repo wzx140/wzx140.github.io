@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(十六)：调度系统之调度池"
 date:   2020-9-15 8:00
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 调度系统
 mathjax: false
 author: wzx
 ---

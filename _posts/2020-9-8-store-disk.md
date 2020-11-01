@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(八)：存储体系之磁盘存储"
 date:   2020-9-8 9:00
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 存储体系
 mathjax: false
 author: wzx
 ---

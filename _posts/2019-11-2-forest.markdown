@@ -3,7 +3,7 @@ layout: post
 title:  "森林"
 date:   2019-11-2
 categories: 算法和数据结构
-keywords: DataStructure Forest
+keywords: Forest
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(二十六): SparkSQL之基本概念"
 date:   2020-10-19
 categories: Spark
-keywords: Spark  SparkSQL
+keywords: Spark, SparkSQL
 mathjax: false
 author: wzx
 ---

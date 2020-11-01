@@ -3,7 +3,7 @@ layout: post
 title:  "梯度下降的优化算法"
 date:   2018-12-21
 categories: MachineLearning
-keywords: DeepLearning GD
+keywords: DeepLearning, GD
 mathjax: true
 author: wzx
 ---

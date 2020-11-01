@@ -3,7 +3,7 @@ layout: post
 title:  "VTK之Marching Cubes算法"
 date:   2018-10-22
 categories: VTK
-keywords: VTK
+keywords: VTK, 移动立方体
 mathjax: false
 author: wzx
 ---

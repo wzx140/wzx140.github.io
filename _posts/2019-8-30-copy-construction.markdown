@@ -3,7 +3,7 @@ layout: post
 title:  "复制构造函数"
 date:   2019-8-30
 categories: Others
-keywords: C++ QT
+keywords: C++, QT
 mathjax: false
 author: wzx
 ---

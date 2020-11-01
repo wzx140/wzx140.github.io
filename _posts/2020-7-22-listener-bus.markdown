@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(一)：事件总线"
 date:   2020-7-22
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, ListenerBus
 mathjax: false
 author: wzx
 ---

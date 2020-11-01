@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(二十一)：计算引擎之排序聚合基础数据结构"
 date:   2020-9-28 8:00
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 计算引擎
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "直方图均衡化"
 date:   2019-7-10
 categories: Others
-keywords: OpenCV Histogram Python
+keywords: OpenCV, Histogram, Python
 mathjax: true
 author: wzx
 ---

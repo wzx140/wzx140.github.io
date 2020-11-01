@@ -3,7 +3,7 @@ layout: post
 title:  "Java中的位运算"
 date:   2019-10-15
 categories: Java
-keywords: Java bitOperation
+keywords: Java, 位运算
 mathjax: true
 author: wzx
 ---

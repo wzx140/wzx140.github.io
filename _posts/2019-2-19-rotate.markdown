@@ -3,7 +3,7 @@ layout: post
 title:  "48. Rotate Image"
 date:   2019-2-19
 categories: 算法和数据结构
-keywords: LeetCode Rotate-Image
+keywords: LeetCode, 48.RotateImage
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "过采样算法"
 date:   2019-4-8
 categories: MachineLearning
-keywords: Pretreatment DeepLearning
+keywords: SMOTE, ADASYN, DeepLearning
 mathjax: true
 author: wzx
 ---

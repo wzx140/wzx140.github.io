@@ -3,7 +3,7 @@ layout: post
 title:  "深层神经网络中的矩阵计算"
 date:   2018-12-15
 categories: MachineLearning
-keywords: Matrix DeepLearning
+keywords: Matrix, DeepLearning
 mathjax: true
 author: wzx
 ---

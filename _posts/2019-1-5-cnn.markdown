@@ -3,7 +3,7 @@ layout: post
 title:  "卷积神经网络概述"
 date:   2019-1-5
 categories: MachineLearning
-keywords: CNN DeepLearning
+keywords: CNN, DeepLearning
 mathjax: true
 author: wzx
 ---

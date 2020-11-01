@@ -3,7 +3,7 @@ layout: post
 title:  "最小二乘问题"
 date:   2019-4-17
 categories: MachineLearning
-keywords: Least_squares
+keywords: 最小二乘问题
 mathjax: true
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "VTK之图像的计算"
 date:   2018-11-7
 categories: VTK
-tags: VTK
+keywords: VTK
 mathjax: false
 author: wzx
 ---

@@ -3,7 +3,7 @@ layout: post
 title:  "HDFS原理解析"
 date:   2020-2-25
 categories: 大数据理论与架构
-keywords: Distribution Hadoop HDFS
+keywords: Hadoop, HDFS
 mathjax: true
 author: wzx
 ---

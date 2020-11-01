@@ -3,7 +3,7 @@ layout: post
 title:  "二分查找算法分析"
 date:   2020-3-3
 categories: 算法和数据结构
-keywords: DataStructure BinarySearch
+keywords: 二分查找
 mathjax: true
 author: wzx
 ---

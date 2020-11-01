@@ -3,7 +3,7 @@ layout: post
 title:  "基于Spark的Apriori算法"
 date:   2020-1-31
 categories: Spark
-keywords: Spark Apriori
+keywords: Spark, Apriori
 mathjax: true
 author: wzx
 ---

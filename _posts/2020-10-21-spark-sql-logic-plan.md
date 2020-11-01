@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(二十八): SparkSQL之unresolved逻辑计划"
 date:   2020-10-21
 categories: Spark
-keywords: Spark 逻辑计划
+keywords: Spark, SparkSQL, 逻辑计划
 mathjax: false
 author: wzx
 ---

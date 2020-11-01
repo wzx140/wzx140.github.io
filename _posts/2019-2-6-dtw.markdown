@@ -3,7 +3,7 @@ layout: post
 title:  "动态时间规整"
 date:   2019-2-6
 categories: MachineLearning
-keywords: Pretreatment Python
+keywords: DTW, Python
 mathjax: true
 author: wzx
 ---

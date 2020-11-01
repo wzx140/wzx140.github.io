@@ -3,7 +3,7 @@ layout: post
 title:  "Scala中的隐式变换"
 date:   2020-8-3
 categories: Scala
-keywords: Scala
+keywords: Scala, 隐式变换
 mathjax: false
 author: wzx
 ---

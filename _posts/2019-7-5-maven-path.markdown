@@ -3,7 +3,7 @@ layout: post
 title:  "maven与IDEA的目录结构"
 date:   2019-7-5
 categories: Java
-keywords: Java Maven IDEA
+keywords: Java, Maven, IDEA
 mathjax: false
 author: wzx
 ---

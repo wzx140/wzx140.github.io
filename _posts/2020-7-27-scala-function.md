@@ -3,7 +3,7 @@ layout: post
 title:  "Scala中的函数"
 date:   2020-7-27
 categories: Scala
-keywords: Scala
+keywords: Scala, Function
 mathjax: false
 author: wzx
 ---

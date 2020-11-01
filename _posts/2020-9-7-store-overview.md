@@ -3,7 +3,7 @@ layout: post
 title:  "Spark源码阅读(六)：存储体系总览"
 date:   2020-9-7
 categories: Spark
-keywords: Spark SparkCore
+keywords: Spark, 存储体系
 mathjax: false
 author: wzx
 ---

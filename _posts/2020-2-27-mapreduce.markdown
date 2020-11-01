@@ -3,7 +3,7 @@ layout: post
 title:  "Hadoop MapReduce原理解析"
 date:   2020-2-27
 categories: 大数据理论与架构
-keywords: Distribution Hadoop MapReduce
+keywords: Hadoop, MapReduce
 mathjax: true
 author: wzx
 ---

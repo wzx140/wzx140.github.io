@@ -3,7 +3,7 @@ layout: post
 title:  "B树与B+树"
 date:   2019-12-17
 categories: 算法和数据结构
-keywords: DataStructure Search Dynamic_index
+keywords: Search, Dynamic_index, B树, B+树
 mathjax: true
 author: wzx
 ---

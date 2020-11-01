@@ -9,4 +9,22 @@ layout: compress
 {% assign assets_images_url = '<img src="' | append: assets_base_url | append: "/images" %}
 {% include header.html %}
     {{ content | replace: '<img src="/images', assets_images_url }}
+
+<!--崩溃欺骗-->
+<script type="text/javascript">
+  var OriginTitle = document.title;
+  var titleTime;
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      document.title = '(●—●)喔哟，崩溃啦！';
+      clearTimeout(titleTime);
+    }else {
+      document.title = '(/≧▽≦/)咦！又好了！' + OriginTitle;
+      titleTime = setTimeout(function () {
+        document.title = OriginTitle;
+      }, 2000);
+    }
+  });
+</script>
+
 {% include footer.html %}

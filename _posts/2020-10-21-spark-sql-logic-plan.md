@@ -167,7 +167,45 @@ SQL语句经由ANTLR4解析树转换为未解析的逻辑算子树，逻辑计�
 
 ### UnaryNode
 
-**只有一个子结点的逻辑计划结点**，常用于对数据的逻辑转换操作，如过滤，投影等
+**只有一个子结点的逻辑计划结点**，常用于对数据的逻辑转换操作，下面介绍一些常见的样例类
+
+- `Project`: 表示 SELECT 语句中选中列的那部分。包含了选中列的表达式`NamedExpression`
+
+  ```scala
+  case class Project(projectList: Seq[NamedExpression], child: LogicalPlan)
+  	extends OrderPreservingUnaryNode
+  ```
+
+- `Filter`: 表示 WHERE 语句中的条件。包含了布尔表达式`Expression`
+
+  ```scala
+  case class Filter(condition: Expression, child: LogicalPlan)
+  	extends OrderPreservingUnaryNode with PredicateHelper
+  ```
+
+- `Sort`: 表示 ORDER BY(全局排序)和SORT BY(分区排序)
+
+  ```scala
+  case class Sort(order: Seq[SortOrder], // 排序的字段或者表达式，还有排序方向
+                  global: Boolean, // 否为全局的排序，还是分区的排序
+                  child: LogicalPlan) extends UnaryNode
+  ```
+
+- `Distinct`: 表示SELECT中带有DISTINCT关键字的列
+
+  ```scala
+  case class Distinct(child: LogicalPlan) extends UnaryNode
+  ```
+
+- `Aggregate`: 
+
+  ```scala
+  case class Aggregate(
+      groupingExpressions: Seq[Expression],  // GROUP BY 的字段
+      aggregateExpressions: Seq[NamedExpression],   // SELECT 的字段
+      child: LogicalPlan)
+    extends UnaryNode
+  ```
 
 ### 其他子类
 
@@ -275,3 +313,4 @@ class SparkSqlParser(conf: SQLConf) extends AbstractSqlParser(conf) {
 
 ## REFERENCE
 1. Spark SQL内核剖析
+2. [Spark Sql LogicalPlan 介绍——zhmin](https://zhmin.github.io/2019/06/18/spark-sql-logicalplan/)

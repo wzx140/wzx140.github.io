@@ -216,7 +216,6 @@ object CurrentOrigin {
 `Expression`涉及范围广且数目庞大，相关的类或接口将近 300 个，下面列举一些常用的接口
 
 - `Nondeterministic`: **具有不确定性的表达式接口**，`deterministic`和`foldable`属性都默认返回false ，典型的实现包括`MonotonicallyincreasingID`、`Rand`和`Randn`等
-
 - `Unevaluable`: **非可执行的表达式接口**，调用`eval()`函数会抛出异常。该接口主要用于生命周期不超过逻辑计划解析和优化阶段的表达式
 - `CodegenFallback`: **不支持代码生成的表达式接口**
 - `LeafExpression`: **叶节点类型的表达式抽象类**
@@ -224,6 +223,97 @@ object CurrentOrigin {
 - `BinaryExpression`: **二元表达式抽象类**，包含两个子节点
 - `TernaryExpression`: **三元表达式抽象类**，包含 3 个子节点
 
+下面列举一下常用的实现样例类
+
+- 单值表达式
+  - `UnresolvedStar`: 代表**通配符\***，`target`代表了要拓展的表名或者结构体名
+
+  ```scala
+  case class UnresolvedStar(target: Option[Seq[String]]) extends Star with Unevaluable
+  ```
+
+  - `UnresolvedAttribute`: 代表**未解析的字段表达式**， `nameParts`代表列名如`name`, `t1.name`(`[t1, name]`)
+
+  ```scala
+  case class UnresolvedAttribute(nameParts: Seq[String]) extends Attribute with Unevaluable
+  ```
+
+  - `Literal`: 代表**常量类型表达式**如整数型，字符串型或其他数值型的表达式
+
+  ```scala
+  case class Literal (value: Any, dataType: DataType) extends LeafExpression
+  ```
+
+  - `UnresolvedFunction`: 代表**函数**，Spark SQL会根据函数名称，在注册中心找到对应的函数
+
+  ```scala
+  case class UnresolvedFunction(
+      name: FunctionIdentifier,		// 函数名称
+      children: Seq[Expression],  // 函数参数
+      isDistinct: Boolean)				// 参数是否有 distinct 关键字
+    extends Expression with Unevaluable
+  ```
+
+  - `Alias`: 代表**别名**，`name`代表别名的名字，`child`表示别名的实际表达式
+
+  ```scala
+  case class Alias(child: Expression, name: String)(
+      val exprId: ExprId = NamedExpression.newExprId,
+      val qualifier: Seq[String] = Seq.empty,
+      val explicitMetadata: Option[Metadata] = None)
+    extends UnaryExpression with NamedExpression
+  ```
+
+- 数值运算: `Add`, `Subtract`, `Multiply`, `Divide`, `Remainder`(%)
+
+  ```scala
+  // 先计算出左右子表达式的值, 在调用子类实现的nullSafeEval()方法进行计算
+  // BinaryExpression
+  override def eval(input: InternalRow): Any = {
+    val value1 = left.eval(input)
+    if (value1 == null) {
+      null
+    } else {
+      val value2 = right.eval(input)
+      if (value2 == null) {
+        null
+      } else {
+        nullSafeEval(value1, value2)
+      }
+    }
+  }
+  ```
+
+- 逻辑表达式，该表达式返回布尔类型
+
+  - 数值比较: `EqualTo`, `LessThan`, `GreaterThan`...，具体计算实现方式与数值运算类似
+
+  - 逻辑运算: `And`, `Or`, `Not`，下面分析一下`And`的计算逻辑
+
+    ```scala
+    override def eval(input: InternalRow): Any = {
+      val input1 = left.eval(input)
+      // 若左表达式false, 则不用计算右表达式, and的短路特性
+      if (input1 == false) {
+        false
+      } else {
+        val input2 = right.eval(input)
+        if (input2 == false) {
+          false
+        } else {
+          if (input1 != null && input2 != null) {
+            true
+          } else {
+            null
+          }
+        }
+      }
+    }
+    ```
+
+    
+
 ## REFERENCE
 
 1. Spark SQL内核剖析
+2. [Spark Sql 表达式介绍——zhmin](https://zhmin.github.io/2019/07/11/spark-sql-expression/)

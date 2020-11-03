@@ -321,7 +321,7 @@ class SparkSqlParser(conf: SQLConf) extends AbstractSqlParser(conf) {
       +- 'UnresolvedRelation `STUDENT`
 ```
 
-可以看出逻辑计划树和ANTLR4解析树是相对应的，右子树解析成了`Sort`，左子树的解析逻辑如下图所示，结合具体源码就可以看出解析逻辑
+可以看出逻辑计划树和ANTLR4解析树是相对应的，`Sort`作为根结点，子结点的解析逻辑如下图所示，结合具体源码就可以看出解析逻辑
 
 ![]({{ site.url }}/assets/img/2020-10-21-7.png)
 

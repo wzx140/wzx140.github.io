@@ -228,41 +228,41 @@ object CurrentOrigin {
 - 单值表达式
   - `UnresolvedStar`: 代表**通配符\***，`target`代表了要拓展的表名或者结构体名
 
-  ```scala
-  case class UnresolvedStar(target: Option[Seq[String]]) extends Star with Unevaluable
-  ```
+    ```scala
+    case class UnresolvedStar(target: Option[Seq[String]]) extends Star with Unevaluable
+    ```
 
   - `UnresolvedAttribute`: 代表**未解析的字段表达式**， `nameParts`代表列名如`name`, `t1.name`(`[t1, name]`)
 
-  ```scala
-  case class UnresolvedAttribute(nameParts: Seq[String]) extends Attribute with Unevaluable
-  ```
+    ```scala
+    case class UnresolvedAttribute(nameParts: Seq[String]) extends Attribute with Unevaluable
+    ```
 
   - `Literal`: 代表**常量类型表达式**如整数型，字符串型或其他数值型的表达式
 
-  ```scala
-  case class Literal (value: Any, dataType: DataType) extends LeafExpression
-  ```
+    ```scala
+    case class Literal (value: Any, dataType: DataType) extends LeafExpression
+    ```
 
   - `UnresolvedFunction`: 代表**函数**，Spark SQL会根据函数名称，在注册中心找到对应的函数
 
-  ```scala
-  case class UnresolvedFunction(
-      name: FunctionIdentifier,		// 函数名称
-      children: Seq[Expression],  // 函数参数
-      isDistinct: Boolean)				// 参数是否有 distinct 关键字
-    extends Expression with Unevaluable
-  ```
+    ```scala
+    case class UnresolvedFunction(
+        name: FunctionIdentifier,		// 函数名称
+        children: Seq[Expression],  // 函数参数
+        isDistinct: Boolean)				// 参数是否有 distinct 关键字
+      extends Expression with Unevaluable
+    ```
 
   - `Alias`: 代表**别名**，`name`代表别名的名字，`child`表示别名的实际表达式
 
-  ```scala
-  case class Alias(child: Expression, name: String)(
-      val exprId: ExprId = NamedExpression.newExprId,
-      val qualifier: Seq[String] = Seq.empty,
-      val explicitMetadata: Option[Metadata] = None)
-    extends UnaryExpression with NamedExpression
-  ```
+    ```scala
+    case class Alias(child: Expression, name: String)(
+        val exprId: ExprId = NamedExpression.newExprId,
+        val qualifier: Seq[String] = Seq.empty,
+        val explicitMetadata: Option[Metadata] = None)
+      extends UnaryExpression with NamedExpression
+    ```
 
 - 数值运算: `Add`, `Subtract`, `Multiply`, `Divide`, `Remainder`(%)
 

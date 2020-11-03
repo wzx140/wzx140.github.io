@@ -302,7 +302,7 @@ class SparkSqlParser(conf: SQLConf) extends AbstractSqlParser(conf) {
 
 ![]({{ site.url }}/assets/img/2020-10-21-5.png)
 
-由以下流程图所示，展示了此SQL语句的ANTLR4解析树结点转换为unresolved逻辑计划的全过程，有以下符号标记
+由以下流程图所示，展示了此SQL语句的ANTLR4解析树结点转换为unresolved逻辑计划的调用逻辑，有以下符号标记
 
 - `astBuilder`表示`SparkSqlAstBuilder`实例，继承自ANTLR产生的`SqlBaseVisitor`访问者类
 - `sparkParser`表示`SparkSqlParser`实例，内部使用了`astBuilder`
@@ -310,6 +310,20 @@ class SparkSqlParser(conf: SQLConf) extends AbstractSqlParser(conf) {
 - `tree`表示`ParseTree`实例，其子类表示各结点上下文如`StatementDefaultContext`
 
 ![]({{ site.url }}/assets/img/2020-10-21-6.png)
+
+最终，ANTLR4解析树被转化为如下所示的Unsolved逻辑计划树
+
+```
+== Parsed Logical Plan ==
+'Sort ['ID DESC NULLS LAST], true
++- 'Project ['NAME]
+   +- 'Filter ('AGE > 18)
+      +- 'UnresolvedRelation `STUDENT`
+```
+
+可以看出逻辑计划树和ANTLR4解析树是相对应的，右子树解析成了`Sort`，左子树的解析逻辑如下图所示，结合具体源码就可以看出解析逻辑
+
+![]({{ site.url }}/assets/img/2020-10-21-7.png)
 
 ## REFERENCE
 1. Spark SQL内核剖析

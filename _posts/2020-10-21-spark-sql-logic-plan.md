@@ -128,6 +128,15 @@ SQL语句经由ANTLR4解析树转换为未解析的逻辑算子树，逻辑计�
 
 ![]({{ site.url }}/assets/img/2020-10-21-4.png)
 
+下面解释一些常用的逻辑计划
+
+- `UnresolvedRelation`: **未解析的表引用**，Resolve阶段通过查找catalog解析
+- `UnresolvedInlineTable`: **未解析的内联表**`"VALUES (1, 'a'), (2, 'b') AS t1(a, b)"`，将被解析成`LocalRelation`
+- `LogicalRelation`: **持有`BaseRelation`的逻辑计划**。`BaseRelation`是具有已知schema的关系契约(tuple集合)
+- `InMemoryRelation`: 代表物理查询计划中的**缓存`Dataset`**
+- `LocalRelation`: 代表从**本地集合**中扫描数据的逻辑计划
+- `OneRowRelation`: 代表一行数据的关系，**输出为空**。在没有FROM子句的SELECT语句中使用
+
 ## Command
 
 **代表着系统执行的非查询命令的逻辑结点**，比如说DDL操作，相比于查询，执行的优先级更高。有以下继承关系，其方法`run()`实现了与命令相关的逻辑
@@ -169,21 +178,21 @@ SQL语句经由ANTLR4解析树转换为未解析的逻辑算子树，逻辑计�
 
 **只有一个子结点的逻辑计划结点**，常用于对数据的逻辑转换操作，下面介绍一些常见的样例类
 
-- `Project`: 表示 SELECT 语句中选中列的那部分。包含了选中列的表达式`NamedExpression`
+- `Project`: **表示 SELECT 语句中选中列的那部分**。包含了选中列的表达式`NamedExpression`
 
   ```scala
   case class Project(projectList: Seq[NamedExpression], child: LogicalPlan)
   	extends OrderPreservingUnaryNode
   ```
 
-- `Filter`: 表示 WHERE 语句中的条件。包含了布尔表达式`Expression`
+- `Filter`: **表示 WHERE 语句中的条件**。包含了布尔表达式`Expression`
 
   ```scala
   case class Filter(condition: Expression, child: LogicalPlan)
   	extends OrderPreservingUnaryNode with PredicateHelper
   ```
 
-- `Sort`: 表示 ORDER BY(全局排序)和SORT BY(分区排序)
+- `Sort`: **表示 ORDER BY(全局排序)和SORT BY(分区排序)**
 
   ```scala
   case class Sort(order: Seq[SortOrder], // 排序的字段或者表达式，还有排序方向
@@ -191,13 +200,13 @@ SQL语句经由ANTLR4解析树转换为未解析的逻辑算子树，逻辑计�
                   child: LogicalPlan) extends UnaryNode
   ```
 
-- `Distinct`: 表示SELECT中带有DISTINCT关键字的列
+- `Distinct`: **表示SELECT中带有DISTINCT关键字的列**
 
   ```scala
   case class Distinct(child: LogicalPlan) extends UnaryNode
   ```
 
-- `Aggregate`: 
+- `Aggregate`: **表示 GROUP BY**
 
   ```scala
   case class Aggregate(

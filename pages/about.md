@@ -14,7 +14,7 @@ Where most it promises; and oft it hits
 Where hope is coldest, and despair most fits.
 
 <br>
-**简单的编程爱好者**
+**简单的编程爱好者**，只要我写的够快，bug就追不上我。
 
 ![]({{ site.url }}/assets/img/wzx_head.jpg)
 
@@ -24,8 +24,4 @@ Where hope is coldest, and despair most fits.
 {% for website in site.data.social %}
 <li>{{website.sitename }}：<a href="{{ website.url }}" target="_blank">@{{ website.name }}</a></li>
 {% endfor %}
-{% if site.url contains 'masterwangzx.com' %}
-<li>
-</li>
-{% endif %}
 </ul>

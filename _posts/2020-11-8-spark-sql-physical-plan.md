@@ -153,7 +153,7 @@ override lazy val (outputPartitioning, outputOrdering): (Partitioning, Seq[SortO
 
 <img src="{{ site.url }}/assets/img/2020-11-8-11.png" alt="image-20201020154942914" style="zoom:50%;" />
 
-如图所示，`SparkPlanner`的继承关系。**生成物理计划的策略保存在`Strategies`属性下**。**`plan()`方法是生成物理计划的入口，将`strategies`依次应用到`LogicalPlan`，生成物理计划候选集合**。对于`PlanLater`类型的 `SparkPlan`，其`doExecute()`方法没有实现，表示不支持执行，所起到的作用仅仅是占位作用。`SparkPlanner`会取出所有的`PlanLater`算子，递归调用`plan()`方法进行替换。之后，调用`prunePlans()`方法对物理计划列表进行过滤，去掉一些不够高效的物理计划 。在生成`SparkPlan`列表后，调用`prepareForExecution()`根据需要插入shuffle操作和格式转换以适应Spark执行。
+如图所示，`SparkPlanner`的继承关系。**生成物理计划的策略保存在`Strategies`属性下**。**`plan()`方法是生成物理计划的入口，将`strategies`依次应用到`LogicalPlan`，生成物理计划候选集合**。对于`PlanLater`类型的 `SparkPlan`，其`doExecute()`方法没有实现，表示不支持执行，所起到的作用仅仅是占位作用。`SparkPlanner`会取出所有的`PlanLater`算子，递归调用`plan()`方法进行替换。之后，调用`prunePlans()`方法对物理计划列表进行过滤，去掉一些不够高效的物理计划 。在生成`SparkPlan`列表后，调用`prepareForExecution()`**根据需要插入shuffle操作和格式转换以适应Spark执行**，主要工作是检查是否有不匹配的partition类型，如果不兼容就增加一个Exchange节点，用来重新分区，这样就最终生成了execute plan
 
 ```scala
 def plan(plan: LogicalPlan): Iterator[PhysicalPlan] = {
@@ -199,11 +199,20 @@ def plan(plan: LogicalPlan): Iterator[PhysicalPlan] = {
 按照前一章所述的[逻辑优化过程]({% post_url 2020-11-5-spark-sql-optimizer-logical-plan %}#示例)，现在继续对`SELECT NAME FROM STUDENT WHERE AGE > 18 ORDER BY ID DESC`的物理计划生成过程做分析。如下所示是生成的物理计划
 
 ```
+// prepareForExecution前
 Project [NAME#11]
 +- Sort [ID#10 DESC NULLS LAST], true, 0
    +- Project [NAME#11, ID#10]
       +- Filter (isnotnull(AGE#12) && (cast(AGE#12 as int) > 18))
          +- FileScan csv [ID#10,NAME#11,AGE#12] Batched: false, Format: CSV, Location: InMemoryFileIndex[file:/Users/wzx/Documents/tmp/spark_tmp/STUDENT.csv], PartitionFilters: [], PushedFilters: [IsNotNull(AGE)], ReadSchema: struct<ID:string,NAME:string,AGE:string>
+         
+// prepareForExecution后
+*(2) Project [NAME#11]
++- *(2) Sort [ID#10 DESC NULLS LAST], true, 0
+   +- Exchange rangepartitioning(ID#10 DESC NULLS LAST, 200)
+      +- *(1) Project [NAME#11, ID#10]
+         +- *(1) Filter (isnotnull(AGE#12) && (cast(AGE#12 as int) > 18))
+            +- *(1) FileScan csv [ID#10,NAME#11,AGE#12] Batched: false, Format: CSV, Location: InMemoryFileIndex[file:/Users/wzx/Documents/tmp/spark_tmp/STUDENT.csv], PartitionFilters: [], PushedFilters: [IsNotNull(AGE)], ReadSchema: struct<ID:string,NAME:string,AGE:string>
 ```
 
 ## REFERENCE

@@ -212,7 +212,7 @@ Project [NAME#11]
    +- Exchange rangepartitioning(ID#10 DESC NULLS LAST, 200)
       +- *(1) Project [NAME#11, ID#10]
          +- *(1) Filter (isnotnull(AGE#12) && (cast(AGE#12 as int) > 18))
-            +- *(1) FileScan csv [ID#10,NAME#11,AGE#12] Batched: false, Format: CSV, Location: InMemoryFileIndex[file:/Users/wzx/Documents/tmp/spark_tmp/STUDENT.csv], PartitionFilters: [], PushedFilters: [IsNotNull(AGE)], ReadSchema: struct<ID:string,NAME:string,AGE:string>
+            +- *(1) FileScan csv [ID#10,NAME#11,AGE#12] Batched: false, Format: CSV, Location: InMemoryFileIndex[file:/Users/wzx/Documents/tmp/spark_tmp/STUDENT.csv], PartitionFilters: [], PushedFilters: [IsNotNull(AGE)], ReadSchema: struct<ID:string,NAME:string,AGE:string>                           
 ```
 
 ## REFERENCE

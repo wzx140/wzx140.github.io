@@ -30,7 +30,6 @@ author: wzx
 # 插入排序
 ## 直接插入排序
 不断将一个记录插入到一个排序好的有序表中的合适位置
-### 代码
 ```c++
 void sortArray(vector<int>& nums) {
 	int length = nums.size();
@@ -48,13 +47,11 @@ void sortArray(vector<int>& nums) {
 }
 ```
 ## shell排序
-应用**跳跃分割**对序列进行分组，对小序列进行插入排序。逐渐减少跳跃的间距，直至对整体进行插入排序
-### 增量序列
+应用**跳跃分割**对序列进行分组，对小序列进行插入排序。逐渐减少跳跃的间距，直至对整体进行插入排序，如下所的增量序列
 - **Hibbard**增量序列：$\{2^k-1,2^{k-1}-1,\cdots,7,3,1\}$
 - **Shell(3)**:以3为间隔
 
 最坏 $\Theta(n^{3 \backslash 2})$
-### 代码
 ```c++
 void sortArray(vector<int>& nums) {
    int length = nums.size();
@@ -83,7 +80,6 @@ void sortArray(vector<int>& nums) {
 # 选择排序
 ## 直接选择排序
 每次选择最小的记录放在当前位置
-### 代码
 ```c++
 void sortArray(vector<int>& nums) {
 	int length = nums.size();
@@ -105,7 +101,6 @@ void sortArray(vector<int>& nums) {
 ```
 ## 堆排序
 利用[最小堆]({% post_url 2019-10-25-min-heap %})
-### 代码
 ```c++
 void sortArray(vector<int>& nums) {
 	int length = nums.size();
@@ -125,7 +120,6 @@ void sortArray(vector<int>& nums) {
 # 交换排序
 ## 冒泡排序
 不停地比较相邻的记录，如果不满足排序要求，就交换相邻记录，直到所有的记录都已经排好序
-### 代码
 ```c++
 void sortArray(vector<int>& nums) {
 	int length = nums.size();
@@ -152,8 +146,6 @@ void sortArray(vector<int>& nums) {
 - 选择轴值(pivot)
 - 将序列划分为两个子序列**L**和**R**，使得**L** 中所有记录都小于或等于轴值，**R**中记录都大于轴值
 - 对子序列**L**和**R**递归调用快速排序
-
-### 代码
 
 ```c++
 void QuickSort(vector<int>& nums, int left, int right) {
@@ -214,7 +206,6 @@ void QuickSort(vector<int>& nums, int left, int right) {
 |0|2|3|4|4|4|5|6|8|9|
 
 这样我们就知道**记录在排序序列的位置**了，遍历原数组，按照累计计数依次放入对应位置
-### 代码
 ```c++
 void bucketSort(vector<int>& array, int min, int max) {
 	int n = array.size();
@@ -256,7 +247,6 @@ void bucketSort(vector<int>& array, int min, int max) {
 
 由于**高位的排序不会影响次高位已经排好的大小关系**，所以一般常用*LSD*。由低至高，依次对排序码应用计数排序。
 
-### 代码
 ```c++
 // d:位数 radix:基数 minR:位最小值 maxR:位最大值
 void RadixtSort(vector<int>& array, int d, int radix, int minR, int maxR) {
@@ -297,8 +287,6 @@ void RadixtSort(vector<int>& array, int d, int radix, int minR, int maxR) {
 - 递归合并两个已排序的子序列
 
 ![]({{ site.url }}/assets/img/2019-11-26-1.png){:height="300"}
-
-## 代码
 
 ```c++
 void merge(vector<int>& array, vector<int>& temp, int left, int right, int middle) {

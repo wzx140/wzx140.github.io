@@ -304,7 +304,7 @@ case class Sum(child: Expression) extends DeclarativeAggregate with ImplicitCast
 
 ### HashAggregateExec
 
-**基于哈希表的聚合物理计划**。`HashAggregateExec`可能因为内存不足的原因退化为`SortAggregateExec`。在其`doExecute()`方法中每个分区内都构建了`SortBasedAggregationIterator`迭代器，将聚合的具体逻辑交由迭代器处理。
+**基于哈希表的聚合物理计划**。`HashAggregateExec`可能因为内存不足的原因退化为`SortAggregateExec`。在其`doExecute()`方法中每个分区内都构建了`TungstenAggregationIterator`迭代器，将聚合的具体逻辑交由迭代器处理。
 
 ```scala
 protected override def doExecute(): RDD[InternalRow] = attachTree(this, "execute") {

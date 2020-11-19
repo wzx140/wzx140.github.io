@@ -477,7 +477,7 @@ Spark计算引擎中的排序器
 - `allocatedPages`: 已经分配的`MemoryBlock`列表
 - `spills`: 溢出文件的元数据信息`SpillInfo`的列表
 - `peakMemoryUsedBytes`: 内存中数据结构大小的峰值
-- `inMemSorter`: `ShuffleInMemorySorter`，用于在内存中对插入的记录进行排序
+- `inMemSorter`: **`ShuffleInMemorySorter`，用于在内存中对插入的记录进行排序，`ShuffleExternalSorter`的排序功能依赖于它**
 - `currentPage`: 当前的`MemoryBlock`
 - `pageCursor`: `MemoryBlock`的游标。实际为用于向Tungsten写入数据时的地址信息
 

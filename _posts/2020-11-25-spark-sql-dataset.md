@@ -79,8 +79,8 @@ Dataset是**强类型JVM对象(样例类)集合**，通过自定义的样例类�
 	  // selected语法错误, 编译阶段没有提示
 	  spark.sql("selected name from student")
 	  ```
-	
-	- 对于DataFrame来说，编译阶段可以发现语法错误，但是不能检查参数类型匹配
+
+  - 对于DataFrame来说，编译阶段可以发现语法错误，但是不能检查参数类型匹配
 	
 	  ```scala
 	  val studentDF = spark.read.format("csv")
@@ -92,7 +92,7 @@ Dataset是**强类型JVM对象(样例类)集合**，通过自定义的样例类�
 	  studentDF.select("NAMED")
 	  ```
 	
-	- 对于Dataset来说，任何不匹配的参数类型都会在编译阶段发现，所以是类型安全
+  - 对于Dataset来说，任何不匹配的参数类型都会在编译阶段发现，所以是类型安全
 	
 	  ```scala
 	  import spark.implicits._
@@ -110,7 +110,7 @@ Dataset是**强类型JVM对象(样例类)集合**，通过自定义的样例类�
 	
 - 提供了比RDD更丰富的算子，基于Catalyst优化器构建支持[执行计划的优化]({% post_url 2020-2-14-spark-sql %}#优化规则)
 
-- `Encoder[T]`由于知道具体的类型，使用成员位置信息，**降低反序列化的范围**，只反序列化需要的列
+- 使用`Encoder[T]`来序列化和反序列化，由于知道具体的类型，所以可以使用成员位置信息，**降低反序列化的范围**，只反序列化需要的列
 
 ## 转化
 

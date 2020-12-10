@@ -161,36 +161,39 @@ delete(list, searchKey)
 
 ![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200603113306.png)
 
-- 存储结构：内存中的MemTable和磁盘上的各级SSTable文件就形成了LSM树
-  - 内存
-      - MemTable：跳表结构。用于数据的快速插入
-      - Immutable MemTable：只读的跳表结构。在MemTable占用内存达到一定阈值之后，便转化为Immutable MemTable
+### 存储结构
 
-  - 硬盘
-      - Current：当前manifest文件名
+**内存中的MemTable和磁盘上的各级SSTable文件就形成了LSM树**
 
-      - Manifest：SSTable的元信息，各层级SSTable文件的Level，文件名，最大最小key
+- 内存
+    - MemTable：跳表结构。用于数据的快速插入
+    - Immutable MemTable：只读的跳表结构。在MemTable占用内存达到一定阈值之后，便转化为Immutable MemTable
 
-        <img src="{{ site.url }}/assets/img/2020-9-5-5.png" style="zoom:50%;" />
+- 硬盘
+    - Current：当前manifest文件名
 
-      - Log：MemTable的插入日志。用于系统崩溃，内存中的MemTable数据丢失后的数据恢复
+    - Manifest：SSTable的元信息，各层级SSTable文件的Level，文件名，最大最小key
 
-      - SSTable：Immutable MemTable导出到磁盘的结果。层级key有序文件结构。第0层有minor compaction生成会出现key重叠现象，但其余层的文件里不会存在key重叠现象
+      <img src="{{ site.url }}/assets/img/2020-9-5-5.png" style="zoom:50%;" />
 
-- compaction
+    - Log：MemTable的插入日志。用于系统崩溃，内存中的MemTable数据丢失后的数据恢复
 
-  - minor: 当MemTable达到一定大小时，转化为Immutable MemTable并按顺序写入level0的新SSTable文件中。不处理删除操作
+    - SSTable：Immutable MemTable导出到磁盘的结果。层级key有序文件结构。第0层有minor compaction生成会出现key重叠现象，但其余层的文件里不会存在key重叠现象
 
-    ![]({{ site.url }}/assets/img/2020-9-5-6.png)
+### compaction
 
-  - major: 当某个Level下的SSTable文件数目超过一定数量时，从这个Level中选择一个文件(Level0 需要选择所有key重叠的文件)和高一Level的文件合并。
+- minor compaction: **当MemTable达到一定大小时**，转化为Immutable MemTable并按顺序写入level0的新SSTable文件中。不处理删除操作
 
-    - 轮流选择Level层的文件
-    - Level+1层选择和Level层文件在key range上有重叠的所有文件进行合并
-    - 使用多路归并排序，并判断这个KV是否被删除，形成一系列新Level+1层的多个文件
-    - 删除Level层的那个文件和旧Level+1层的所有文件
+  ![]({{ site.url }}/assets/img/2020-9-5-6.png)
 
-    <img src="{{ site.url }}/assets/img/2020-9-5-7.png" style="zoom:50%;" />
+- major compaction: **当某个Level下的SSTable文件数目超过一定数量时**，从这个Level中选择一个文件(Level0 需要选择所有key重叠的文件)和高一Level的文件合并。
+
+  - 轮流选择Level层的文件
+  - Level+1层选择和Level层文件在key range上有重叠的所有文件进行合并
+  - 使用多路归并排序，并判断这个KV是否被删除，形成一系列新Level+1层的多个文件
+  - 删除Level层的那个文件和旧Level+1层的所有文件
+
+  <img src="{{ site.url }}/assets/img/2020-9-5-7.png" style="zoom:50%;" />
 
 ## Merkle Hash Tree
 主要用于海量数据下快速定位少量变化的数据内容，在BitTorrent，Git，比特币等中得到了应用。

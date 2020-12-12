@@ -3,7 +3,7 @@ layout: post
 title:  "大数据日知录学习(四)：常用数据结构"
 date:   2020-9-5 16:00
 categories: 大数据理论与架构
-keywords: 布隆过滤器, 跳表, LSM, 哈希树
+keywords: BloomFilter, SkipList, LSM, MerkleHashTree, BitMap, RoaringBitmap
 mathjax: true
 author: wzx
 ---
@@ -12,12 +12,65 @@ author: wzx
 
 
 
+## BitMap
 
+> 位图
+
+**将具体数据映射到比特数组中，0表示数据不存在，1表示数据存在**。适用于大量数据查询和去重的场景，具有比较高的空间利用率。但是具有以下缺点
+
+- **数据碰撞**。具体数据映射到比特数组中会有碰撞的问题，可以考虑用 Bloom Filter 来解决，Bloom Filter 使用多个 Hash 函数来减少冲突的概率
+
+- **数据稀疏**。稀疏数据的存储会有很大的空间浪费，通过引入 Roaring BitMap 来解决
+
+## Roaring Bitmap
+
+**将具体数据映射到32位无符号整数按照高16位分桶，低16位放入container中**。Roaring Bitmap是对BitMap的改进，通过三种不同的container解决了稀疏数据存储的问题。
+
+![]({{ site.url }}/assets/img/2020-9-5-8.png)
+
+图中示出了三个container
+
+- 高16位为0000H的ArrayContainer，存储有前1000个62的倍数
+- 高16位为0001H的ArrayContainer，存储有$[2^{16},2^{16}+100)$区间内的100个数
+- 高16位为0002H的RunContainer，存储有$[2\times2^{16},3\times2^{16})$区间内的所有偶数，共$2^{15}$
+
+### ArrayContainer
+
+**当桶内数据的基数不大于4096时，会采用它来存储，其本质上是一个无符号短整型的**
+**有序数组**。数组初始长度为4，随着数据的增多会自动扩容至最大长度4096
+
+### BitMapContainer
+
+**当桶内数据的基数大于4096时，会采用它来存储，其本质就是长度为1024的无符号长整型数组表示的BitMap**。
+
+### 复杂度分析
+
+在创建一个新container时，如果只插入一个元素，默认会用ArrayContainer来存储。当ArrayContainer的容量超过4096后，会自动转成 BitMapContainer存储。低于4096时Arraycontainer比较省空间，高于4096时BitMapContainer比t较省空间。即**ArrayContainer存储稀疏数据，Bitmapcontainer适合存储稠密数据**，可以最大限度地避免内存浪费。
+
+增删改查的时间复杂度方面，BitMapContainer只涉及到位运算，复杂度为O(1)。而ArrayContainer需要用二分查找在有序数组中定位元素故为O(logN)。空间占用方面，BitMapcontainer恒定为8192B，而ArrayContainers的空间占用与序列基数有关 。
+
+## Hyperloglog
+
+**基于$n$重伯努利实验原理的不精准去重统计**。假设一直抛硬币，直到它出现正面为止，记为一次伯努利实验。对于$n$重伯努利实验，每此伯努利实验的抛掷次数为$k_1,k_2,\cdots,k_n$，最大抛掷次数为$k_{max}$。由极大似然估计可知，$n=2^{k_{max}}$。**假设一共有$m$轮$n$重伯努利实验，随着$m$的增加，使用最大抛掷次数的调和平均数，会使极大似然估计值与越来越接近真实值**。
+
+对于具体数据通过哈希函数映射成比特串，根据比特串的高几位进行分桶，**每个桶相当于一轮$n$重伯努利实验**。**从右往左看，比特串首次出现1的位置即为当前伯努利实验的抛掷次数$k$**，每次插入数据都将更新对应桶中的$k_{max}$。根据**极大似然估计和调和平均值**，即可最终计算出所有轮的总实验次数$m\times n$，可用以下公式计算，其中$const$为修正常数随着$m$而变化
+
+
+$$
+DV_{HLL}=const\times m\times \frac{m}{\sum^m_{j=1}\frac{1}{2^{R_j}}}
+$$
+
+
+
+- 由于哈希函数的存在，重复的数据不会进行统计
+- 所有数据都被均等的分在$m$个桶中，每个桶中有$n$个元素
+- 使用调和平均数替换平均数，不容易受到大数值的影响
 
 ## Bloom Filter
+
 > 布隆过滤器
 
-二进制向量结构(空间利用率和时间效率)，检测集合中是否存在某元素，**存在误判但不存在漏判**
+二进制向量结构(空间利用率和时间效率)，**检测集合中是否存在某元素，存在误判但不存在漏判**
 
 
 ### 原理
@@ -55,7 +108,7 @@ MembershipTest(element, filter, hash_functions)
 
 ## SkipList
 
-可替代平衡树的数据结构，依靠随机数保持数据的平衡分布。在最坏情况下效率要低于平衡树，在大多数情况下仍然非常搞笑。增删改查的时间复杂度都是O(logn)。
+**可替代平衡树的数据结构，依靠随机数保持数据的平衡分布**。在最坏情况下效率要低于平衡树，在大多数情况下仍然非常搞笑。增删改查的时间复杂度都是O(logn)。
 
 <img src="{{ site.url }}/assets/img/2020-9-5-3.png" style="zoom:50%;" />
 
@@ -155,11 +208,11 @@ delete(list, searchKey)
 ## LSM
 > Log-structured Merge-tree
 
-**将大量随机写转化为批量的顺序写**，提升磁盘写入速度，牺牲了读性能，可以使用布隆过滤器进行优化。
+**将大量随机写转化为批量的顺序写，提升磁盘写入速度，牺牲了读性能**，读性能可以使用布隆过滤器进行优化。
 
 以LevelDB为例
 
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200603113306.png)
+![]({{ site.url }}/assets/img/2020-9-5-9.png)
 
 ### 存储结构
 
@@ -196,7 +249,7 @@ delete(list, searchKey)
   <img src="{{ site.url }}/assets/img/2020-9-5-7.png" style="zoom:50%;" />
 
 ## Merkle Hash Tree
-主要用于海量数据下快速定位少量变化的数据内容，在BitTorrent，Git，比特币等中得到了应用。
+主要用于**海量数据下快速定位少量变化的数据内容**，在BitTorrent，Git，比特币等中得到了应用。
 
 <img src="{{ site.url }}/assets/img/2020-9-5-2.png" style="zoom:50%;" />
 
@@ -205,3 +258,5 @@ delete(list, searchKey)
 ## REFERENCE
 
 1. 大数据日知录
+2. [高效压缩位图RoaringBitmap的原理与应用](https://www.jianshu.com/p/818ac4e90daf)
+3. [HyperLogLog 算法的原理讲解以及 Redis 是如何应用它的](https://juejin.cn/post/6844903785744056333)

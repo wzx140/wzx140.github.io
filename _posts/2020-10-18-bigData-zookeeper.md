@@ -39,15 +39,58 @@ ZooKeeper服务由若干台结点组成，**每个结点内存中维护相同的
 
 ZAB一致性协议采用简单的多数投票仲裁方式，这意味着半数以上投票服务器存活，Zookeeper 才能正常运行，即如果有 2f+1 台服务器，则最多可以容忍f台服务器产生故障。
 
+### Serverid
+
+服务器编号，编号越大在选择算法中的权重越大。
+
+### Zxid
+
+**对于来自client的每个更新请求，ZooKeeper 都会分配一个全局唯一的递增编号Zxid(Zookeeper Transaction Id)，这个编号反应了所有事务操作的先后顺序**，表示服务器中存放的最大数据ID。实际上是一个64位的数字，高32位是Epoch用来标识 leader是否发生改变，低32位用来递增计数。值越大在选择算法中的权重越大。
+
+如果client从某个服务器切换连接到了另外一个服务器，新服务器会保证给这个client看到的数据版本不会比之前的服务器数据版本更低、这是通过比较client发送请求时传来的Zxid和服务器本身的最高编号Zxid来实现的。如果client请求Zxid编号高于服务器本身最高Zxid编号，说明服务器数据过时，则其从Leader同步内存数据到最新状态，然后再响应读操作。
+
+### Epoch
+
+逻辑时钟，表示投票次数。同一轮投票过程中的Epoch是相同的，**每投完一次票Epoch就会增加**。
+
+### 服务器状态
+
+- LOOKING: 竟选状态
+- FOLLOWING: 随从状态，同步Leader状态，参与投票 
+- OBSERVING: 观察状态，同步Leader状态，不参与投票
+- LEADING: 领导者状态
+
 ### 崩溃恢复
 
-当Leader出现网络中断、崩溃退出与重启等异常情况时，ZAB 协议就会进人恢复模式并选举产生新的Leader。当选举产生了新的 Leader 服务器，同时集群中已经有过半的机器与该Leader服务器完成了状态同步之后，ZAB协议就会退出恢复模式。
+**当Leader出现网络中断、崩溃退出与重启等异常情况**时，ZAB协议就会进人恢复模式并选举产生新的Leader。当选举产生了新的 Leader 服务器，同时集群中已经有过半的机器与该Leader服务器完成了状态同步之后，ZAB协议就会退出恢复模式。**恢复模式主要进行Leader选举和数据恢复**。
 
- Zookeeper通过**日志重放和模糊快照来对服务器故障进行容错**。**重放日志在将更新操作体现在内存数据之前先写入外存日志中避免数据丢失，模糊快照指周期性不加锁状态下对内存数据做数据快照**。因为Zookeeper可以保证数据更新操作是**幂等**的，所以在服务器故障恢复时，**加载模糊快照并根据重放日志重新应用更新操作**，系统就会恢复到最新状态
+Leader宕机时，剩下的所有Follower都会变成LOOKING状态，然后进行Leader选举流程。每个Server第一轮都会投票给自己，**投票信息为(Serverid, Zxid, Epoch)**。
+
+- 发送的Epoch大于目前的Epoch
+  - 更新本Epoch，同时清空本轮Epoch收集到的来自其他Server的选举数据
+  - 根据Zxid->Leader Serverid的顺序，判断是否需要更新自己的投票信息
+  - 将自身的投票信息广播给其他Server
+- 发送的Epoch小于目前的Epoch
+  - 直接发送自身的投票信息
+- 发送的Epoch等于目前的Epoch
+  - 根据Zxid->Leader Serverid的顺序，判断是否需要更新自己的投票信息
+  - 将自身的投票信息广播给其他Server
+- 已经收集到了半数以上服务器的选举状态，等待200ms确保没有丢失其他Server的更优选票，之后根据投票结果设置自己的角色(FOLLOWING, LEADER)，退出选举
+
+Zookeeper通过**日志重放和模糊快照来对服务器故障进行容错**。**重放日志在将更新操作体现在内存数据之前先写入外存日志中避免数据丢失，模糊快照指周期性不加锁状态下对内存数据做数据快照**。因为Zookeeper可以保证数据更新操作是**幂等**的，所以在服务器故障恢复时，**加载模糊快照并根据重放日志重新应用更新操作**，系统就会恢复到最新状态
 
 ### 消息广播
 
-Leader将client的事务请求分发给集群中其他所有的Follower，然后Leader等待Follower反馈，**当有过半数的Follower反馈信息后，Leader将再次向集群内Follower广播完成事务提交**。而Follower接收到client的事务请求，会首先将这个事务请求转发给Leader。
+Leader将Client的事务请求分发给集群中其他所有的Follower，然后Leader等待Follower反馈，**当有过半数的Follower反馈信息后，Leader将再次向集群内Follower广播完成事务提交**。**Follower接收到Client的事务请求，会首先将这个事务请求转发给Leader**。ZAB协议的核心就是只要有一台服务器提交Proposal，就要确保所有的服务器最终都能正确提交Proposal。并且Leader服务器与每一个 Follower服务器之间都维护了一个单独的FIFO消息队列进行收发消息，使用队列消息可以做到**异步解耦**。
+
+如下流程所示，相当于简化版的2PC，只要半数以上的Follower成功反馈即可提交
+
+1. Client发起一个写操作请求
+2. Leader将Client的请求转化为Proposal，并分配Zxid
+3. Leader为每个Follower分配一个单独的队列，然后将需要广播的Proposal依次放到队列中，并且根据FIFO策略进行消息发送
+4. Follower接收到Proposal后，会首先将其以事务日志的方式写入本地磁盘中，写入成功后向 Leader反馈一个ACK响应消息
+5. **Leader接收到超过半数以上Follower的ACK响应消息**后，即认为消息发送成 功,可以发送 commit消息
+6. Leader向所有Follower广播commit消息，同时自身也会完成事务提交
 
 ## 数据模型
 
@@ -82,12 +125,6 @@ Zookeeper采用**ACL(*Access Control Lists*)策略来进行权限控制**，类�
 - version: 当前ZNode的版本
 - cversion: 当前ZNode子节点的版本
 - cversion: 当前ZNode的ACL版本
-
-### zxid
-
-**对于来自client的每个更新请求，ZooKeeper 都会分配一个全局唯一的递增编号zxid(Zookeeper Transaction Id)，这个编号反应了所有事务操作的先后顺序**。
-
-如果client从某个服务器切换连接到了另外一个服务器，新服务器会保证给这个client看到的数据版本不会比之前的服务器数据版本更低、这是通过比较client发送请求时传来的zxid和服务器本身的最高编号zxid来实现的。如果client请求zxid编号高于服务器本身最高zxid编号，说明服务器数据过时，则其从Leader同步内存数据到最新状态，然后再响应读操作。
 
 ## 应用场景
 

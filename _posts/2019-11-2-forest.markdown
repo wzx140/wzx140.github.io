@@ -140,7 +140,25 @@ void SeqTraverse(TreeNode* T) {
 
 如果有需要还可以再开个数组保存结点的值
 
+### 查找
+
+给定一个结点，递归找到其所在子树的根结点
+
+如果运用**路径压缩**，在查找后，将其作为根结点的子结点，目的是减少树的层数，从而减少寻找父结点的时间
+
+```c++
+int find(int x) {
+	if (parents[x] == x) {
+		return x;
+	}
+	// 路径压缩
+	parents[x] = find(parents[x]);
+	return parents[x];
+}
+```
+
 ### 归并
+
 出现了一个新的等价关系，我们需要根据这个等价关系对森林做出调整
 1. 递归的查找到两个结点所在子树的根结点
 2. 若根结点不相同，则将数量较少的树的根结点作为另一个树的子结点
@@ -149,11 +167,11 @@ void SeqTraverse(TreeNode* T) {
 
 ```c++
 void aUnion(int x, int y) {
-	int root1 = this->find(x);
-	int root2 = this->find(y);
+	int root1 = find(x);
+	int root2 = find(y);
 
 	// 加权合并
-	if (this->count[root1] < this->count[root2]) {
+	if (count[root1] < count[root2]) {
 		int temp = root1;
 		root1 = root2;
 		root2 = temp;
@@ -163,22 +181,6 @@ void aUnion(int x, int y) {
 }
 ```
 
-### 查找
-给定一个结点，递归找到其所在子树的根结点
-
-如果运用**路径压缩**，在查找后，将其作为根结点的子结点，目的是减少树的层数，从而减少寻找父结点的时间
-
-```c++
-int find(int x) {
-	if (this->parents[x] == x) {
-		return x;
-	}
-	// 路径压缩
-	this->parents[x] = find(this->parents[x]);
-	return this->parents[x];
-}
-```
-
 ## REFERENCE
-[1][树的定义、树与二叉树的等价转换](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/JwdEN/shu-de-ding-yi-shu-yu-er-cha-shu-de-deng-jie-zhuan-huan) - 北京大学[EB/OL]. Coursera.  
-[2][树的顺序存储和K叉树](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/JaZZ8/shu-de-shun-xu-cun-chu-he-kcha-shu) - 北京大学[EB/OL]. Coursera.
+1. [树的定义、树与二叉树的等价转换](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/JwdEN/shu-de-ding-yi-shu-yu-er-cha-shu-de-deng-jie-zhuan-huan)
+2. [树的顺序存储和K叉树](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/JaZZ8/shu-de-shun-xu-cun-chu-he-kcha-shu)

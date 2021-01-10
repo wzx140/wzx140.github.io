@@ -17,7 +17,7 @@ author: wzx
 ## 定义
 ### 树
 树是 $n$ 个结点的有限集。$n=0$ 时称为空树
-#### 元素
+### 元素
 - 结点
     - 根结点
     - 父结点
@@ -45,7 +45,9 @@ author: wzx
 *Binary Tree*
 
 二叉树是 $n(n>=0)$ 个结点的有限集合，由一个根节点和两棵互不相交的，称为左子树和右子树的二叉树组成
+
 ![]({{ site.url }}/assets/img/2019-3-16-2.png){:height="300" width="300"}
+
 #### 满二叉树
 *Full Binary Tree*
 
@@ -78,7 +80,7 @@ author: wzx
 
 ![]({{ site.url }}/assets/img/2019-3-16-4.gif)
 
-## 二叉树的性质
+## 性质
 1. 在二叉树中，第 $i$ 层上最多有 $2^i$ 个结点( $i\ge 0$ )
 
 2. 深度为 $k$ 的二叉树至多有 $2^{k+1}-1$ 个结点( $k\ge0$ )
@@ -106,160 +108,175 @@ author: wzx
 所以，$\lfloor \frac{2^{k+1}+2j-3-1}{2} \rfloor=\lfloor \frac{2^{k+1}+2j-2-1}{2} \rfloor=2^k-2+j$
 
 
-## 二叉树的遍历
+## 遍历
 二叉树的遍历就是二叉树结点的线性化
 
 表达式的二叉树的前序遍历和后序遍历的结果就是前缀和后缀表达式
 ### 前序遍历
 当到达某个结点时，先输出该结点，再访问左子结点，最后访问右子结点
-```c++
-void preOrderTraverse(BinaryTreeNode* T) {
-	if (T == NULL) {
-		return;
-	}
-	std::cout << T->data;
-	preOrderTraverse(T->left);
-	preOrderTraverse(T->right);
+```java
+public List<Integer> preorderTraversal(TreeNode root) {
+  List<Integer> res = new LinkedList<>();
+  recursion(root, res);
+  return res;
+}
+
+private void recursion(TreeNode root, List<Integer> res) {
+  if (root == null) return;
+  res.add(root.val);
+  recursion(root.left, res);
+  recursion(root.right, res);
 }
 ```
-#### 非递归实现
+非递归实现
 
-```c++
-void preOrderTraverseNR(BinaryTreeNode* T) {
-    std::stack<BinaryTreeNode*> cache;
+```java
+public List<Integer> preorderTraversal(TreeNode root) {
+  List<Integer> res = new LinkedList<>();
+  if (root == null) return res;
 
-	// 栈底监视哨
-	cache.push(NULL);
+  Deque<TreeNode> stack = new LinkedList<>();
+  stack.addFirst(root);
+  while (!stack.isEmpty()) {
+    TreeNode node = stack.pollFirst();
+    // 先访问根结点
+    res.add(node.val);
+    // 注意左右子结点的入栈顺序
+    if (node.right != null) stack.addFirst(node.right);
+    if (node.left != null) stack.addFirst(node.left);
+  }
 
-	while (T != NULL) {
-
-		// 首先访问当前结点
-		std::cout << T->data;
-
-		// 最后访问右子树
-		if (T->right != NULL) {
-			cache.push(T->right);
-		}
-
-		// 下次循环访问左子树
-		if (T->left != NULL) {
-			T = T->left;
-		} else {
-			// 没有左子树，则退回访问缓存的右子树
-			T = cache.top();
-			cache.pop();
-		}
-	}
+  return res;
 }
 ```
 
 ### 中序遍历
 当到达某个结点时，先访问左子结点，再输出该结点，最后访问右子结点
-```c++
-void inOrderTraverse(BinaryTreeNode* T) {
-	if (T == NULL) {
-		return;
-	}
-	inOrderTraverse(T->left);
-	std::cout << T->data;
-	inOrderTraverse(T->right);
+```java
+public List<Integer> inorderTraversal(TreeNode root) {
+  List<Integer> res = new LinkedList<>();
+  recursion(root, res);
+  return res;
+}
+
+private void recursion(TreeNode root, List<Integer> res) {
+  if (root == null) return;
+  recursion(root.left, res);
+  res.add(root.val);
+  recursion(root.right, res);
 }
 ```
-#### 非递归实现
+非递归实现
 
-```c++
-void inOrderTraverseNR(BinaryTreeNode* T) {
-	std::stack<BinaryTreeNode*> cache;
+```java
+public List<Integer> inorderTraversal(TreeNode root) {
+  List<Integer> res = new LinkedList<>();
 
-	while (!cache.empty() || T) {
-		if (T != NULL) {
-			// 先访问左子树
-			cache.push(T);
-			T = T->left;
-		} else {
-			// 左子树访问完毕
-			T = cache.top();
-			cache.pop();
-			// 访问当前结点
-			std::cout << T->data;
-			// 访问右子树
-			T = T->right;
-		}
-	}
+  // (结点,该节点是否访问过左子树)
+  Deque<Map.Entry<TreeNode, Boolean>> stack = new LinkedList<>();
+  if (root != null) stack.addFirst(new AbstractMap.SimpleEntry<>(root, false));
+  while (!stack.isEmpty()) {
+    Map.Entry<TreeNode, Boolean> entry = stack.peekFirst();
+    boolean left = entry.getValue();
+    TreeNode node = entry.getKey();
+    if (!left) {
+      // 没有访问过左子树，先访问左子树再访问当前结点
+      entry.setValue(true);
+      if (node.left != null) stack.addFirst(new AbstractMap.SimpleEntry<>(node.left, false));
+    } else {
+      // 访问过左子树，先访问当前结点再访问右子树
+      res.add(node.val);
+      stack.removeFirst();
+      if (node.right != null) stack.addFirst(new AbstractMap.SimpleEntry<>(node.right, false));
+    }
+  }
+
+  return res;
 }
 ```
 ### 后序遍历
 当到达某个结点时，先访问左子结点，再访问右子结点，最后输出该结点
-```c++
-void postOrderTraverse(BinaryTreeNode* T) {
-	if (T == NULL) {
-		return;
-	}
-	behOrderTraverse(T->left);
-	behOrderTraverse(T->right);
-	std::cout << T->data;
+```java
+public List<Integer> postorderTraversal(TreeNode root) {
+  List<Integer> res = new LinkedList<>();
+  recursion(root, res);
+  return res;
+}
+
+private void recursion(TreeNode root, List<Integer> res) {
+  if (root == null) return;
+
+  recursion(root.left, res);
+  recursion(root.right, res);
+  res.add(root.val);
 }
 ```
 
-#### 非递归实现
+非递归实现
 
-```c++
-void postOrderTraverseNR(BinaryTreeNode* T) {
-	// 除了结点，还要保存返回地址(从左子树还是从右子树返回)
-	std::stack<CacheElem> cache;
-	CacheElem elem;
+```java
+private enum State{
+  // 左子结点没有访问
+  LEFT,
+  // 右子结点没有访问
+  RIGHT,
+  // 结点没有访问
+  CUR
+}
 
-	while (!cache.empty() || T != NULL) {
+public List<Integer> postorderTraversal2(TreeNode root) {
+  List<Integer> res = new LinkedList<>();
+  // (结点, 该节点的访问状态)
+  Deque<Map.Entry<TreeNode, State>> stack = new LinkedList<>();
+  if (root != null) stack.addFirst(new AbstractMap.SimpleEntry<>(root, State.LEFT));
+  while (!stack.isEmpty()) {
+    Map.Entry<TreeNode, State> entry = stack.peekFirst();
+    TreeNode node = entry.getKey();
+    State state = entry.getValue();
 
-		if (T != NULL) {
-			// 先访问左子树
-			elem.node = T;
-			elem.tag = Tags::Left;
-			cache.push(elem);
+    if (state == State.LEFT) {
+      // 先访问左子树
+      entry.setValue(State.RIGHT);
+      if (node.left != null) stack.addFirst(new AbstractMap.SimpleEntry<>(node.left, State.LEFT));
+    } else if (state == State.RIGHT) {
+      // 再访问右子树
+      entry.setValue(State.CUR);
+      if (node.right != null) stack.addFirst(new AbstractMap.SimpleEntry<>(node.right, State.LEFT));
+    } else {
+      // 最后访问当前结点
+      res.add(node.val);
+      stack.removeFirst();
+    }
+  }
 
-			T = T->left;
-		} else {
-			elem = cache.top();
-			T = elem.node;
-			cache.pop();
-
-			if (elem.tag == Tags::Left) {
-				// 如果是从左子节点返回，则访问右子结点
-				elem.tag = Tags::Right;
-				cache.push(elem);
-
-				T = T->right;
-			} else {
-				// 从右子结点返回，则访问当前结点
-				std::cout << T->data;
-				T = NULL;
-			}
-		}
-	}
+  return res;
 }
 ```
 
 ### 层序遍历
 广度优先的算法，所以使用队列实现
-```c++
-void SeqTraverse(BinaryTreeNode* T) {
-	queue<BinaryTreeNode*> aQueue;
-	aQueue.push(T);
-	while (!aQueue.empty()) {
-		BinaryTreeNode* root = aQueue.front();
-		aQueue.pop();
-		std::cout << root->data;
+```java
+public List<List<Integer>> levelOrder(TreeNode root) {
+  List<List<Integer>> res = new LinkedList<>();
 
-		if (root->left != NULL) {
-			aQueue.push(root->left);
-		if (root->right != NULL) {
-			aQueue.push(root->right);
-		}
-	}
+  Deque<TreeNode> queue = new LinkedList<>();
+  if (root != null) queue.addFirst(root);
+  while (!queue.isEmpty()) {
+    int size = queue.size();
+    List<Integer> layer = new LinkedList<>();
+    for (int i = 0; i < size; i++) {
+      TreeNode node = queue.pollLast();
+      layer.add(node.val);
+      if (node.left != null) queue.addFirst(node.left);
+      if (node.right != null) queue.addFirst(node.right);
+    }
+    res.add(layer);
+  }
+  return res;
 }
 ```
 
-## 二叉树的重建
+## 重建
 二叉树的先跟、中根和后根序列中的任何一个都不能唯一确定一棵二叉树，必须要组合使用
 
 ### 先跟+中根

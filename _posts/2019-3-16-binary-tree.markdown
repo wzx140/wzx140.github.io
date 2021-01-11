@@ -94,7 +94,7 @@ author: wzx
 6. 有 $n$ 个结点的**完全二叉树**的高度为 $\lfloor log_2n \rfloor+1$
 
 7. 有 $n$ 个结点的**完全二叉树**的节点按层序编号(**起始索引为0**)，对于任意结点 $i$ ：
-    - 当 $0<i<n$，则其父结点为 $\lfloor \frac{i-1}{2} \rfloor$
+    - 当 $0<i<n$，则其父结点为 $\lfloor \frac{i-1}{2} \rfloor$，故其左子结点为 $2i+1$，右子结点为$2i+2$
     - 当 $i$ 为偶数且 $0<i<n$，为右结 点，则左兄弟结点为 $i-1$，否则没有左兄弟
     - 当 $i$ 为奇数且 $i+1<n$，为左结点，则右兄弟结点为 $i+1$，否则没有右兄弟
 
@@ -284,22 +284,107 @@ public List<List<Integer>> levelOrder(TreeNode root) {
 - 中根序列={左子树的中根序列+根结点+右子树的中根序列}
 - 先跟序列={根结点+左子树的先跟序列+右子树的先跟序列}
 
-[递归求解](https://github.com/wzx140/LeetCode/blob/master/src/main/java/com/wzx/leetcode/No105ConstructBinaryTreeFromPreorderAndInorderTraversal.java)
+```java
+public TreeNode buildTree(int[] preorder, int[] inorder) {
+  // 中根序列的倒排索引，加速查找
+  Map<Integer, Integer> InvertedIndex = new HashMap<>(inorder.length);
+  for (int i = 0; i < inorder.length; i++) {
+    InvertedIndex.put(inorder[i], i);
+  }
+
+  return recursion(preorder, 0, preorder.length - 1, 0, inorder.length - 1, InvertedIndex);
+}
+
+private TreeNode recursion(int[] preorder, int preBegin, int preEnd, int InBegin, int InEnd, Map<Integer, Integer> InvertedIndex) {
+  if (preBegin > preEnd) return null;
+
+  // 由先跟序列得到root
+  int rootVal = preorder[preBegin];
+  TreeNode root = new TreeNode(rootVal);
+  // 在中根序列中找到root
+  int inRootIndex = InvertedIndex.get(rootVal);
+  // 左右子树长度
+  int leftNum = inRootIndex - InBegin;
+  int rightNum = InEnd - inRootIndex;
+
+  root.left = recursion(preorder, preBegin + 1, preBegin + leftNum, InBegin, inRootIndex - 1, InvertedIndex);
+  root.right = recursion(preorder, preEnd - rightNum + 1, preEnd, inRootIndex + 1, InEnd, InvertedIndex);
+  return root;
+}
+```
 
 ### 中根+后根
 - 后根序列的最后一个元素是根结点
 - 中根序列={左子树的中根序列+根结点+右子树的中根序列}
 - 后跟序列={左子树的后根序列+右子树的后根序列+根结点}
 
-[递归求解](https://github.com/wzx140/LeetCode/blob/master/src/main/java/com/wzx/leetcode/No106ConstructBinaryTreeFromInorderAndPostorderTraversal.java)
+```java
+public TreeNode buildTree(int[] inorder, int[] postorder) {
+  // 中根序列的倒排索引，加速查找
+  Map<Integer, Integer> invertedIndex = new HashMap<>(inorder.length);
+  for (int i = 0; i < inorder.length; i++) {
+    invertedIndex.put(inorder[i], i);
+  }
+
+  return recursion(0, inorder.length - 1, postorder, 0, postorder.length - 1, invertedIndex);
+}
+
+public TreeNode recursion(int inBegin, int inEnd, int[] postorder, int postBegin, int postEnd, Map<Integer, Integer> invertedIndex) {
+  if (inBegin > inEnd) return null;
+
+  // 由后根序列得到root
+  int rootVal = postorder[postEnd];
+  TreeNode root = new TreeNode(rootVal);
+  // 中根序列中找到root
+  int inRootIndex = invertedIndex.get(rootVal);
+  // 左右子树长度
+  int leftNum = inRootIndex - inBegin;
+  int rightNum = inEnd - inRootIndex;
+
+  root.left = recursion(inBegin, inRootIndex - 1, postorder, postBegin, postBegin + leftNum - 1, invertedIndex);
+  root.right = recursion(inRootIndex + 1, inEnd, postorder, postEnd - 1 - rightNum + 1, postEnd - 1, invertedIndex);
+  return root;
+}
+```
 
 ### 先根+后根
-- 先跟序列中，左子树先根序列的首个元素为根结点的左子结点，右子树先跟序列的首个元素为根结点的右子结点
-- 后根序列中，左子树后根序列的末尾元素为根结点的左子结点，右子树后根序列中的末尾元素为根结点的右子结点
 - 先跟序列={根结点+左子树的先跟序列+右子树的先跟序列}
 - 后跟序列={左子树的后根序列+右子树的后根序列+根结点}
+- 先跟序列中，左子树先根序列的首个元素为根结点的左子结点，右子树先跟序列的首个元素为根结点的右子结点
+- 后根序列中，左子树后根序列的末尾元素为根结点的左子结点，右子树后根序列中的末尾元素为根结点的右子结点
 
-[递归求解](https://github.com/wzx140/LeetCode/blob/master/src/main/java/com/wzx/leetcode/No889ConstructBinaryTreeFromPreorderAndPostorderTraversal.java)
+```java
+public TreeNode constructFromPrePost(int[] pre, int[] post) {
+  // 后跟序列的倒排索引，加速查找
+  Map<Integer, Integer> invertedIndex = new HashMap<>(pre.length);
+  for (int i = 0; i < post.length; i++) {
+    invertedIndex.put(post[i], i);
+  }
+
+  return recursion(pre, 0, pre.length - 1, 0, pre.length - 1, invertedIndex);
+}
+
+private TreeNode recursion(int[] pre, int preBegin, int preEnd, int postBegin, int postEnd, Map<Integer, Integer> invertedIndex) {
+  if (preBegin > preEnd) return null;
+  if (preBegin == preEnd) return new TreeNode(pre[preBegin]);
+
+  // 在先根序列中找到root和其左子结点，默认左子树优先存在
+  int rootVal = pre[preBegin];
+  TreeNode root = new TreeNode(rootVal);
+  int leftVal = pre[preBegin + 1];
+  // 在后根序列中找到root左子结点
+  int postLeftIndex = invertedIndex.get(leftVal);
+  // 左右子树长度
+  int leftNum = postLeftIndex - postBegin + 1;
+  int rightNum = postEnd - 1 - postBegin + 1 - leftNum;
+
+  root.left = recursion(pre, preBegin + 1, preBegin + leftNum, postBegin, postBegin + leftNum - 1, invertedIndex);
+  root.right = recursion(pre, preEnd - rightNum + 1, preEnd, postEnd - rightNum, postEnd - 1, invertedIndex);
+  return root;
+}
+```
+
+
 
 ## Reference
 [1]程杰. [大话数据结构](https://book.douban.com/subject/6424904/)[M]. 清华大学出版社, 2011.  

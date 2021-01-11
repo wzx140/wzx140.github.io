@@ -29,8 +29,7 @@ author: wzx
 1. 用`siftDown()`对当前结点调整，使其作为根结点的子树为为最小堆
 2. 从最后一个**分支结点**开始，**自下向上**执行(1)中的步骤
 
-### `siftDown`
-从当前结点开始，比较它和它的子结点，如果它大于最小的子结点，就交换它和子结点的值，直至树的最后一层，这样就可以调整为当前结点作为根结点的二叉树为为最小堆
+如下所示为`siftDown()`方法，**从当前结点开始，比较它和它的子结点，如果它大于最小的子结点，就交换它和子结点的值，直至树的最后一层**，这样就可以调整为当前结点作为根结点的二叉树为为最小堆。有关父子节点间的索引关系，参见[二叉树的性质]({% post_url 2019-3-16-binary-tree %}#二叉树的性质)
 
 ```c++
 void MinHeap::SiftDown(int position) {
@@ -62,10 +61,7 @@ void MinHeap::SiftDown(int position) {
 	this->heapArray[parent] = temp;
 }
 ```
-有关父子节点间的索引关系，参见[二叉树的性质]({% post_url 2019-3-16-binary-tree %}#二叉树的性质)
-
-### 实现
-最后一个分支结点的下标应为 $\lfloor \frac{n}{2} \rfloor-1$
+建堆时，从最后一个结点开始。最后一个分支结点的下标应为 $\lfloor \frac{n}{2} \rfloor-1$
 ```c++
 void MinHeap::buildHeap() {
 	for (int i = this->size / 2 - 1; i >= 0; i--) {
@@ -75,8 +71,7 @@ void MinHeap::buildHeap() {
 ```
 
 ## 插入
-### `siftUp`
-与 `siftDown`类似。从当前结点开始，比较它和它的父结点，如果它小于父结点，就交换它和父结点的值，直至第0层
+与 `siftDown()`类似。`siftUp()`从当前结点开始，**比较它和它的父结点，如果它小于父结点，就交换它和父结点的值，直至第0层**
 ```c++
 void MinHeap::SiftUp(int position) {
 	int child = position;
@@ -104,8 +99,7 @@ void MinHeap::SiftUp(int position) {
 }
 ```
 
-### 实现
-将插入的元素放在最后一个叶结点后面，再用 `siftUp` 向上传播
+插入时，将插入的元素放在最后一个叶结点后面，再用 `siftUp()` 向上传播
 
 ```c++
 bool MinHeap::push(int value) {
@@ -140,5 +134,108 @@ bool MinHeap::pop() {
 
 - 出队: $O(1)$
 
+## 完整实现
+
+下面使用Java完整实现了一个带泛型并且可以自定义比较器的堆结构
+
+```java
+public class Heap<E> {
+  private final Object[] heap;
+  private int size = 0;
+  private final Comparator<? super E> comparator;
+
+  public Heap(int size, Comparator<? super E> comparator) {
+    heap = new Object[size];
+    this.comparator = comparator;
+  }
+
+  public Heap(Collection<E> data, Comparator<? super E> comparator) {
+    this.heap = data.toArray(new Object[0]);
+    this.size = data.size();
+    this.comparator = comparator;
+    // 筛选法建堆, 由下往上调用siftDown
+    // 最后一个分支结点下标为 n/2
+    for (int i = size / 2 - 1; i >= 0; i--) {
+      siftDown(i);
+    }
+  }
+
+  public int size() {
+    return size;
+  }
+
+  public void add(E val) {
+    heap[size] = val;
+    siftUp(size);
+    size++;
+  }
+
+  public void pop() {
+    size--;
+    heap[0] = heap[size];
+    siftDown(0);
+  }
+
+  public E peek() {
+    return (E) heap[0];
+  }
+
+  /**
+   * 从第i个结点向下调整
+   */
+  private void siftDown(int i) {
+    int parent = i;
+    // i结点暂存
+    E record = (E) heap[parent];
+    // 左子结点
+    int child = 2 * parent + 1;
+    while (child < size) {
+      // 取左右子结点中较小的
+      if (child + 1 < size && comparator.compare((E) heap[child + 1], (E) heap[child]) < 0) {
+        child = child + 1;
+      }
+      // 当前结点大于子结点则向下传播
+      if (comparator.compare(record, (E) heap[child]) > 0) {
+        heap[parent] = heap[child];
+      } else {
+        break;
+      }
+      // 更新结点索引
+      parent = child;
+      child = 2 * parent + 1;
+    }
+    heap[parent] = record;
+  }
+
+  /**
+   * 从第i个结点向上调整
+   */
+  private void siftUp(int i) {
+    int child = i;
+    // i结点暂存
+    E record = (E) heap[child];
+    // 父结点
+    int parent = (child - 1) / 2;
+    // 防止出现child=parent的死循环
+    while (child > 0) {
+      // 当前结点小于父结点则将当前结点向上传播
+      if (comparator.compare(record, (E) heap[parent]) < 0) {
+        // 给当前结点留出空位
+        heap[child] = heap[parent];
+      } else {
+        break;
+      }
+      // 更新结点索引
+      child = parent;
+      parent = (child - 1) / 2;
+    }
+    heap[child] = record;
+  }
+}
+```
+
+
+
 ## REFERENCE
+
 [1][堆与优先队列](https://www.coursera.org/learn/shuju-jiegou-suanfa/lecture/WY3aq/dui-yu-you-xian-dui-lie) - 北京大学[EB/OL]. Coursera.

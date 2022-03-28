@@ -24,7 +24,7 @@ author: wzx
 
 由于网络分区是小概率事件，在未产生网络分区的情况，应保证AC。**发生网络分区时，系统可以识别出来并且进入分区模式，可能限制某些系统操作，最后网络分区解决后，恢复数据的一致性或弥补错误。**
 
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200519171858.png)
+![]({{ site.url }}/assets/img/2020-9-5-24.png)
 
 ## ACID
 **关系型数据库**的采纳原则
@@ -51,7 +51,7 @@ ACID强调数据一致性，BASE强调可用性
 调用方反复执行统一操作与只正确执行一次操作效果相同
 
 # 一致性模型
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200519194303.png)
+![]({{ site.url }}/assets/img/2020-9-5-25.png)
 - 强一致性：对某个数据更新后，后续观察者应感知这次变化并以此为基础读写
 - 弱一致性
 - 最终一致性：需要时间段才能达到强一致性的性质(数据的副本同步需要时间)
@@ -61,7 +61,7 @@ ACID强调数据一致性，BASE强调可用性
 - 单调读一致性：读取的数据的版本在时间上只能变新
 - 单调写一致性：保证多次写操作的序列化，写操作一致
 
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200519195927.png)
+![]({{ site.url }}/assets/img/2020-9-5-26.png)
 
 # 多副本更新策略
 ## 同时更新

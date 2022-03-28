@@ -19,7 +19,7 @@ author: wzx
 
 做数据路由时，首先根据`key-partition`找到对应的分片，再根据`partition-machine`找到对应的机器。
 
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200512192329.png)
+![]({{ site.url }}/assets/img/2020-9-5-20.png)
 
 ## 哈希分片
 **有利于点查询**。
@@ -37,7 +37,7 @@ author: wzx
 - 哈希函数，数据记录和bucket的映射
 - 表格记录，bucket和物理机的映射
 
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200512192915.png)
+![]({{ site.url }}/assets/img/2020-9-5-21.png)
 
 虚拟桶对应分片空间，新机器加入只需修改`partition-machine`就能完成拓展。
 
@@ -46,7 +46,7 @@ author: wzx
 
 **一致性哈希是DHT的一种实现方式**，下面介绍Chord系统中提出的一致性哈希算法。将哈希空间切分，每个物理结点保存一定范围的数据记录。如图所示，N14保存6~14(哈希值)的数据，N20保存15~20的数据。
 
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200512194433.png)
+![]({{ site.url }}/assets/img/2020-9-5-22.png)
 
 #### 路由算法
 1. 机器接收到查找请求，先在本地查找，不存在则发送到下一台机器查找
@@ -76,7 +76,7 @@ author: wzx
 ## Range Partition
 主键排序，主键空间划分为多个分片，每个分片映射到一台物理机上。**有利于范围查询**
 
-![](https://gitee.com/wangzxuan/images_bed/raw/master/images/20200512195411.png)
+![]({{ site.url }}/assets/img/2020-9-5-23.png)
 
 分片映射表一般采用LSM树
 

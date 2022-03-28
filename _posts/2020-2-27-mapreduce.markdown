@@ -40,7 +40,7 @@ reduce(String key, Iterator values):
 
 ## 编程模型
 
-![](https://wangzxuan.gitee.io/images_bed/images/2019-12-23-1.png)
+![]({{ site.url }}/assets/img/2019-12-23-1.png)
 
 1. `InputFormat`：定义**数据文件如何分割和读取**，不同的子类会有不同分割和读取行为。
     - 选择文件或其他对象作为**数据输入**

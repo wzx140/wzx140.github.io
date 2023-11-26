@@ -636,7 +636,16 @@ private[memory] def getExecutionMemoryUsageForTask(taskAttemptId: Long): Long = 
 
 ## 总结
 
-- `UnifiedMemoryManager`: 在堆内和堆外内存中，计算内存和存储内存中间间隔一条虚线是可以互相借用的。
+- `UnifiedMemoryManager`: 在堆内和堆外内存中，计算内存和存储内存中间间隔一条虚线是可以互相借用的
+
+  - 计算内存主要用于 shuffle、join、sort、aggregation 中的缓存
+
+  - 存储内存主要用于缓存 RDD、展开 partition、存放广播变量
+
+  - **计算和存储的占比由`spark.memory.fraction` 配置，默认是0.6，即偏向于存储内存池。其中存储内存池的堆内内存默认占比是由 `spark.memory.storageFraction` 参数决定，默认是 0.5 ，即存储内存池的堆内内存默认占比为0.3。**
+
+  - 计算内存和存储内存可以相互借用，但是**缓存block时可能会因为计算内存池占用了大量的内存池不能释放导致缓存block失败，在这种情况下，新的block会根据`StorageLevel`做相应处理**
+
 
   <img src="{{ site.url }}/assets/img/2020-9-9-2.png" style="zoom: 67%;" />
 

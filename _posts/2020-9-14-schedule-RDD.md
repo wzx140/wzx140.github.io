@@ -247,8 +247,12 @@ class HashPartitioner(partitions: Int) extends Partitioner {
 - 总取样大小`sampleSize`为 20*partition个数，最大不超过1000000
 - 单个分区的取样大小`sampleSizePerPartition`为 3*`sampleSize`/partition个数，**采样数量比实际需要的数量多 3 倍，在数据倾斜的情况下尽量使每个分区采样数量足够**
 - `sketch()`方法对RDD的每个partition进行根据`sampleSizePerPartition`进行水塘采样，在此方法中的`SamplingUtils.reservoirSampleAndCount()`实现了水塘抽样
-- 由于partition中数据量各不相同，所以大partition的采样量是不足的。如果 partition 数据条数 * 抽样率比抽样个数还要大时，则记录partition id之后使用`RDD.sample()`方法进行重采样，否则记录采样key和权重(当前partition的总数据量/采样量即采样间隔)
-- 调用`determineBounds()`方法根据采样key的权重解析出partition的划分界限
+- 由于partition中数据量各不相同，所以大partition的采样量是不足的。**如果 partition 数据条数 * 抽样率比抽样个数还要大时，则记录partition id之后使用`RDD.sample()`方法进行重采样**
+- 记录采样key和权重(当前partition的数据条数/采样量)
+- 调用`determineBounds()`方法
+  - 根据采样 key 进行排序
+  - 根据采样 key 的权重解析出 partition 的划分界限
+
 
 ```scala
 def sketch[K : ClassTag](

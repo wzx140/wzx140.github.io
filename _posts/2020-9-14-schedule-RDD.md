@@ -143,23 +143,23 @@ RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子�
   abstract class Dependency[T] extends Serializable {
     def rdd: RDD[T]
   }
-
+  
   @DeveloperApi
   abstract class NarrowDependency[T](_rdd: RDD[T]) extends Dependency[T] {
     def getParents(partitionId: Int): Seq[Int]
-
+  
     override def rdd: RDD[T] = _rdd
   }
-
+  
   @DeveloperApi
   class OneToOneDependency[T](rdd: RDD[T]) extends NarrowDependency[T](rdd) {
     override def getParents(partitionId: Int): List[Int] = List(partitionId)
   }
-
+  
   @DeveloperApi
   class RangeDependency[T](rdd: RDD[T], inStart: Int, outStart: Int, length: Int)
     extends NarrowDependency[T](rdd) {
-
+  
     override def getParents(partitionId: Int): List[Int] = {
       if (partitionId >= outStart && partitionId < outStart + length) {
         List(partitionId - outStart + inStart)
@@ -168,7 +168,7 @@ RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子�
       }
     }
   }
-
+  
   @DeveloperApi
   class ShuffleDependency[K: ClassTag, V: ClassTag, C: ClassTag](
       @transient private val _rdd: RDD[_ <: Product2[K, V]],
@@ -178,24 +178,24 @@ RDD应用了**模板方法**模式，抽象类RDD定义了以下接口，在子�
       val aggregator: Option[Aggregator[K, V, C]] = None,
       val mapSideCombine: Boolean = false)
     extends Dependency[Product2[K, V]] {
-
+  
     if (mapSideCombine) {
       require(aggregator.isDefined, "Map-side combine without Aggregator specified!")
     }
     override def rdd: RDD[Product2[K, V]] = _rdd.asInstanceOf[RDD[Product2[K, V]]]
-
+  
     private[spark] val keyClassName: String = reflect.classTag[K].runtimeClass.getName
     private[spark] val valueClassName: String = reflect.classTag[V].runtimeClass.getName
     // Note: It's possible that the combiner class tag is null, if the combineByKey
     // methods in PairRDDFunctions are used instead of combineByKeyWithClassTag.
     private[spark] val combinerClassName: Option[String] =
       Option(reflect.classTag[C]).map(_.runtimeClass.getName)
-
+  
     val shuffleId: Int = _rdd.context.newShuffleId()
-
+  
     val shuffleHandle: ShuffleHandle = _rdd.context.env.shuffleManager.registerShuffle(
       shuffleId, _rdd.partitions.length, this)
-
+  
     _rdd.sparkContext.cleaner.foreach(_.registerShuffleForCleanup(this))
   }
   ```
@@ -244,10 +244,10 @@ class HashPartitioner(partitions: Int) extends Partitioner {
 
 如代码所示初始化`rangeBounds`序列的过程，`rangeBounds`保存了key和partition id的映射关系
 
-- 取样大小`sampleSize`为 20*partition个数，最大不超过1000000
-- 单个分区的取样大小`sampleSizePerPartition`为 3*`sampleSize`/partition个数
+- 总取样大小`sampleSize`为 20*partition个数，最大不超过1000000
+- 单个分区的取样大小`sampleSizePerPartition`为 3*`sampleSize`/partition个数，**采样数量比实际需要的数量多 3 倍，在数据倾斜的情况下尽量使每个分区采样数量足够**
 - `sketch()`方法对RDD的每个partition进行根据`sampleSizePerPartition`进行水塘采样，在此方法中的`SamplingUtils.reservoirSampleAndCount()`实现了水塘抽样
-- 由于partition中数据量各不相同，所以大partition的采样量是不足的。如果partition中的数据比平均值还要大则记录partition id之后使用`RDD.sample()`方法进行重采样，否则记录采样key和权重(当前partition的总数据量/采样量即采样间隔)
+- 由于partition中数据量各不相同，所以大partition的采样量是不足的。如果 partition 数据条数 * 抽样率比抽样个数还要大时，则记录partition id之后使用`RDD.sample()`方法进行重采样，否则记录采样key和权重(当前partition的总数据量/采样量即采样间隔)
 - 调用`determineBounds()`方法根据采样key的权重解析出partition的划分界限
 
 ```scala
@@ -402,7 +402,7 @@ def getPartition(key: Any): Int = {
     val callsiteLongForm = Option(SparkEnv.get)
     .map(_.conf.get(EVENT_LOG_CALLSITE_LONG_FORM))
     .getOrElse(false)
-
+  
     val callSite = if (callsiteLongForm) {
       rdd.creationSite.longForm
     } else {

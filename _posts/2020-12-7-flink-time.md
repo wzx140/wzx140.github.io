@@ -16,13 +16,23 @@ Flink通过Window、Time、Watermark完成乱序事件处理，定义窗口以�
 ## Window
 流式计算最终的目的是去统计数据产生汇总结果的，而**在无界数据集上，如果做一个全局的窗口统计是不现实的，所以只能去划定一定大小的窗口范围去汇总**
 
+![]({{ site.url }}/assets/img/2020-12-7-5.png)
+
 - 滚动窗口(Tumbling Window): 窗口数据有固定的大小(时间，计数)，窗口不会重叠
 - 滑动窗口(Sliding Window): 窗口数据有固定的大小(时间)，有生成间隔，窗口会重叠
 - 会话窗口(Session Window): 窗口数据没有固定的大小，根据会话参数划分，窗口不会重叠
 
-![]({{ site.url }}/assets/img/2020-12-7-5.png)
+窗口是时间驱动(如每30s)或者事件驱动(如每100个元素)的。
 
-窗口是时间驱动(如每30s)或者事件驱动(如每100个元素)的。Flink使用**assigner(分配record到特定窗口)，trigger(触发窗口的执行的条件)，evictor(trigger触发后，处理数据前，过滤一部分record)来配置一个窗口**。以下代码描述了建立一个`GlobalWindow`，当窗口积累了1000个事件时，保留最新的100个并触发计算。
+![]({{ site.url }}/assets/img/2020-12-7-window-1.png)
+
+- WindowAssigner：根据 record 的维度进行 keyBy，并创建 key 为 window 的 keyed state
+- Trigger：触发窗口计算的条件
+- evictor：触发计算后，先过滤一部分 record
+
+Flink对一些聚合类的窗口计算(如sum和min)做了优化，因为聚合类的计算不需要将窗口中的所有数据都保存下来，只需要保存一个中间结果值就可以了。
+
+以下代码描述了建立一个`GlobalWindow`，当窗口积累了1000个事件时，保留最新的100个并触发计算。
 
 ```java
 stream
@@ -52,7 +62,7 @@ stream
 WaterMark本质上是一个时间戳，是`DataStream` 中一个带有时间戳的元素，**一般结合事件时间使用**，为了**解决实时计算中的数据乱序问题**。
 
 - WaterMark是Flink判断迟到数据的标准，同时也是窗口触发的标记。如果 Flink中出现了一个WaterMark(T)，那么就意味着 EventTime < T 的数据都已经到达
-- 在程序并行度大于 1 的情况下，会有多个流产生WaterMark和窗口，这时候 Flink 会选取时间戳最小的WaterMark
+- 在程序并行度大于 1 的情况下，会有多个流产生WaterMark和窗口，这时候 **Flink 会选取时间戳最小的WaterMark**
 - **WaterMark可以加在source算子或者非source算子，建议加在source算子上**，只有当不可以加在source算子上才能加在非source算子上
 
 ![]({{ site.url }}/assets/img/2020-12-7-7.png)

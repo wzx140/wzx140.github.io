@@ -20,7 +20,7 @@ Flink 的状态都是基于本地的，即每个算子子任务维护着这个�
 
 ![]({{ site.url }}/assets/img/2020-12-7-9.png)
 
-Keyed State以键值对方式存储，并且**与数据流一样严格分区**。如图所示，只有在`keyBy`函数之后，才可以在对应keyed stream的子任务中访问到Keyed State。这种key的对齐保证了**状态更新是本地运算**，从而保证了一致性且没有事务开销。
+**Keyed State以键值对方式存储**，并且**与数据流一样严格分区**。如图所示，只有在`keyBy`函数之后，才可以在对应keyed stream的子任务中访问到Keyed State。这种key的对齐保证了**状态更新是本地运算**，从而保证了一致性且没有事务开销。
 
 Operator State绑定在子任务上，**流入相同子任务的数据可以访问和共享Operator State**。
 

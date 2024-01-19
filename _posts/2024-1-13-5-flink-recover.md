@@ -1,14 +1,16 @@
 ---
 layout: post
-title:  "Flink: 故障恢复"
-date:   2020-12-7 11:00
+title:  "Flink 剖析(五) checkpoint"
+date:   2024-1-13
 categories: Flink
 keywords: Flink 2PC Barrier Consistence
 mathjax: true
 author: wzx
 ---
 
-Flink中精准一次的容错机制
+Flink中精准一次的容错机制 10.8/10.9
+
+
 
 
 
@@ -59,14 +61,14 @@ Flink通过**严格只处理一次的一致性保证**和**检查点与分区重
 
 ### 状态
 
-所有类型的[状态]({% post_url 2020-12-7-flink-state %})都是快照的一部分。
+所有类型的[状态]({% post_url 2024-1-13-2-flink-state %})都是快照的一部分。
 
 - **用户定义状态**：由transformation函数(`map()`,`filter()`)直接创建或者修改的状态
 - **系统状态**：这种状态指的是数据缓存，是算子计算的一部分。例如窗口，其中缓存一定数量的record，直到计算完成为止。
 
 ![]({{ site.url }}/assets/img/2020-12-7-14.png)
 
-如图所示，算子在从输入流接收到所有barrier之后，向输出流发出barrier之前，对其状态进行快照。在这个时间点，barrier之前的record进行的所有状态更新已经完成，并且没有依赖于barrier之后的record。由于快照状态占用空间可能很大，因此将其存储在可配置的[后端存储系统]({% post_url 2020-12-7-flink-state %}#存储)中。默认情况下，使用JobManager的内存，但**对于生产用途，应配置分布式可靠存储(例如HDFS)**。状态存储后，算子确认检查点，将barrier发送到输出流，然后继续处理数据。
+如图所示，算子在从输入流接收到所有barrier之后，向输出流发出barrier之前，对其状态进行快照。在这个时间点，barrier之前的record进行的所有状态更新已经完成，并且没有依赖于barrier之后的record。由于快照状态占用空间可能很大，因此将其存储在可配置的[后端存储系统]({% post_url 2024-1-13-2-flink-state %}#存储)中。默认情况下，使用JobManager的内存，但**对于生产用途，应配置分布式可靠存储(例如HDFS)**。状态存储后，算子确认检查点，将barrier发送到输出流，然后继续处理数据。
 
 快照包含：
 

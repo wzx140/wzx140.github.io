@@ -1,14 +1,14 @@
 ---
 layout: post
-title:  "Flink: 状态"
-date:   2020-12-7 10:00
+title:  "Flink 剖析(二) 状态"
+date:   2024-1-13
 categories: Flink
 keywords: Flink State
 mathjax: true
 author: wzx
 ---
 
-Flink中高效而丰富的算子状态管理机制
+Flink 中高效而丰富的算子状态管理机制
 
 
 
@@ -16,30 +16,37 @@ Flink中高效而丰富的算子状态管理机制
 
 Flink 的状态都是基于本地的，即每个算子子任务维护着这个算子子任务对应的状态存储，**算子子任务之间的状态不能相互访问**。
 
-### Keyed and Operator State
+### Keyed/Operator/Broadcast State
 
-![]({{ site.url }}/assets/img/2020-12-7-9.png)
+![]({{ site.url }}/assets/img/2024-1-13-2-1.png)
 
-**Keyed State以键值对方式存储**，并且**与数据流一样严格分区**。如图所示，只有在`keyBy`函数之后，才可以在对应keyed stream的子任务中访问到Keyed State。这种key的对齐保证了**状态更新是本地运算**，从而保证了一致性且没有事务开销。
+**Keyed State 以键值对方式存储**，并且**与数据流一样严格分区**。如图所示，只有在 keyBy 函数之后，才可以在对应 keyed stream 的子任务中访问到 Keyed State。
 
-Operator State绑定在子任务上，**流入相同子任务的数据可以访问和共享Operator State**。
+Operator State 绑定在子任务上，**流入相同子任务的数据可以访问和共享Operator State**。
+
+Broadcast State 由 Broadcast Stream 生成，**每个子任务保存全量的状态**，但是 Broadcast state 的更新不能依赖于流中元素到达的顺序
 
 
 ### Raw and Managed State
 
-**Managed State用Flink runtime维护的数据结构表示**，例如内部哈希表或RocksDB。Managed State如`ValueState`、`ListState`、`MapState`等。Flink runtime对state进行编码，然后将其写入检查点。
+**Managed State 由 Flink 进行维护管理**，如`ValueState`、`ListState`、`MapState` 等。Flink runtime 对 state 进行编码，然后将其写入检查点。
 
-Raw State由算子维护state的数据结构表示，Flink本身并不知道状态的数据结构。快照时，仅将字节序列写入检查点。**Raw State的数据结构对Flink不透明，只能观察到原始的字节数组**。
+**Raw State 由算子维护**，Flink 本身并不知道这些状态。快照时，仅将字节序列写入检查点。Raw State 的数据结构对 Flink 不透明，只能观察到原始的字节数组。**一般不建议使用**。
+
+## 存储
+
+### MemoryStateBackend
+**MemoryStateBackend 将状态数据存储在本地内存中**，一般用来进行本地调试用
+
+### FsStateBackend
+**FsStateBackend 会把状态数据保存在 TaskManager 的内存中。CheckPoint 时，将状态快照写入到配置的 HDFS 中**，少量的元数据信息存储到 JobManager 的内存中。**适用于大作业、状态较大、全局高可用的那些任务**。
+
+### RocksDBStateBackend
+**RocksDBStateBackend 将正在运行中的状态数据保存在 RocksDB 数据库中**，RocksDB 数据库默认将数据存储在 TaskManager 运行节点的数据目录下。**CheckPoint 时，将状态快照写入到配置 HDFS 中**，**是唯一支持增量快照的状态后端，适用于超大状态的场景**
 
 ## 访问
 
-### State
-![]({{ site.url }}/assets/img/2020-12-7-10.png)
-
-### StateDescriptor
-![]({{ site.url }}/assets/img/2020-12-7-11.png)
-
-### 示例
+**所有对 subTask 状态的并发操作都通过队列进行排队(Mailbox)，单线程(Mailbox 线程)依次处理达到线程安全**。使用 StateDescriptor 从 StateBackend 中获取 State 实例
 
 ```java
 public class Main {
@@ -97,23 +104,6 @@ public class Main {
   }
 }
 ```
-
-## 存储
-
-算子状态存储在JVM 的堆内存，堆外内存或者第三方存储中
-
-### MemoryStateBackend
-**`MemoryStateBackend`将状态数据存储在本地内存中**，一般用来进行本地调试用。`StreamExecutionEnvironment.setStateBackend(new MemoryStateBackend(DEFAULT_MAX_STATE_SIZE, false))`
-
-- 每个独立状态默认限制大小为 5MB，可以通过构造函数增加容量
-- 状态的大小不能超过 akka 的 Framesize 大小
-- 聚合后的状态必须能够放进 JobManager 的内存中
-
-### FsStateBackend
-`FsStateBackend`会把状态数据保存在 TaskManager 的内存中。CheckPoint 时，将状态快照写入到配置的文件系统(HDFS)中，少量的元数据信息存储到 JobManager 的内存中。**适用于大作业、状态较大、全局高可用的那些任务**。`StreamExecutionEnvironment.setStateBackend(new FsStateBackend("hdfs://namenode:40010/flink/checkpoints", false))`
-
-### RocksDBStateBackend
-`RocksDBStateBackend`将正在运行中的状态数据保存在RocksDB数据库中，RocksDB 数据库默认将数据存储在 TaskManager 运行节点的数据目录下，CheckPoint 时，将状态快照写入到配置的文件系统(HDFS)中，**是唯一支持增量快照的状态后端**
 
 ## REFERENCE
 

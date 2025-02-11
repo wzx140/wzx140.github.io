@@ -2,12 +2,12 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url: https://masterwangzx.com
+url: https://wzx140.github.io/
 date_format: "ordinal"
 title: WZX's Blog
 subtitle: "筚路蓝缕 以启山林"
 description: "学习是一种信仰"
-keywords: WZX, masterwangzx
+keywords: WZX, wzx140
 timezone: Asia/Shanghai
 encoding: "utf-8"
 side_bar_repo_limit: 5
